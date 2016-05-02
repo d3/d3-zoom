@@ -1,0 +1,35 @@
+{
+  "name": "d3-zoom",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [
+    "d3",
+    "zoom",
+    "behavior",
+    "interaction"
+  ],
+  "homepage": "https://github.com/d3/d3-zoom",
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Mike Bostock",
+    "url": "http://bost.ocks.org/mike"
+  },
+  "main": "build/d3-zoom.js",
+  "jsnext:main": "index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d3/d3-zoom.git"
+  },
+  "scripts": {
+    "pretest": "rm -rf build && mkdir build && json2module package.json > build/package.js && rollup -f umd -n d3_zoom -o build/d3-zoom.js -- index.js",
+    "test": "tape 'test/**/*-test.js' && eslint index.js src",
+    "prepublish": "npm run test && uglifyjs build/d3-zoom.js -c -m -o build/d3-zoom.min.js",
+    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git push --tags && cp build/d3-zoom.js ../d3.github.com/d3-zoom.v0.0.js && cp build/d3-zoom.min.js ../d3.github.com/d3-zoom.v0.0.min.js && cd ../d3.github.com && git add d3-zoom.v0.0.js d3-zoom.v0.0.min.js && git commit -m \"d3-zoom ${VERSION}\" && git push && cd - && zip -j build/d3-zoom.zip -- LICENSE README.md build/d3-zoom.js build/d3-zoom.min.js"
+  },
+  "devDependencies": {
+    "json2module": "0.0",
+    "rollup": "0.26",
+    "tape": "4",
+    "uglify-js": "2"
+  }
+}
