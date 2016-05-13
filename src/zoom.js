@@ -8,11 +8,21 @@ export default function(started) {
 
   function zoom(selection) {
     selection
+        .on("wheel.zoom", wheeled)
         .on("mousedown.zoom", mousedowned)
         .on("touchstart.zoom", touchstarted)
         .on("touchmove.zoom", touchmoved)
         .on("touchend.zoom touchcancel.zoom", touchended)
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
+  }
+
+  function wheeled() {
+    listeners.apply("zoom", this, arguments);
+    event.preventDefault();
+    // TODO emit start on first wheel event
+    // TODO emit end if no wheel events seen in 50ms
+    // TODO compute scale delta based on event.deltaY and event.deltaMode
+    // TODO allow zoom center to be specified, and default to mouse position
   }
 
   function mousedowned() {
