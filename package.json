@@ -31,6 +31,7 @@
     "d3-selection": "~0.7.2"
   },
   "devDependencies": {
+    "eslint": "2",
     "json2module": "0.0",
     "rollup": "0.26",
     "tape": "4",
