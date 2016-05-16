@@ -28,18 +28,17 @@ export default function(started) {
 
   function zoom(selection) {
     if (selection instanceof transition) {
-      selection
-          .call(schedule, target);
+      selection.call(schedule, target);
     } else {
       selection
-          .property("__zoom", target)
           .on("wheel.zoom", wheeled)
           .on("mousedown.zoom", mousedowned)
           .on("dblclick.zoom", dblclicked)
           .on("touchstart.zoom", touchstarted)
           .on("touchmove.zoom", touchmoved)
           .on("touchend.zoom touchcancel.zoom", touchended)
-          .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
+          .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
+          .property("__zoom", target);
     }
   }
 
