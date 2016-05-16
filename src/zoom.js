@@ -41,6 +41,8 @@ export default function(started) {
   // TODO observe scale extent
   // TODO observe translate extent?
   function wheeled() {
+    if (!event.deltaY) return;
+
     var that = this,
         args = arguments,
         start = wheelTimer ? (clearTimeout(wheelTimer), false) : (mouseLocation = location(mousePoint = mouse(that)), true);
