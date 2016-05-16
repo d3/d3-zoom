@@ -2,6 +2,7 @@ import {dispatch} from "d3-dispatch";
 import {event, customEvent, select, mouse} from "d3-selection";
 import ZoomEvent from "./event";
 
+// TODO scale and translate must be stored on each selected element, not the behavior
 export default function(started) {
   var scale = 1,
       scaleMin = 0,
@@ -11,6 +12,8 @@ export default function(started) {
       zooming = 0,
       wheelTimer,
       wheelDelay = 150,
+      centerPoint = null,
+      centerLocation,
       mousePoint,
       mouseLocation;
 
@@ -53,21 +56,21 @@ export default function(started) {
   }
 
   // TODO interrupt transition on this element, if any
-  // TODO allow zoom center to be specified, and default to mouse position
   // TODO observe translate extent?
   function wheeled() {
     if (!event.deltaY) return;
 
     var that = this,
         args = arguments,
-        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (mouseLocation = location(mousePoint = mouse(that)), true);
+        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = location(centerPoint)), mouseLocation = location(mousePoint = mouse(that)), true);
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
     if (start && ++zooming === 1) emit("start", that, args);
 
     scaleTo(scale * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
-    translateTo(mousePoint, mouseLocation);
+    if (centerPoint) translateTo(centerPoint, centerLocation), mouseLocation = location(mousePoint);
+    else translateTo(mousePoint, mouseLocation);
     emit("zoom", that, args);
 
     function wheelidled() {
@@ -121,6 +124,10 @@ export default function(started) {
   // TODO allow setting
   zoom.translate = function() {
     return [translateX, translateY];
+  };
+
+  zoom.center = function(_) {
+    return arguments.length ? (centerPoint = _ == null ? null : [+_[0], +_[1]], zoom) : centerPoint;
   };
 
   zoom.on = function() {
