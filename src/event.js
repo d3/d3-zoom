@@ -1,5 +1,5 @@
-export default function ZoomEvent(type, scale, translateX, translateY) {
+export default function ZoomEvent(type, view) {
   this.type = type;
-  this.scale = scale;
-  this.translate = [translateX, translateY];
+  this.scale = view.k;
+  this.translate = [view.x, view.y];
 }

@@ -1,11 +1,13 @@
 import {dispatch} from "d3-dispatch";
 import {interpolateZoom} from "d3-interpolate";
 import {event, customEvent, select, mouse} from "d3-selection";
-import {transition} from "d3-transition";
+import {interrupt, transition} from "d3-transition";
 import ZoomEvent from "./event";
+import View from "./view";
 
+// TODO scaleExtent
 export default function(started) {
-  var view = {x: 0, y: 0, k: 1},
+  var target = new View(1, 0, 0),
       dx = 960,
       dy = 500,
       scaleMin = 0,
@@ -36,10 +38,10 @@ export default function(started) {
                 v = that.__zoom,
                 x = mousePoint ? mousePoint[0] : dx / 2,
                 y = mousePoint ? mousePoint[1] : dy / 2,
-                i = interpolateZoom([(x - v.x) / v.k, (y - v.y) / v.k, dx / v.k], [(x - view.x) / view.k, (y - view.y) / view.k, dx / view.k]);
+                i = interpolateZoom([(x - v.x) / v.k, (y - v.y) / v.k, dx / v.k], [(x - target.x) / target.k, (y - target.y) / target.k, dx / target.k]);
             return function(t) {
               var l = i(t), k = dx / l[2];
-              that.__zoom = {x: x - l[0] * k, y: y - l[1] * k, k: k};
+              that.__zoom = new View(k, x - l[0] * k, y - l[1] * k);
               emit("zoom", that, args);
             };
           })
@@ -48,7 +50,7 @@ export default function(started) {
           });
     } else {
       selection
-          .property("__zoom", view)
+          .property("__zoom", target)
           .on("wheel.zoom", wheeled)
           .on("mousedown.zoom", mousedowned)
           .on("dblclick.zoom", dblclicked)
@@ -59,43 +61,26 @@ export default function(started) {
     }
   }
 
-  function point(l) {
-    return [l[0] * view.k + view.x, l[1] * view.k + view.y];
-  }
-
-  function location(p) {
-    return [(p[0] - view.x) / view.k, (p[1] - view.y) / view.k];
-  }
-
-  function scale(k) {
-    view = {k: Math.max(scaleMin, Math.min(scaleMax, k)), x: view.x, y: view.y};
-  }
-
-  function translate(p, l) {
-    l = point(l), view = {k: view.k, x: view.x + p[0] - l[0], y: view.y + p[1] - l[1]};
-  }
-
   function emit(type, that, args) {
-    var view = that.__zoom; // May differ from behavior’s during a transition!
-    customEvent(new ZoomEvent(type, view.k, view.x, view.y), listeners.apply, listeners, [type, that, args]);
+    customEvent(new ZoomEvent(type, that.__zoom), listeners.apply, listeners, [type, that, args]);
   }
 
-  // TODO interrupt transition on this element, if any
   function wheeled() {
     if (!event.deltaY) return;
 
     var that = this,
         args = arguments,
-        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = location(centerPoint)), mouseLocation = location(mousePoint = mouse(that)), true);
+        view = that.__zoom,
+        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = view.location(centerPoint)), mouseLocation = view.location(mousePoint = mouse(that)), true);
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    if (start && ++zooming === 1) emit("start", that, args);
+    if (start && ++zooming === 1) interrupt(that), emit("start", that, args);
 
-    scale(view.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
-    if (centerPoint) translate(centerPoint, centerLocation), mouseLocation = location(mousePoint);
-    else translate(mousePoint, mouseLocation);
-    this.__zoom = view;
+    view = view.scale(view.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
+    if (centerPoint) view = view.translate(centerPoint, centerLocation), mouseLocation = view.location(mousePoint);
+    else view = view.translate(mousePoint, mouseLocation);
+    that.__zoom = view;
     emit("zoom", that, args);
 
     function wheelidled() {
@@ -104,18 +89,17 @@ export default function(started) {
     }
   }
 
-  // TODO interrupt transition on this element, if any
   function mousedowned() {
     var that = this,
-        args = arguments;
+        args = arguments,
+        view = that.__zoom;
 
-    mouseLocation = location(mousePoint = mouse(that));
+    mouseLocation = view.location(mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
-    if (++zooming === 1) emit("start", that, args);
+    if (++zooming === 1) interrupt(that), emit("start", that, args);
 
     function mousemoved() {
-      translate(mousePoint = mouse(that), mouseLocation);
-      that.__zoom = view;
+      that.__zoom = view = view.translate(mousePoint = mouse(that), mouseLocation);
       emit("zoom", that, args);
     }
 
@@ -126,11 +110,10 @@ export default function(started) {
   }
 
   function dblclicked() {
-    var k = Math.log(view.k) / Math.LN2;
-    mouseLocation = location(mousePoint = mouse(this));
-    scale(Math.pow(2, event.shiftKey ? Math.ceil(k) - 1 : Math.floor(k) + 1));
-    translate(mousePoint, mouseLocation);
-    if (duration > 0) select(this).transition().duration(duration).call(zoom);
+    var view = this.__zoom, k = Math.log(view.k) / Math.LN2;
+    mouseLocation = view.location(mousePoint = mouse(this));
+    view = view.scale(Math.pow(2, event.shiftKey ? Math.ceil(k) - 1 : Math.floor(k) + 1)).translate(mousePoint, mouseLocation);
+    if (duration > 0) target = view, select(this).transition().duration(duration).call(zoom); // TODO restore original target
     else this.__zoom = view;
   }
 
@@ -147,7 +130,7 @@ export default function(started) {
   }
 
   zoom.scale = function(_) {
-    return arguments.length ? (scale(+_), zoom) : view.k;
+    return arguments.length ? (target = target.scale(+_), zoom) : target.k;
   };
 
   zoom.scaleExtent = function(_) {
@@ -155,7 +138,7 @@ export default function(started) {
   };
 
   zoom.translate = function(_) {
-    return arguments.length ? (view = {k: view.k, x: +_[0], y: +_[1]}, zoom) : [view.x, view.y];
+    return arguments.length ? (target = new View(target.k, +_[0], +_[1]), zoom) : [target.x, target.y];
   };
 
   zoom.center = function(_) {
