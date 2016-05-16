@@ -29,25 +29,7 @@ export default function(started) {
   function zoom(selection) {
     if (selection instanceof transition) {
       selection
-          .on("start.zoom", function() {
-            emit("start", this, arguments);
-          })
-          .tween("zoom:zoom", function() {
-            var that = this,
-                args = arguments,
-                v = that.__zoom,
-                x = mousePoint ? mousePoint[0] : dx / 2,
-                y = mousePoint ? mousePoint[1] : dy / 2,
-                i = interpolateZoom([(x - v.x) / v.k, (y - v.y) / v.k, dx / v.k], [(x - target.x) / target.k, (y - target.y) / target.k, dx / target.k]);
-            return function(t) {
-              var l = i(t), k = dx / l[2];
-              that.__zoom = new View(k, x - l[0] * k, y - l[1] * k);
-              emit("zoom", that, args);
-            };
-          })
-          .on("end.zoom", function() {
-            emit("end", this, arguments);
-          });
+          .call(schedule, target);
     } else {
       selection
           .property("__zoom", target)
@@ -59,6 +41,30 @@ export default function(started) {
           .on("touchend.zoom touchcancel.zoom", touchended)
           .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
     }
+  }
+
+  function schedule(transition, target) {
+    transition
+        .on("start.zoom", function() {
+          emit("start", this, arguments);
+        })
+        .tween("zoom:zoom", function() {
+          var that = this,
+              args = arguments,
+              v = that.__zoom,
+              x = mousePoint ? mousePoint[0] : dx / 2,
+              y = mousePoint ? mousePoint[1] : dy / 2,
+              i = interpolateZoom([(x - v.x) / v.k, (y - v.y) / v.k, dx / v.k], [(x - target.x) / target.k, (y - target.y) / target.k, dx / target.k]);
+          return function(t) {
+            var l = i(t), k = dx / l[2];
+            that.__zoom = new View(k, x - l[0] * k, y - l[1] * k);
+            emit("zoom", that, args);
+          };
+        })
+        .on("end.zoom", function() {
+          this.__zoom = target;
+          emit("end", this, arguments);
+        });
   }
 
   function emit(type, that, args) {
@@ -113,7 +119,7 @@ export default function(started) {
     var view = this.__zoom, k = Math.log(view.k) / Math.LN2;
     mouseLocation = view.location(mousePoint = mouse(this));
     view = view.scale(Math.pow(2, event.shiftKey ? Math.ceil(k) - 1 : Math.floor(k) + 1)).translate(mousePoint, mouseLocation);
-    if (duration > 0) target = view, select(this).transition().duration(duration).call(zoom); // TODO restore original target
+    if (duration > 0) select(this).transition().duration(duration).call(schedule, view);
     else this.__zoom = view;
   }
 
