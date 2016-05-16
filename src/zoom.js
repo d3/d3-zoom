@@ -5,6 +5,7 @@ export default function(started) {
   var scale = 1,
       translateX = 0,
       translateY = 0,
+      zooming = 0,
       wheelTimer,
       wheelDelay = 150,
       mousePoint,
@@ -34,7 +35,6 @@ export default function(started) {
     return [(p[0] - translateX) / scale, (p[1] - translateY) / scale];
   }
 
-  // TODO don’t dispatch start & end if there is another active gesture (e.g., mousedown)
   // TODO interrupt transition on this element, if any
   // TODO dispatch customEvent
   // TODO allow zoom center to be specified, and default to mouse position
@@ -49,7 +49,7 @@ export default function(started) {
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    if (start) listeners.apply("start", that, args);
+    if (start && ++zooming === 1) listeners.apply("start", that, args);
 
     scale *= Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
     var point0 = point(mouseLocation);
@@ -59,11 +59,10 @@ export default function(started) {
 
     function wheelidled() {
       wheelTimer = null;
-      listeners.apply("end", that, args);
+      if (--zooming === 0) listeners.apply("end", that, args);
     }
   }
 
-  // TODO don’t dispatch start & end if there is another active gesture (e.g., wheel)
   // TODO interrupt transition on this element, if any
   // TODO dispatch customEvent
   // TODO observe translate extent?
@@ -73,7 +72,7 @@ export default function(started) {
 
     mouseLocation = location(mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
-    listeners.apply("start", that, args);
+    if (++zooming === 1) listeners.apply("start", that, args);
 
     function mousemoved() {
       var point0 = point(mouseLocation),
@@ -85,7 +84,7 @@ export default function(started) {
 
     function mouseupped() {
       select(event.view).on("mousemove.zoom mouseup.zoom", null);
-      listeners.apply("end", that, args);
+      if (--zooming === 0) listeners.apply("end", that, args);
     }
   }
 
