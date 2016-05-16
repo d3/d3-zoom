@@ -7,9 +7,11 @@ export default function(started) {
       translateY = 0,
       wheelTimer,
       wheelDelay = 150,
-      wheelPoint,
-      wheelLocation;
+      mousePoint,
+      mouseLocation;
 
+  // TODO prevent default
+  // TODO stop propagation
   var listeners = dispatch("start", "zoom", "end")
       .on("start", started);
 
@@ -41,16 +43,16 @@ export default function(started) {
   function wheeled() {
     var that = this,
         args = arguments,
-        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (wheelLocation = location(wheelPoint = mouse(that)), true);
+        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (mouseLocation = location(mousePoint = mouse(that)), true);
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
     if (start) listeners.apply("start", that, args);
 
     scale *= Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
-    var point0 = point(wheelLocation);
-    translateX += wheelPoint[0] - point0[0];
-    translateY += wheelPoint[1] - point0[1];
+    var point0 = point(mouseLocation);
+    translateX += mousePoint[0] - point0[0];
+    translateY += mousePoint[1] - point0[1];
     listeners.apply("zoom", that, args);
 
     function wheelidled() {
@@ -65,15 +67,15 @@ export default function(started) {
   // TODO observe translate extent?
   function mousedowned() {
     var that = this,
-        args = arguments,
-        location0 = location(mouse(that));
+        args = arguments;
 
+    mouseLocation = location(mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
     listeners.apply("start", that, args);
 
     function mousemoved() {
-      var point1 = mouse(that),
-          point0 = point(location0);
+      var point0 = point(mouseLocation),
+          point1 = mousePoint = mouse(that);
       translateX += point1[0] - point0[0];
       translateY += point1[1] - point0[1];
       listeners.apply("zoom", that, args);
