@@ -3,6 +3,8 @@ import {event, select, mouse} from "d3-selection";
 
 export default function(started) {
   var scale = 1,
+      scaleMin = 0,
+      scaleMax = Infinity,
       translateX = 0,
       translateY = 0,
       zooming = 0,
@@ -35,6 +37,16 @@ export default function(started) {
     return [(p[0] - translateX) / scale, (p[1] - translateY) / scale];
   }
 
+  function scaleTo(k) {
+    scale = Math.max(scaleMin, Math.min(scaleMax, k));
+  }
+
+  function translateTo(p, l) {
+    l = point(l);
+    translateX += p[0] - l[0];
+    translateY += p[1] - l[1];
+  }
+
   // TODO interrupt transition on this element, if any
   // TODO dispatch customEvent
   // TODO allow zoom center to be specified, and default to mouse position
@@ -51,10 +63,8 @@ export default function(started) {
     wheelTimer = setTimeout(wheelidled, wheelDelay);
     if (start && ++zooming === 1) listeners.apply("start", that, args);
 
-    scale *= Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
-    var point0 = point(mouseLocation);
-    translateX += mousePoint[0] - point0[0];
-    translateY += mousePoint[1] - point0[1];
+    scaleTo(scale * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
+    translateTo(mousePoint, mouseLocation);
     listeners.apply("zoom", that, args);
 
     function wheelidled() {
@@ -75,10 +85,7 @@ export default function(started) {
     if (++zooming === 1) listeners.apply("start", that, args);
 
     function mousemoved() {
-      var point0 = point(mouseLocation),
-          point1 = mousePoint = mouse(that);
-      translateX += point1[0] - point0[0];
-      translateY += point1[1] - point0[1];
+      translateTo(mousePoint = mouse(that), mouseLocation);
       listeners.apply("zoom", that, args);
     }
 
@@ -104,6 +111,10 @@ export default function(started) {
   // TODO allow setting
   zoom.scale = function() {
     return scale;
+  };
+
+  zoom.scaleExtent = function(_) {
+    return arguments.length ? (scaleMin = +_[0], scaleMax = +_[1], zoom) : [scaleMin, scaleMax];
   };
 
   // TODO expose on custom event
