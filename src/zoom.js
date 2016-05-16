@@ -1,5 +1,6 @@
 import {dispatch} from "d3-dispatch";
-import {event, select, mouse} from "d3-selection";
+import {event, customEvent, select, mouse} from "d3-selection";
+import ZoomEvent from "./event";
 
 export default function(started) {
   var scale = 1,
@@ -47,10 +48,12 @@ export default function(started) {
     translateY += p[1] - l[1];
   }
 
+  function emit(type, that, args) {
+    customEvent(new ZoomEvent(type, scale, translateX, translateY), listeners.apply, listeners, [type, that, args]);
+  }
+
   // TODO interrupt transition on this element, if any
-  // TODO dispatch customEvent
   // TODO allow zoom center to be specified, and default to mouse position
-  // TODO observe scale extent
   // TODO observe translate extent?
   function wheeled() {
     if (!event.deltaY) return;
@@ -61,20 +64,19 @@ export default function(started) {
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    if (start && ++zooming === 1) listeners.apply("start", that, args);
+    if (start && ++zooming === 1) emit("start", that, args);
 
     scaleTo(scale * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
     translateTo(mousePoint, mouseLocation);
-    listeners.apply("zoom", that, args);
+    emit("zoom", that, args);
 
     function wheelidled() {
       wheelTimer = null;
-      if (--zooming === 0) listeners.apply("end", that, args);
+      if (--zooming === 0) emit("end", that, args);
     }
   }
 
   // TODO interrupt transition on this element, if any
-  // TODO dispatch customEvent
   // TODO observe translate extent?
   function mousedowned() {
     var that = this,
@@ -82,16 +84,16 @@ export default function(started) {
 
     mouseLocation = location(mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
-    if (++zooming === 1) listeners.apply("start", that, args);
+    if (++zooming === 1) emit("start", that, args);
 
     function mousemoved() {
       translateTo(mousePoint = mouse(that), mouseLocation);
-      listeners.apply("zoom", that, args);
+      emit("zoom", that, args);
     }
 
     function mouseupped() {
       select(event.view).on("mousemove.zoom mouseup.zoom", null);
-      if (--zooming === 0) listeners.apply("end", that, args);
+      if (--zooming === 0) emit("end", that, args);
     }
   }
 
@@ -107,7 +109,6 @@ export default function(started) {
     // TODO
   }
 
-  // TODO expose on custom event
   // TODO allow setting
   zoom.scale = function() {
     return scale;
@@ -117,7 +118,6 @@ export default function(started) {
     return arguments.length ? (scaleMin = +_[0], scaleMax = +_[1], zoom) : [scaleMin, scaleMax];
   };
 
-  // TODO expose on custom event
   // TODO allow setting
   zoom.translate = function() {
     return [translateX, translateY];
