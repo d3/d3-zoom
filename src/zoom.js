@@ -47,14 +47,14 @@ export default function(started) {
   function zoom(selection, view) {
     if (arguments.length < 2) {
       selection
-        .on("wheel.zoom", wheeled)
-        .on("mousedown.zoom", mousedowned)
-        .on("dblclick.zoom", dblclicked)
-        .on("touchstart.zoom", touchstarted)
-        .on("touchmove.zoom", touchmoved)
-        .on("touchend.zoom touchcancel.zoom", touchended)
-        .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
-        .property("__zoom", identity);
+          .on("wheel.zoom", wheeled)
+          .on("mousedown.zoom", mousedowned)
+          .on("dblclick.zoom", dblclicked)
+          .on("touchstart.zoom", touchstarted)
+          .on("touchmove.zoom", touchmoved)
+          .on("touchend.zoom touchcancel.zoom", touchended)
+          .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
+          .property("__zoom", identity);
     } else if (selection instanceof transition) {
       schedule(selection, view, centerPoint);
     } else {
