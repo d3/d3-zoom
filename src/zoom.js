@@ -126,6 +126,7 @@ export default function(started) {
     }
   }
 
+  // TODO use explicit center, if specified
   function dblclicked() {
     if (!filter.apply(this, arguments)) return;
     var view = this.__zoom;
