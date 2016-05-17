@@ -45,7 +45,8 @@ export default function(started) {
       .on("start", started);
 
   function zoom(selection, view) {
-    if (arguments.length < 2) selection
+    if (arguments.length < 2) {
+      selection
         .on("wheel.zoom", wheeled)
         .on("mousedown.zoom", mousedowned)
         .on("dblclick.zoom", dblclicked)
@@ -54,15 +55,22 @@ export default function(started) {
         .on("touchend.zoom touchcancel.zoom", touchended)
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
         .property("__zoom", identity);
-    else if (selection instanceof transition) schedule(selection, view, centerPoint);
-    else selection.property("__zoom", view);
+    } else if (selection instanceof transition) {
+      schedule(selection, view, centerPoint);
+    } else {
+      selection
+          .each(emitStart)
+          .property("__zoom", view)
+          .each(emitZoom)
+          .each(emitEnd);
+    }
   }
 
   // TODO apply scaleExtent to the specified view
   function schedule(transition, view, center) {
     transition
-        .on("start.zoom", function() { emit("start", this, arguments); })
-        .on("end.zoom", function() { emit("end", this, arguments); })
+        .on("start.zoom", emitStart)
+        .on("end.zoom", emitEnd)
         .tween("zoom:zoom", function() {
           var that = this,
               args = arguments,
@@ -75,9 +83,21 @@ export default function(started) {
           return function(t) {
             if (t === 1) that.__zoom = v1; // Avoid rounding error on end.
             else { var l = i(t), k = w / l[2]; that.__zoom = new View(k, p[0] - l[0] * k, p[1] - l[1] * k); }
-            emit("zoom", that, args);
+            emitZoom.apply(that, args);
           };
         });
+  }
+
+  function emitStart() {
+    emit("start", this, arguments);
+  }
+
+  function emitZoom() {
+    emit("zoom", this, arguments);
+  }
+
+  function emitEnd() {
+    emit("end", this, arguments);
   }
 
   function emit(type, that, args) {
@@ -89,40 +109,42 @@ export default function(started) {
     var that = this,
         args = arguments,
         view = that.__zoom,
-        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = view.invert(centerPoint)), mouseLocation = view.invert(mousePoint = mouse(that)), true),
-        delta = Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
+        delta = Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500),
+        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = view.invert(centerPoint)), mouseLocation = view.invert(mousePoint = mouse(that)), true);
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    if (start && ++zooming === 1) interrupt(that), emit("start", that, args);
+    if (start && ++zooming === 1) interrupt(that), emitStart.apply(that, args);
     view = view.scaleBy(delta);
     if (centerPoint) view = view.translateTo(centerPoint, centerLocation), mouseLocation = view.invert(mousePoint);
     else view = view.translateTo(mousePoint, mouseLocation);
     that.__zoom = view;
-    emit("zoom", that, args);
+    emitZoom.apply(that, args);
 
     function wheelidled() {
       wheelTimer = null;
-      if (--zooming === 0) emit("end", that, args);
+      if (--zooming === 0) emitEnd.apply(that, args);
     }
   }
 
   function mousedowned() {
     if (!filter.apply(this, arguments)) return;
-    var that = this, args = arguments, view = that.__zoom;
+    var that = this,
+        args = arguments,
+        view = that.__zoom;
 
     mouseLocation = view.invert(mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
-    if (++zooming === 1) interrupt(that), emit("start", that, args);
+    if (++zooming === 1) interrupt(that), emitStart.apply(that, args);
 
     function mousemoved() {
       that.__zoom = view = view.translateTo(mousePoint = mouse(that), mouseLocation);
-      emit("zoom", that, args);
+      emitZoom.apply(that, args);
     }
 
     function mouseupped() {
       select(event.view).on("mousemove.zoom mouseup.zoom", null);
-      if (--zooming === 0) emit("end", that, args);
+      if (--zooming === 0) emitEnd.apply(that, args);
     }
   }
 
