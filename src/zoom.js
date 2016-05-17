@@ -2,20 +2,27 @@ import {dispatch} from "d3-dispatch";
 import {interpolateZoom} from "d3-interpolate";
 import {event, customEvent, select, mouse} from "d3-selection";
 import {interrupt, transition} from "d3-transition";
+import constant from "./constant";
 import ZoomEvent from "./event";
-// import View, {identity} from "./view";
 
 var identity = {
   scale: 1,
   translate: [0, 0]
 };
 
+// Ignore horizontal scrolling.
+// Ignore right-click, since that should open the context menu.
+function defaultFilter() {
+  return event.type === "wheel" ? event.deltaY : !event.button;
+}
+
 function defaultView() {
   return this.__zoom || identity;
 }
 
 export default function(started) {
-  var dx = 960,
+  var filter = defaultFilter,
+      dx = 960,
       dy = 500,
       scaleMin = 0,
       scaleMax = Infinity,
@@ -98,17 +105,12 @@ export default function(started) {
   }
 
   function wheeled() {
-    if (!event.deltaY) return;
-
-    var that = this,
-        args = arguments,
-        view = that.__zoom,
-        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = location(view, centerPoint)), mouseLocation = location(view, mousePoint = mouse(that)), true);
+    if (!filter.apply(this, arguments)) return;
+    var that = this, args = arguments, view = that.__zoom, start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = location(view, centerPoint)), mouseLocation = location(view, mousePoint = mouse(that)), true);
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
     if (start && ++zooming === 1) interrupt(that), emit("start", that, args);
-
     view = scale(view, Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
     if (centerPoint) view = translate(view, centerPoint, centerLocation), mouseLocation = location(view, mousePoint);
     else view = translate(view, mousePoint, mouseLocation);
@@ -122,9 +124,8 @@ export default function(started) {
   }
 
   function mousedowned() {
-    var that = this,
-        args = arguments,
-        view = that.__zoom;
+    if (!filter.apply(this, arguments)) return;
+    var that = this, args = arguments, view = that.__zoom;
 
     mouseLocation = location(view, mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
@@ -142,7 +143,9 @@ export default function(started) {
   }
 
   function dblclicked() {
+    if (!filter.apply(this, arguments)) return;
     var view = this.__zoom;
+
     mouseLocation = location(view, mousePoint = mouse(this));
     view = scale(view, event.shiftKey ? 0.5 : 2);
     view = translate(view, mousePoint, mouseLocation);
@@ -161,6 +164,10 @@ export default function(started) {
   function touchended() {
     // TODO
   }
+
+  zoom.filter = function(_) {
+    return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), zoom) : filter;
+  };
 
   zoom.scaleExtent = function(_) {
     return arguments.length ? (scaleMin = +_[0], scaleMax = +_[1], zoom) : [scaleMin, scaleMax];
