@@ -8,22 +8,26 @@ import View from "./view";
 
 var identity = new View(1, 0, 0);
 
+view.prototype = View.prototype;
+
+export function view(node) {
+  return node.__zoom;
+}
+
 // Ignore horizontal scrolling.
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {
   return event.type === "wheel" ? event.deltaY : !event.button;
 }
 
-export function view(node) {
-  return node.__zoom;
+function defaultSize() {
+  var node = this.ownerSVGElement || this;
+  return [node.clientWidth, node.clientHeight];
 }
-
-view.prototype = View.prototype;
 
 export default function(started) {
   var filter = defaultFilter,
-      dx = 960,
-      dy = 500,
+      size = defaultSize,
       scaleMin = 0,
       scaleMax = Infinity,
       duration = 250,
@@ -40,8 +44,6 @@ export default function(started) {
   var listeners = dispatch("start", "zoom", "end")
       .on("start", started);
 
-  // TODO apply scaleExtent to the specified view
-  // TODO use explicit center, if specified, with a transition
   function zoom(selection, view) {
     if (arguments.length < 2) selection
         .on("wheel.zoom", wheeled)
@@ -52,31 +54,29 @@ export default function(started) {
         .on("touchend.zoom touchcancel.zoom", touchended)
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
         .property("__zoom", identity);
-    else if (selection instanceof transition) schedule(selection, view, dx / 2, dy / 2);
+    else if (selection instanceof transition) schedule(selection, view, centerPoint);
     else selection.property("__zoom", view);
   }
 
   // TODO apply scaleExtent to the specified view
-  function schedule(transition, view, cx, cy) {
+  function schedule(transition, view, center) {
     transition
-        .on("start.zoom", function() {
-          emit("start", this, arguments);
-        })
+        .on("start.zoom", function() { emit("start", this, arguments); })
+        .on("end.zoom", function() { emit("end", this, arguments); })
         .tween("zoom:zoom", function() {
           var that = this,
               args = arguments,
+              s = size.apply(that, args),
+              p = center || [s[0] / 2, s[1] / 2],
+              w = Math.max(s[0], s[1]),
               v0 = that.__zoom,
               v1 = typeof view === "function" ? view.apply(that, args) : view,
-              p = [cx, cy],
-              i = interpolateZoom(v0.invert(p).concat(dx / v0._k), v1.invert(p).concat(dx / v1._k));
+              i = interpolateZoom(v0.invert(p).concat(w / v0._k), v1.invert(p).concat(w / v1._k));
           return function(t) {
             if (t === 1) that.__zoom = v1; // Avoid rounding error on end.
-            else { var l = i(t), k = dx / l[2]; that.__zoom = new View(k, cx - l[0] * k, cy - l[1] * k); }
+            else { var l = i(t), k = w / l[2]; that.__zoom = new View(k, p[0] - l[0] * k, p[1] - l[1] * k); }
             emit("zoom", that, args);
           };
-        })
-        .on("end.zoom", function() {
-          emit("end", this, arguments);
         });
   }
 
@@ -133,7 +133,7 @@ export default function(started) {
 
     mouseLocation = view.invert(mousePoint = mouse(this));
     view = view.scaleBy(event.shiftKey ? 0.5 : 2).translateTo(mousePoint, mouseLocation);
-    if (duration > 0) select(this).transition().duration(duration).call(schedule, view, mousePoint[0], mousePoint[1]);
+    if (duration > 0) select(this).transition().duration(duration).call(schedule, view, mousePoint);
     else this.__zoom = view;
   }
 
@@ -153,16 +153,16 @@ export default function(started) {
     return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), zoom) : filter;
   };
 
+  zoom.size = function(_) {
+    return arguments.length ? (size = typeof _ === "function" ? _ : constant([+_[0], +_[1]]), zoom) : size;
+  };
+
   zoom.scaleExtent = function(_) {
     return arguments.length ? (scaleMin = +_[0], scaleMax = +_[1], zoom) : [scaleMin, scaleMax];
   };
 
   zoom.center = function(_) {
     return arguments.length ? (centerPoint = _ == null ? null : [+_[0], +_[1]], zoom) : centerPoint;
-  };
-
-  zoom.size = function(_) {
-    return arguments.length ? (dx = +_[0], dy = +_[1], zoom) : [dx, dy];
   };
 
   zoom.duration = function(_) {
