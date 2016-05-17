@@ -3,12 +3,19 @@ import {interpolateZoom} from "d3-interpolate";
 import {event, customEvent, select, mouse} from "d3-selection";
 import {interrupt, transition} from "d3-transition";
 import ZoomEvent from "./event";
-import View from "./view";
+// import View, {identity} from "./view";
 
-// TODO scaleExtent
+var identity = {
+  scale: 1,
+  translate: [0, 0]
+};
+
+function defaultView() {
+  return this.__zoom || identity;
+}
+
 export default function(started) {
-  var target = new View(1, 0, 0),
-      dx = 960,
+  var dx = 960,
       dy = 500,
       scaleMin = 0,
       scaleMax = Infinity,
@@ -27,22 +34,27 @@ export default function(started) {
       .on("start", started);
 
   function zoom(selection) {
-    if (selection instanceof transition) {
-      selection.call(schedule, target);
-    } else {
-      selection
-          .on("wheel.zoom", wheeled)
-          .on("mousedown.zoom", mousedowned)
-          .on("dblclick.zoom", dblclicked)
-          .on("touchstart.zoom", touchstarted)
-          .on("touchmove.zoom", touchmoved)
-          .on("touchend.zoom touchcancel.zoom", touchended)
-          .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
-          .property("__zoom", target);
-    }
+    selection
+        .on("wheel.zoom", wheeled)
+        .on("mousedown.zoom", mousedowned)
+        .on("dblclick.zoom", dblclicked)
+        .on("touchstart.zoom", touchstarted)
+        .on("touchmove.zoom", touchmoved)
+        .on("touchend.zoom touchcancel.zoom", touchended)
+        .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
+        .property("__zoom", defaultView);
   }
 
-  function schedule(transition, target) {
+  // TODO make defensive copies of the view on get?
+  // TODO make defensive copies of the view on set?
+  zoom.view = function(selection, view) {
+    if (arguments.length < 2) return selection.property("__zoom");
+    if (selection instanceof transition) schedule(transition, view, dx / 2, dy / 2);
+    else selection.property("__zoom", view);
+  };
+
+  // TODO what if the view to be specified as a function?
+  function schedule(transition, view, x, y) {
     transition
         .on("start.zoom", function() {
           emit("start", this, arguments);
@@ -51,19 +63,34 @@ export default function(started) {
           var that = this,
               args = arguments,
               v = that.__zoom,
-              x = mousePoint ? mousePoint[0] : dx / 2,
-              y = mousePoint ? mousePoint[1] : dy / 2,
-              i = interpolateZoom([(x - v.x) / v.k, (y - v.y) / v.k, dx / v.k], [(x - target.x) / target.k, (y - target.y) / target.k, dx / target.k]);
+              p = [x, y],
+              i = interpolateZoom(location(v, p).concat(dx / v.scale), location(view, p).concat(dx / view.scale));
           return function(t) {
             var l = i(t), k = dx / l[2];
-            that.__zoom = new View(k, x - l[0] * k, y - l[1] * k);
+            that.__zoom = {scale: k, translate: [x - l[0] * k, y - l[1] * k]};
             emit("zoom", that, args);
           };
         })
         .on("end.zoom", function() {
-          this.__zoom = target;
+          this.__zoom = view;
           emit("end", this, arguments);
         });
+  }
+
+  function point(view, l) {
+    return [l[0] * view.scale + view.translate[0], l[1] * view.scale + view.translate[1]];
+  }
+
+  function location(view, p) {
+    return [(p[0] - view.translate[0]) / view.scale, (p[1] - view.translate[1]) / view.scale];
+  }
+
+  function scale(view, scale) {
+    return {scale: Math.max(scaleMin, Math.min(scaleMax, view.scale * scale)), translate: view.translate}; // TODO defensive copy?
+  }
+
+  function translate(view, p, l) {
+    return l = point(view, l), {scale: view.scale, translate: [view.translate[0] + p[0] - l[0], view.translate[1] + p[1] - l[1]]};
   }
 
   function emit(type, that, args) {
@@ -76,15 +103,15 @@ export default function(started) {
     var that = this,
         args = arguments,
         view = that.__zoom,
-        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = view.location(centerPoint)), mouseLocation = view.location(mousePoint = mouse(that)), true);
+        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = location(view, centerPoint)), mouseLocation = location(view, mousePoint = mouse(that)), true);
 
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
     if (start && ++zooming === 1) interrupt(that), emit("start", that, args);
 
-    view = view.scale(view.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
-    if (centerPoint) view = view.translate(centerPoint, centerLocation), mouseLocation = view.location(mousePoint);
-    else view = view.translate(mousePoint, mouseLocation);
+    view = scale(view, Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
+    if (centerPoint) view = translate(view, centerPoint, centerLocation), mouseLocation = location(view, mousePoint);
+    else view = translate(view, mousePoint, mouseLocation);
     that.__zoom = view;
     emit("zoom", that, args);
 
@@ -99,12 +126,12 @@ export default function(started) {
         args = arguments,
         view = that.__zoom;
 
-    mouseLocation = view.location(mousePoint = mouse(that));
+    mouseLocation = location(view, mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
     if (++zooming === 1) interrupt(that), emit("start", that, args);
 
     function mousemoved() {
-      that.__zoom = view = view.translate(mousePoint = mouse(that), mouseLocation);
+      that.__zoom = view = translate(view, mousePoint = mouse(that), mouseLocation);
       emit("zoom", that, args);
     }
 
@@ -115,10 +142,11 @@ export default function(started) {
   }
 
   function dblclicked() {
-    var view = this.__zoom, k = Math.log(view.k) / Math.LN2;
-    mouseLocation = view.location(mousePoint = mouse(this));
-    view = view.scale(Math.pow(2, event.shiftKey ? Math.ceil(k) - 1 : Math.floor(k) + 1)).translate(mousePoint, mouseLocation);
-    if (duration > 0) select(this).transition().duration(duration).call(schedule, view);
+    var view = this.__zoom;
+    mouseLocation = location(view, mousePoint = mouse(this));
+    view = scale(view, event.shiftKey ? 0.5 : 2);
+    view = translate(view, mousePoint, mouseLocation);
+    if (duration > 0) select(this).transition().duration(duration).call(schedule, view, mousePoint[0], mousePoint[1]);
     else this.__zoom = view;
   }
 
@@ -134,16 +162,8 @@ export default function(started) {
     // TODO
   }
 
-  zoom.scale = function(_) {
-    return arguments.length ? (target = target.scale(+_), zoom) : target.k;
-  };
-
   zoom.scaleExtent = function(_) {
     return arguments.length ? (scaleMin = +_[0], scaleMax = +_[1], zoom) : [scaleMin, scaleMax];
-  };
-
-  zoom.translate = function(_) {
-    return arguments.length ? (target = new View(target.k, +_[0], +_[1]), zoom) : [target.x, target.y];
   };
 
   zoom.center = function(_) {
