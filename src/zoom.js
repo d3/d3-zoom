@@ -126,12 +126,11 @@ export default function(started) {
     }
   }
 
-  // TODO use explicit center, if specified
   function dblclicked() {
     if (!filter.apply(this, arguments)) return;
     var view = this.__zoom;
 
-    mouseLocation = view.invert(mousePoint = mouse(this));
+    mouseLocation = view.invert(mousePoint = centerPoint || mouse(this));
     view = view.scaleBy(event.shiftKey ? 0.5 : 2).translateTo(mousePoint, mouseLocation);
     if (duration > 0) select(this).transition().duration(duration).call(schedule, view, mousePoint);
     else this.__zoom = view;
