@@ -56,7 +56,7 @@ export default function(started) {
   // TODO make defensive copies of the view on set?
   zoom.view = function(selection, view) {
     if (arguments.length < 2) return selection.property("__zoom");
-    if (selection instanceof transition) schedule(transition, view, dx / 2, dy / 2);
+    if (selection instanceof transition) schedule(selection, view, dx / 2, dy / 2);
     else selection.property("__zoom", view);
   };
 
