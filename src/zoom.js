@@ -44,19 +44,21 @@ export default function(started) {
   var listeners = dispatch("start", "zoom", "end")
       .on("start", started);
 
+  function zoom(selection) {
+    selection
+        .on("wheel.zoom", wheeled)
+        .on("mousedown.zoom", mousedowned)
+        .on("dblclick.zoom", dblclicked)
+        .on("touchstart.zoom", touchstarted)
+        .on("touchmove.zoom", touchmoved)
+        .on("touchend.zoom touchcancel.zoom", touchended)
+        .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
+        .property("__zoom", identity);
+  }
+
   // TODO Enforce scaleExtent.
-  function zoom(selection, view) {
-    if (arguments.length < 2) {
-      selection
-          .on("wheel.zoom", wheeled)
-          .on("mousedown.zoom", mousedowned)
-          .on("dblclick.zoom", dblclicked)
-          .on("touchstart.zoom", touchstarted)
-          .on("touchmove.zoom", touchmoved)
-          .on("touchend.zoom touchcancel.zoom", touchended)
-          .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
-          .property("__zoom", identity);
-    } else if (selection instanceof transition) {
+  zoom.view = function(selection, view) {
+    if (selection instanceof transition) {
       schedule(selection, view, centerPoint);
     } else {
       selection
@@ -66,7 +68,20 @@ export default function(started) {
           .each(emitZoom)
           .each(emitEnd);
     }
-  }
+  };
+
+  // TODO Can k be a function?
+  // TODO Enforce scaleExtent.
+  zoom.scaleBy = function(selection, k) {
+    zoom.view(selection, function() {
+      var center = centerPoint;
+      if (!center) {
+        var s = size.apply(this, arguments);
+        center = [s[0] / 2, s[1] / 2];
+      }
+      return this.__zoom.scaleBy(k, center);
+    });
+  };
 
   // TODO Enforce scaleExtent.
   function schedule(transition, view, center) {
