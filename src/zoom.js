@@ -39,11 +39,12 @@ export default function(started) {
       mousePoint,
       mouseLocation;
 
-  // TODO prevent default
-  // TODO stop propagation
+  // TODO Prevent default.
+  // TODO Stop propagation.
   var listeners = dispatch("start", "zoom", "end")
       .on("start", started);
 
+  // TODO Enforce scaleExtent.
   function zoom(selection, view) {
     if (arguments.length < 2) {
       selection
@@ -66,7 +67,7 @@ export default function(started) {
     }
   }
 
-  // TODO apply scaleExtent to the specified view
+  // TODO Enforce scaleExtent.
   function schedule(transition, view, center) {
     transition
         .on("start.zoom", emitStart)
@@ -104,8 +105,11 @@ export default function(started) {
     customEvent(new ZoomEvent(type, that.__zoom), listeners.apply, listeners, [type, that, args]);
   }
 
+  // TODO Clean this up.
+  // TODO Enforce scaleExtent.
   function wheeled() {
     if (!filter.apply(this, arguments)) return;
+
     var that = this,
         args = arguments,
         view = that.__zoom,
@@ -127,8 +131,11 @@ export default function(started) {
     }
   }
 
+  // TODO Clean this up.
+  // TODO Enforce scaleExtent.
   function mousedowned() {
     if (!filter.apply(this, arguments)) return;
+
     var that = this,
         args = arguments,
         view = that.__zoom;
@@ -148,10 +155,12 @@ export default function(started) {
     }
   }
 
+  // TODO Clean this up.
+  // TODO Enforce scaleExtent.
   function dblclicked() {
     if (!filter.apply(this, arguments)) return;
-    var view = this.__zoom;
 
+    var view = this.__zoom;
     mouseLocation = view.invert(mousePoint = centerPoint || mouse(this));
     view = view.scaleBy(event.shiftKey ? 0.5 : 2).translateTo(mousePoint, mouseLocation);
     if (duration > 0) select(this).transition().duration(duration).call(schedule, view, mousePoint);
