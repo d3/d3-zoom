@@ -113,16 +113,35 @@ export default function(started) {
     var that = this,
         args = arguments,
         view = that.__zoom,
-        delta = Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500),
-        start = wheelTimer ? (clearTimeout(wheelTimer), false) : (centerPoint && (centerLocation = view.invert(centerPoint)), mouseLocation = view.invert(mousePoint = mouse(that)), true);
+        delta = Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
 
+    if (wheelTimer) clearTimeout(wheelTimer);
+
+    // If this is the first wheel event since the wheel was idle, then capture
+    // the mouse location and the center location to avoid loss of precision
+    // over the duration of the gesture: if you zoom in a lot and then zoom out,
+    // we want you to return to the original location exactly.
+    else {
+      if (++zooming === 1) interrupt(that), emitStart.apply(that, args);
+      if (centerPoint) centerLocation = view.invert(centerPoint);
+      mouseLocation = view.invert(mousePoint = mouse(that));
+    }
+
+    view = view.scaleBy(delta);
+
+    // There may be a concurrent mousedown-mouseup gesture! Scaling around an
+    // explicit center changes the mouse location, so must update the mouse
+    // location that was captured on mousedown.
+    if (centerPoint) {
+      view = view.translateTo(centerPoint, centerLocation);
+      mouseLocation = view.invert(mousePoint);
+    } else {
+      view = view.translateTo(mousePoint, mouseLocation);
+    }
+
+    that.__zoom = view;
     event.preventDefault();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    if (start && ++zooming === 1) interrupt(that), emitStart.apply(that, args);
-    view = view.scaleBy(delta);
-    if (centerPoint) view = view.translateTo(centerPoint, centerLocation), mouseLocation = view.invert(mousePoint);
-    else view = view.translateTo(mousePoint, mouseLocation);
-    that.__zoom = view;
     emitZoom.apply(that, args);
 
     function wheelidled() {
@@ -137,15 +156,19 @@ export default function(started) {
     if (!filter.apply(this, arguments)) return;
 
     var that = this,
-        args = arguments,
-        view = that.__zoom;
+        args = arguments;
 
-    mouseLocation = view.invert(mousePoint = mouse(that));
+    // We shouldn’t capture that.__zoom on mousedown because you can wheel after
+    // mousedown and before mouseup. If that happens AND an explicit center is
+    // defined, the center location also needs to be updated.
+
+    mouseLocation = that.__zoom.invert(mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
     if (++zooming === 1) interrupt(that), emitStart.apply(that, args);
 
     function mousemoved() {
-      that.__zoom = view = view.translateTo(mousePoint = mouse(that), mouseLocation);
+      that.__zoom = that.__zoom.translateTo(mousePoint = mouse(that), mouseLocation);
+      if (centerPoint) centerLocation = that.__zoom.invert(centerPoint);
       emitZoom.apply(that, args);
     }
 
