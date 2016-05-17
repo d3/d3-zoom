@@ -60,6 +60,7 @@ export default function(started) {
       schedule(selection, view, centerPoint);
     } else {
       selection
+          .interrupt()
           .each(emitStart)
           .property("__zoom", view)
           .each(emitZoom)
@@ -71,7 +72,7 @@ export default function(started) {
   function schedule(transition, view, center) {
     transition
         .on("start.zoom", emitStart)
-        .on("end.zoom", emitEnd)
+        .on("interrupt.zoom end.zoom", emitEnd)
         .tween("zoom:zoom", function() {
           var that = this,
               args = arguments,
@@ -90,7 +91,7 @@ export default function(started) {
   }
 
   function emitStart() {
-    emit("start", this, arguments);
+    if (++zooming === 1) emit("start", this, arguments);
   }
 
   function emitZoom() {
@@ -98,7 +99,7 @@ export default function(started) {
   }
 
   function emitEnd() {
-    emit("end", this, arguments);
+    if (--zooming === 0) emit("end", this, arguments);
   }
 
   function emit(type, that, args) {
@@ -122,9 +123,9 @@ export default function(started) {
     // over the duration of the gesture: if you zoom in a lot and then zoom out,
     // we want you to return to the original location exactly.
     else {
-      if (++zooming === 1) interrupt(that), emitStart.apply(that, args);
       if (centerPoint) centerLocation = view.invert(centerPoint);
       mouseLocation = view.invert(mousePoint = mouse(that));
+      interrupt(that), emitStart.apply(that, args);
     }
 
     view = view.scaleBy(delta);
@@ -146,7 +147,7 @@ export default function(started) {
 
     function wheelidled() {
       wheelTimer = null;
-      if (--zooming === 0) emitEnd.apply(that, args);
+      emitEnd.apply(that, args);
     }
   }
 
@@ -164,7 +165,7 @@ export default function(started) {
 
     mouseLocation = that.__zoom.invert(mousePoint = mouse(that));
     select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
-    if (++zooming === 1) interrupt(that), emitStart.apply(that, args);
+    interrupt(that), emitStart.apply(that, args);
 
     function mousemoved() {
       that.__zoom = that.__zoom.translateTo(mousePoint = mouse(that), mouseLocation);
@@ -174,7 +175,7 @@ export default function(started) {
 
     function mouseupped() {
       select(event.view).on("mousemove.zoom mouseup.zoom", null);
-      if (--zooming === 0) emitEnd.apply(that, args);
+      emitEnd.apply(that, args);
     }
   }
 
