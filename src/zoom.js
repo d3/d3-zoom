@@ -17,6 +17,10 @@ function defaultSize() {
   return [node.clientWidth, node.clientHeight];
 }
 
+function defaultTransform() {
+  return this.__zoom || identity;
+}
+
 export default function(started) {
   var filter = defaultFilter,
       size = defaultSize,
@@ -45,21 +49,15 @@ export default function(started) {
         .on("touchmove.zoom", touchmoved)
         .on("touchend.zoom touchcancel.zoom", touchended)
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
-        .property("__zoom", identity);
+        .property("__zoom", defaultTransform);
   }
 
-  zoom.transform = function(selection, transform) {
+  zoom.transform = function(collection, transform) {
+    var selection = collection.selection ? collection.selection() : collection;
     transform = clamp(transform);
-    if (selection instanceof transition) {
-      schedule(selection, transform, centerPoint);
-    } else {
-      selection
-          .interrupt()
-          .each(emitStart)
-          .property("__zoom", transform)
-          .each(emitZoom)
-          .each(emitEnd);
-    }
+    selection.property("__zoom", defaultTransform);
+    if (collection instanceof transition) schedule(collection, transform, centerPoint);
+    else collection.interrupt().each(emitStart).property("__zoom", transform).each(emitZoom).each(emitEnd);
   };
 
   zoom.scaleBy = function(selection, k) {
