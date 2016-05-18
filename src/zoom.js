@@ -140,6 +140,7 @@ export default function(started) {
   }
 
   function emit(type, that, args) {
+    if (event) event.stopImmediatePropagation();
     customEvent(new ZoomEvent(type, that.__zoom), listeners.apply, listeners, [type, that, args]);
   }
 
