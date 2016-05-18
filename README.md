@@ -26,6 +26,31 @@ var zoom = d3_zoom.zoom();
 
 ## API Reference
 
+This table describes how the zoom behavior interprets native events:
+
+| Event        | Listening Element | Zoom Event | Default Prevented? |
+| ------------ | ----------------- | ---------- | ------------------ |
+| mousedown    | selection         | start      | no¹                |
+| mousemove²   | window³           | zoom       | TODO               |
+| mouseup²     | window³           | end        | no¹                |
+| dblclick     | selection         | zoom⁴      | TODO               |
+| wheel        | selection         | zoom⁵      | yes                |
+| touchstart   | TODO              | TODO       | TODO               |
+| touchmove    | TODO              | TODO       | TODO               |
+| touchend     | TODO              | TODO       | TODO               |
+| touchcancel  | TODO              | TODO       | TODO               |
+| selectstart  | TODO              | TODO       | TODO               |
+| dragstart    | TODO              | TODO       | TODO               |
+| click        | TODO              | TODO       | TODO               |
+
+TODO Touch events. The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation).
+
+¹ Default cannot be prevented due to browser bugs; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
+<br>² Only applies during an active zoom gesture.
+<br>³ Necessary to capture events outside an iframe; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
+<br>⁴ A dblclick event emits a start, zoom and end event.
+<br>⁵ The first of a sequence of wheel events emits a start event; the sequence ends with an end event if no wheel events are received for 150ms.
+
 <a href="#zoom" name="zoom">#</a> d3.<b>zoom</b>()
 
 …
