@@ -129,7 +129,6 @@ export default function(started) {
   }
 
   // TODO Clean this up.
-  // TODO Enforce scaleExtent.
   function wheeled() {
     if (!filter.apply(this, arguments)) return;
 
@@ -149,7 +148,7 @@ export default function(started) {
       interrupt(that), emitStart.apply(that, args);
     }
 
-    view = view.scaleBy(Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
+    view = view.scaleTo(Math.max(scaleMin, Math.min(scaleMax, view._k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500))));
 
     // There may be a concurrent mousedown-mouseup gesture! Scaling around an
     // explicit center changes the mouse location, so must update the mouse
@@ -173,7 +172,6 @@ export default function(started) {
   }
 
   // TODO Clean this up.
-  // TODO Enforce scaleExtent.
   function mousedowned() {
     if (!filter.apply(this, arguments)) return;
 
@@ -200,15 +198,12 @@ export default function(started) {
     }
   }
 
-  // TODO Clean this up.
-  // TODO Enforce scaleExtent.
   function dblclicked() {
     if (!filter.apply(this, arguments)) return;
-
-    var view = this.__zoom;
-    mouseLocation = view.invert(mousePoint = centerPoint || mouse(this));
-    view = view.scaleBy(event.shiftKey ? 0.5 : 2).translateTo(mousePoint, mouseLocation);
-    if (duration > 0) select(this).transition().duration(duration).call(schedule, view, mousePoint);
+    var center = centerPoint || mouse(this),
+        scale = this.__zoom._k * (event.shiftKey ? 0.5 : 2),
+        view = this.__zoom.scaleTo(Math.max(scaleMin, Math.min(scaleMax, scale)), center);
+    if (duration > 0) select(this).transition().duration(duration).call(schedule, view, center);
     else this.__zoom = view;
   }
 
