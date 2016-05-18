@@ -94,11 +94,11 @@ export default function(started) {
               s = size.apply(that, args),
               p = center || [s[0] / 2, s[1] / 2],
               w = Math.max(s[0], s[1]),
-              v0 = that.__zoom,
-              v1 = typeof view === "function" ? view.apply(that, args) : view,
-              i = interpolateZoom(v0.invert(p).concat(w / v0._k), v1.invert(p).concat(w / v1._k));
+              a = that.__zoom,
+              b = typeof view === "function" ? view.apply(that, args) : view,
+              i = interpolateZoom(a.invert(p).concat(w / a._k), b.invert(p).concat(w / b._k));
           return function(t) {
-            if (t === 1) that.__zoom = v1; // Avoid rounding error on end.
+            if (t === 1) that.__zoom = b; // Avoid rounding error on end.
             else { var l = i(t), k = w / l[2]; that.__zoom = new View(k, p[0] - l[0] * k, p[1] - l[1] * k); }
             emitZoom.apply(that, args);
           };
