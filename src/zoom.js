@@ -11,7 +11,7 @@ var identity = new View(1, 0, 0);
 view.prototype = View.prototype;
 
 export function view(node) {
-  return node.__zoom;
+  return node == null ? identity : node.__zoom;
 }
 
 // Ignore horizontal scrolling.
