@@ -49,7 +49,7 @@ TODO Touch events. The propagation of all consumed events is [immediately stoppe
 <br>² Only applies during an active zoom gesture.
 <br>³ Necessary to capture events outside an iframe; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
 <br>⁴ A dblclick event emits start, zoom and end events.
-<br>⁵ The first of a series of wheel events emits a start event; an end event is emitted when no wheel events are received for 150ms.
+<br>⁵ The first wheel event emits a start event; an end event is emitted when no wheel events are received for 150ms.
 
 <a href="#zoom" name="zoom">#</a> d3.<b>zoom</b>()
 
