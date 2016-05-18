@@ -17,6 +17,9 @@ Transform.prototype = {
   },
   translate: function(x, y) {
     return new Transform(this.k, this.x + this.k * x, this.y + this.k * y);
+  },
+  toString: function() {
+    return "translate(" + this.x + "," + this.y + ") scale(" + this.k + ")";
   }
 };
 
