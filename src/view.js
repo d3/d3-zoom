@@ -16,7 +16,10 @@ View.prototype = {
     return arguments.length ? new View(+_, this._x, this._y) : this._k;
   },
   scaleBy: function(_, center) {
-    var view = new View(this._k * _, this._x, this._y);
+    return this.scaleTo(this._k * _, center);
+  },
+  scaleTo: function(_, center) {
+    var view = new View(+_, this._x, this._y);
     return center == null ? view : view.translateTo(center, this.invert(center));
   },
   translate: function(_) {

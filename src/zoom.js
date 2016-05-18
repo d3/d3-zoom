@@ -70,16 +70,18 @@ export default function(started) {
     }
   };
 
-  // TODO Can k be a function?
-  // TODO Enforce scaleExtent.
   zoom.scaleBy = function(selection, k) {
+    zoom.scaleTo(selection, function() {
+      return this.__zoom._k * (typeof k === "function" ? k.apply(this, arguments) : k);
+    });
+  };
+
+  zoom.scaleTo = function(selection, s) {
     zoom.view(selection, function() {
-      var center = centerPoint;
-      if (!center) {
-        var s = size.apply(this, arguments);
-        center = [s[0] / 2, s[1] / 2];
-      }
-      return this.__zoom.scaleBy(k, center);
+      return this.__zoom.scaleTo(
+        Math.max(scaleMin, Math.min(scaleMax, typeof s === "function" ? s.apply(this, arguments) : s)),
+        centerPoint || centroid.apply(this, arguments)
+      );
     });
   };
 
@@ -121,6 +123,11 @@ export default function(started) {
     customEvent(new ZoomEvent(type, that.__zoom), listeners.apply, listeners, [type, that, args]);
   }
 
+  function centroid() {
+    var s = size.apply(this, arguments);
+    return [s[0] / 2, s[1] / 2];
+  }
+
   // TODO Clean this up.
   // TODO Enforce scaleExtent.
   function wheeled() {
@@ -128,8 +135,7 @@ export default function(started) {
 
     var that = this,
         args = arguments,
-        view = that.__zoom,
-        delta = Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
+        view = that.__zoom;
 
     if (wheelTimer) clearTimeout(wheelTimer);
 
@@ -143,7 +149,7 @@ export default function(started) {
       interrupt(that), emitStart.apply(that, args);
     }
 
-    view = view.scaleBy(delta);
+    view = view.scaleBy(Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
 
     // There may be a concurrent mousedown-mouseup gesture! Scaling around an
     // explicit center changes the mouse location, so must update the mouse
