@@ -48,8 +48,8 @@ export default function(started) {
         .property("__zoom", identity);
   }
 
-  // TODO Enforce scaleExtent.
   zoom.transform = function(selection, transform) {
+    transform = clamp(transform);
     if (selection instanceof transition) {
       schedule(selection, transform, centerPoint);
     } else {
@@ -78,6 +78,18 @@ export default function(started) {
       return translate(scale(this.__zoom, k1), p0, p1);
     });
   };
+
+  function clamp(transform) {
+    return function() {
+      var t = typeof transform === "function" ? transform.apply(this, arguments) : transform;
+      if (scaleMin > t.k || t.k > scaleMax) {
+        var p0 = centerPoint || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
+            p1 = t.invert(p0);
+        t = translate(scale(t, t.k), p0, p1);
+      }
+      return t;
+    };
+  }
 
   function scale(transform, k) {
     return new Transform(Math.max(scaleMin, Math.min(scaleMax, k)), transform.x, transform.y);
