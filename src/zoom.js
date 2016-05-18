@@ -36,7 +36,6 @@ export default function(started) {
       mouseLocation;
 
   // TODO Prevent default.
-  // TODO Stop propagation.
   var listeners = dispatch("start", "zoom", "end")
       .on("start", started);
 
