@@ -87,7 +87,6 @@ export default function(started) {
     return p1 = transform.apply(p1), new Transform(transform.k, transform.x + p0[0] - p1[0], transform.y + p0[1] - p1[1]);
   }
 
-  // TODO Enforce scaleExtent.
   function schedule(transition, transform, center) {
     transition
         .on("start.zoom", emitStart)
