@@ -77,6 +77,15 @@ export default function(started) {
     });
   };
 
+  zoom.translateBy = function(selection, x, y) {
+    zoom.transform(selection, function() {
+      return this.__zoom.translate(
+        typeof x === "function" ? x.apply(this, arguments) : x,
+        typeof y === "function" ? y.apply(this, arguments) : y
+      );
+    });
+  };
+
   function clamp(transform) {
     return function() {
       var t = typeof transform === "function" ? transform.apply(this, arguments) : transform;
