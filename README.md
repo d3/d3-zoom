@@ -28,20 +28,20 @@ var zoom = d3_zoom.zoom();
 
 This table describes how the zoom behavior interprets native events:
 
-| Event        | Listening Element | Zoom Event | Default Prevented? |
-| ------------ | ----------------- | ---------- | ------------------ |
-| mousedown⁵   | selection         | start      | no¹                |
-| mousemove²   | window¹           | zoom       | yes                |
-| mouseup²     | window¹           | end        | yes                |
-| dragstart²   | window            | -          | yes                |
-| selectstart² | window            | -          | yes                |
-| click³       | window            | -          | yes                |
-| dblclick     | selection         | zoom⁶      | yes                |
-| wheel        | selection         | zoom⁷      | yes                |
-| touchstart   | selection         | start⁶     | no⁴                |
-| touchmove    | selection         | zoom       | yes                |
-| touchend     | selection         | end        | no⁴                |
-| touchcancel  | selection         | end        | no⁴                |
+| Event        | Listening Element | Zoom Event  | Default Prevented? |
+| ------------ | ----------------- | ----------- | ------------------ |
+| mousedown⁵   | selection         | start       | no¹                |
+| mousemove²   | window¹           | zoom        | yes                |
+| mouseup²     | window¹           | end         | yes                |
+| dragstart²   | window            | -           | yes                |
+| selectstart² | window            | -           | yes                |
+| click³       | window            | -           | yes                |
+| dblclick     | selection         | *multiple*⁶ | yes                |
+| wheel        | selection         | zoom⁷       | yes                |
+| touchstart   | selection         | *multiple*⁶ | no⁴                |
+| touchmove    | selection         | zoom        | yes                |
+| touchend     | selection         | end         | no⁴                |
+| touchcancel  | selection         | end         | no⁴                |
 
 The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation).
 
