@@ -30,26 +30,28 @@ This table describes how the zoom behavior interprets native events:
 
 | Event        | Listening Element | Zoom Event | Default Prevented? |
 | ------------ | ----------------- | ---------- | ------------------ |
-| mousedown    | selection         | start      | no¹                |
-| mousemove²   | window³           | zoom       | TODO               |
-| mouseup²     | window³           | end        | no¹                |
-| dblclick     | selection         | zoom⁴      | TODO               |
-| wheel        | selection         | zoom⁵      | yes                |
-| touchstart   | TODO              | TODO       | TODO               |
-| touchmove    | TODO              | TODO       | TODO               |
-| touchend     | TODO              | TODO       | TODO               |
-| touchcancel  | TODO              | TODO       | TODO               |
-| selectstart  | TODO              | TODO       | TODO               |
-| dragstart    | TODO              | TODO       | TODO               |
-| click        | TODO              | TODO       | TODO               |
+| mousedown⁵   | selection         | start      | no¹                |
+| mousemove²   | window¹           | zoom       | yes                |
+| mouseup²     | window¹           | end        | yes                |
+| dragstart²   | window            | -          | yes                |
+| selectstart² | window            | -          | yes                |
+| click³       | window            | -          | yes                |
+| dblclick     | selection         | zoom⁶      | yes                |
+| wheel        | selection         | zoom⁷      | yes                |
+| touchstart   | selection         | start      | no⁴                |
+| touchmove    | selection         | zoom       | yes                |
+| touchend     | selection         | end        | no⁴                |
+| touchcancel  | selection         | end        | no⁴                |
 
-TODO Touch events. The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation).
+The propagation of all consumed events is [immediately stopped](https://dom.spec.whatwg.org/#dom-event-stopimmediatepropagation).
 
-¹ Default cannot be prevented due to browser bugs; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
-<br>² Only applies during an active zoom gesture.
-<br>³ Necessary to capture events outside an iframe; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
-<br>⁴ A dblclick event emits start, zoom and end events.
-<br>⁵ The first wheel event emits a start event; an end event is emitted when no wheel events are received for 150ms.
+¹ Necessary to capture events outside an iframe; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
+<br>² Only applies during an active, mouse-based gesture; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
+<br>³ Only applies immediately after a non-empty, mouse-based gesture.
+<br>⁴ Necessary to allow [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7) on touch input; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
+<br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
+<br>⁶ A dblclick event emits start, zoom and end events.
+<br>⁷ The first wheel event emits a start event; an end event is emitted when no wheel events are received for 150ms.
 
 <a href="#zoom" name="zoom">#</a> d3.<b>zoom</b>()
 
