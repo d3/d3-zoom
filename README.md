@@ -38,7 +38,7 @@ This table describes how the zoom behavior interprets native events:
 | click³       | window            | -          | yes                |
 | dblclick     | selection         | zoom⁶      | yes                |
 | wheel        | selection         | zoom⁷      | yes                |
-| touchstart   | selection         | start      | no⁴                |
+| touchstart   | selection         | start⁶     | no⁴                |
 | touchmove    | selection         | zoom       | yes                |
 | touchend     | selection         | end        | no⁴                |
 | touchcancel  | selection         | end        | no⁴                |
@@ -50,7 +50,7 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 <br>³ Only applies immediately after a non-empty, mouse-based gesture.
 <br>⁴ Necessary to allow [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7) on touch input; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
 <br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
-<br>⁶ A dblclick event emits start, zoom and end events.
+<br>⁶ Double-click and double-tap initiate a transition that emits start, zoom and end events.
 <br>⁷ The first wheel event emits a start event; an end event is emitted when no wheel events are received for 150ms.
 
 <a href="#zoom" name="zoom">#</a> d3.<b>zoom</b>()
