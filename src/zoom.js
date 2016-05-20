@@ -1,10 +1,11 @@
 import {dispatch} from "d3-dispatch";
 import {interpolateZoom} from "d3-interpolate";
 import {event, customEvent, select, mouse} from "d3-selection";
-import {interrupt, transition} from "d3-transition";
 import constant from "./constant";
 import ZoomEvent from "./event";
 import {Transform, identity} from "./transform";
+import {nodrag, yesdrag} from "./nodrag";
+import noevent, {nopropagation} from "./noevent";
 
 // Ignore horizontal scrolling.
 // Ignore right-click, since that should open the context menu.
@@ -26,18 +27,13 @@ export default function(started) {
       size = defaultSize,
       scaleMin = 0,
       scaleMax = Infinity,
+      center = null,
       duration = 250,
-      zooming = 0,
+      gestures = [],
+      listeners = dispatch("start", "zoom", "end").on("start", started),
+      mousemoving,
       wheelTimer,
-      wheelDelay = 150,
-      centerPoint = null,
-      centerLocation,
-      mousePoint,
-      mouseLocation;
-
-  // TODO Prevent default.
-  var listeners = dispatch("start", "zoom", "end")
-      .on("start", started);
+      wheelDelay = 150;
 
   function zoom(selection) {
     selection
@@ -55,8 +51,15 @@ export default function(started) {
     var selection = collection.selection ? collection.selection() : collection;
     transform = clamp(transform);
     selection.property("__zoom", defaultTransform);
-    if (collection instanceof transition) schedule(collection, transform, centerPoint);
-    else collection.interrupt().each(emitStart).property("__zoom", transform).each(emitZoom).each(emitEnd);
+    if (collection !== selection) {
+      schedule(collection, transform, center);
+    } else {
+      selection.interrupt().each(function() {
+        var g = gesture(this, arguments).start();
+        this.__zoom = typeof transform === "function" ? transform.apply(this, arguments) : transform;
+        g.zoom().end();
+      });
+    }
   };
 
   zoom.scaleBy = function(selection, k) {
@@ -69,7 +72,7 @@ export default function(started) {
 
   zoom.scaleTo = function(selection, k) {
     zoom.transform(selection, function() {
-      var p0 = centerPoint || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
+      var p0 = center || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
           p1 = this.__zoom.invert(p0),
           k1 = typeof k === "function" ? k.apply(this, arguments) : k;
       return translate(scale(this.__zoom, k1), p0, p1);
@@ -89,7 +92,7 @@ export default function(started) {
     return function() {
       var t = typeof transform === "function" ? transform.apply(this, arguments) : transform;
       if (scaleMin > t.k || t.k > scaleMax) {
-        var p0 = centerPoint || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
+        var p0 = center || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
             p1 = t.invert(p0);
         t = translate(scale(t, t.k), p0, p1);
       }
@@ -107,11 +110,12 @@ export default function(started) {
 
   function schedule(transition, transform, center) {
     transition
-        .on("start.zoom", emitStart)
-        .on("interrupt.zoom end.zoom", emitEnd)
+        .on("start.zoom", function() { gesture(this, arguments).start(); })
+        .on("interrupt.zoom end.zoom", function() { gesture(this, arguments).end(); })
         .tween("zoom:zoom", function() {
           var that = this,
               args = arguments,
+              g = gesture(that, args),
               s = size.apply(that, args),
               p = center || [s[0] / 2, s[1] / 2],
               w = Math.max(s[0], s[1]),
@@ -121,102 +125,107 @@ export default function(started) {
           return function(t) {
             if (t === 1) that.__zoom = b; // Avoid rounding error on end.
             else { var l = i(t), k = w / l[2]; that.__zoom = new Transform(k, p[0] - l[0] * k, p[1] - l[1] * k); }
-            emitZoom.apply(that, args);
+            g.zoom();
           };
         });
   }
 
-  function emitStart() {
-    if (++zooming === 1) emit("start", this, arguments);
+  function gesture(that, args) {
+    for (var i = 0, n = gestures.length, g; i < n; ++i) {
+      if ((g = gestures[i]).that === that) {
+        return g;
+      }
+    }
+    return new Gesture(that, args);
   }
 
-  function emitZoom() {
-    emit("zoom", this, arguments);
+  function Gesture(that, args) {
+    this.that = that;
+    this.args = args;
+    this.index = -1;
+    this.active = 0;
+    this.pointers = {};
   }
 
-  function emitEnd() {
-    if (--zooming === 0) emit("end", this, arguments);
-  }
+  Gesture.prototype = {
+    start: function() {
+      if (++this.active === 1) {
+        this.index = gestures.push(this) - 1;
+        this.emit("start");
+      }
+      return this;
+    },
+    zoom: function() {
+      this.emit("zoom");
+      return this;
+    },
+    end: function() {
+      if (--this.active === 0) {
+        gestures.splice(this.index, 1);
+        this.index = -1;
+        this.emit("end");
+      }
+      return this;
+    },
+    emit: function(type) {
+      customEvent(new ZoomEvent(type, this.that.__zoom), listeners.apply, listeners, [type, this.that, this.args]);
+    }
+  };
 
-  function emit(type, that, args) {
-    if (event) event.stopImmediatePropagation();
-    customEvent(new ZoomEvent(type, that.__zoom), listeners.apply, listeners, [type, that, args]);
-  }
-
-  // TODO Clean this up.
   function wheeled() {
     if (!filter.apply(this, arguments)) return;
+    var g = gesture(this, arguments),
+        p0 = center || mouse(this),
+        p1 = g.pointers.wheel || (g.pointers.wheel = this.__zoom.invert(p0)),
+        k0 = this.__zoom.k,
+        k1 = k0 * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
 
-    var that = this,
-        args = arguments,
-        transform = that.__zoom;
-
-    if (wheelTimer) clearTimeout(wheelTimer);
-
-    // If this is the first wheel event since the wheel was idle, then capture
-    // the mouse location and the center location to avoid loss of precision
-    // over the duration of the gesture: if you zoom in a lot and then zoom out,
-    // we want you to return to the original location exactly.
-    else {
-      if (centerPoint) centerLocation = transform.invert(centerPoint);
-      mouseLocation = transform.invert(mousePoint = mouse(that));
-      interrupt(that), emitStart.apply(that, args);
-    }
-
-    transform = scale(transform, transform.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500));
-
-    // There may be a concurrent mousedown-mouseup gesture! Scaling around an
-    // explicit center changes the mouse location, so must update the mouse
-    // location that was captured on mousedown.
-    if (centerPoint) {
-      transform = translate(transform, centerPoint, centerLocation);
-      mouseLocation = transform.invert(mousePoint);
-    } else {
-      transform = translate(transform, mousePoint, mouseLocation);
-    }
-
-    that.__zoom = transform;
-    event.preventDefault();
+    if (wheelTimer) clearTimeout(wheelTimer); else g.start();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    emitZoom.apply(that, args);
+    noevent();
+
+    this.__zoom = translate(scale(this.__zoom, k1), p0, p1);
+    // TODO update the location of other g.pointers.
+    g.zoom();
 
     function wheelidled() {
       wheelTimer = null;
-      emitEnd.apply(that, args);
+      delete g.pointers.wheel;
+      g.end();
     }
   }
 
-  // TODO Clean this up.
   function mousedowned() {
     if (!filter.apply(this, arguments)) return;
+    var g = gesture(this, arguments),
+        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true).call(nodrag);
 
-    var that = this,
-        args = arguments;
-
-    // We shouldn’t capture that.__zoom on mousedown because you can wheel after
-    // mousedown and before mouseup. If that happens AND an explicit center is
-    // defined, the center location also needs to be updated.
-
-    mouseLocation = that.__zoom.invert(mousePoint = mouse(that));
-    select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
-    interrupt(that), emitStart.apply(that, args);
+    nopropagation();
+    mousemoving = false;
+    g.start();
 
     function mousemoved() {
-      that.__zoom = translate(that.__zoom, mousePoint = mouse(that), mouseLocation);
-      if (centerPoint) centerLocation = that.__zoom.invert(centerPoint);
-      emitZoom.apply(that, args);
+      noevent();
+      mousemoving = true;
+
+      // TODO update g.that.__zoom
+      // TODO update the location of any g.pointers
+
+      g.zoom();
     }
 
     function mouseupped() {
-      select(event.view).on("mousemove.zoom mouseup.zoom", null);
-      emitEnd.apply(that, args);
+      v.on("mousemove.zoom mouseup.zoom", null).call(yesdrag);
+      if (mousemoving) v.on("click.drag", noevent, true), setTimeout(function() { v.on("click.drag", null); }, 0);
+      noevent();
+      g.end();
     }
   }
 
   function dblclicked() {
     if (!filter.apply(this, arguments)) return;
     var t0 = this.__zoom,
-        p0 = centerPoint || mouse(this),
+        p0 = center || mouse(this),
         p1 = t0.invert(p0),
         k1 = t0.k * (event.shiftKey ? 0.5 : 2),
         t1 = translate(scale(t0, k1), p0, p1);
@@ -249,7 +258,7 @@ export default function(started) {
   };
 
   zoom.center = function(_) {
-    return arguments.length ? (centerPoint = _ == null ? null : [+_[0], +_[1]], zoom) : centerPoint;
+    return arguments.length ? (center = _ == null ? null : [+_[0], +_[1]], zoom) : center;
   };
 
   zoom.duration = function(_) {
