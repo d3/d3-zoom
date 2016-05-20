@@ -1,6 +1,7 @@
 import {dispatch} from "d3-dispatch";
 import {interpolateZoom} from "d3-interpolate";
 import {event, customEvent, select, mouse} from "d3-selection";
+import {interrupt} from "d3-transition";
 import constant from "./constant";
 import ZoomEvent from "./event";
 import {Transform, identity} from "./transform";
@@ -155,7 +156,12 @@ export default function(started) {
       }
       return this;
     },
-    zoom: function() {
+    zoom: function(key) {
+      for (var k in this.pointers) {
+        if (k !== key) {
+          this.pointers[k][1] = this.that.__zoom.invert(this.pointers[k][0]);
+        }
+      }
       this.emit("zoom");
       return this;
     },
@@ -175,18 +181,28 @@ export default function(started) {
   function wheeled() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
-        p0 = center || mouse(this),
-        p1 = g.pointers.wheel || (g.pointers.wheel = this.__zoom.invert(p0)),
+        p0,
+        p1,
         k0 = this.__zoom.k,
         k1 = k0 * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
 
-    if (wheelTimer) clearTimeout(wheelTimer); else g.start();
-    wheelTimer = setTimeout(wheelidled, wheelDelay);
-    noevent();
+    // If there were recently wheel events, use the existing point and location.
+    if (g.pointers.wheel) {
+      p0 = g.pointers.wheel[0], p1 = g.pointers.wheel[1];
+      clearTimeout(wheelTimer);
+    }
 
+    // Otherwise, capture the mouse point (or center) and location at the start.
+    else {
+      g.pointers.wheel = [p0 = center || mouse(this), p1 = this.__zoom.invert(p0)];
+      interrupt(this);
+      g.start();
+    }
+
+    noevent();
+    wheelTimer = setTimeout(wheelidled, wheelDelay);
     this.__zoom = translate(scale(this.__zoom, k1), p0, p1);
-    // TODO update the location of other g.pointers.
-    g.zoom();
+    g.zoom("wheel");
 
     function wheelidled() {
       wheelTimer = null;
@@ -198,26 +214,27 @@ export default function(started) {
   function mousedowned() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
-        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true).call(nodrag);
+        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true).call(nodrag),
+        p0 = mouse(this),
+        p1 = this.__zoom.invert(p0);
 
     nopropagation();
     mousemoving = false;
+    g.pointers.mouse = [p0, p1];
     g.start();
 
     function mousemoved() {
       noevent();
       mousemoving = true;
-
-      // TODO update g.that.__zoom
-      // TODO update the location of any g.pointers
-
-      g.zoom();
+      g.that.__zoom = translate(g.that.__zoom, g.pointers.mouse[0] = mouse(g.that), g.pointers.mouse[1])
+      g.zoom("mouse");
     }
 
     function mouseupped() {
       v.on("mousemove.zoom mouseup.zoom", null).call(yesdrag);
       if (mousemoving) v.on("click.drag", noevent, true), setTimeout(function() { v.on("click.drag", null); }, 0);
       noevent();
+      delete g.pointers.mouse;
       g.end();
     }
   }
