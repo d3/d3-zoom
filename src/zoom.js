@@ -249,7 +249,7 @@ export default function(started) {
         k1 = t0.k * (event.shiftKey ? 0.5 : 2),
         t1 = translate(scale(t0, k1), p0, p1);
     if (duration > 0) select(this).transition().duration(duration).call(schedule, t1, p0);
-    else this.__zoom = t1;
+    else select(this).call(zoom.transform, t1);
   }
 
   function touchstarted() {
