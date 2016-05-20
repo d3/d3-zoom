@@ -222,6 +222,7 @@ export default function(started) {
     nopropagation();
     mousemoving = false;
     g.pointers.mouse = [p0, p1];
+    interrupt(this);
     g.start();
 
     function mousemoved() {
