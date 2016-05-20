@@ -73,10 +73,11 @@ export default function(started) {
 
   zoom.scaleTo = function(selection, k) {
     zoom.transform(selection, function() {
-      var p0 = center || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
-          p1 = this.__zoom.invert(p0),
+      var t0 = this.__zoom,
+          p0 = center || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
+          p1 = t0.invert(p0),
           k1 = typeof k === "function" ? k.apply(this, arguments) : k;
-      return translate(scale(this.__zoom, k1), p0, p1);
+      return translate(scale(t0, k1), p0, p1);
     });
   };
 
@@ -183,8 +184,8 @@ export default function(started) {
     var g = gesture(this, arguments),
         p0,
         p1,
-        k0 = this.__zoom.k,
-        k1 = k0 * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
+        t0 = this.__zoom,
+        k1 = t0.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
 
     // If there were recently wheel events, use the existing point and location.
     if (g.pointers.wheel) {
@@ -194,14 +195,14 @@ export default function(started) {
 
     // Otherwise, capture the mouse point (or center) and location at the start.
     else {
-      g.pointers.wheel = [p0 = center || mouse(this), p1 = this.__zoom.invert(p0)];
+      g.pointers.wheel = [p0 = center || mouse(this), p1 = t0.invert(p0)];
       interrupt(this);
       g.start();
     }
 
     noevent();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    this.__zoom = translate(scale(this.__zoom, k1), p0, p1);
+    this.__zoom = translate(scale(t0, k1), p0, p1);
     g.zoom("wheel");
 
     function wheelidled() {
