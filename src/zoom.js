@@ -1,11 +1,11 @@
 import {dispatch} from "d3-dispatch";
+import {dragDisable, dragEnable} from "d3-drag";
 import {interpolateZoom} from "d3-interpolate";
 import {event, customEvent, select, mouse} from "d3-selection";
 import {interrupt} from "d3-transition";
 import constant from "./constant";
 import ZoomEvent from "./event";
 import {Transform, identity} from "./transform";
-import {nodrag, yesdrag} from "./nodrag";
 import noevent, {nopropagation} from "./noevent";
 
 // Ignore horizontal scrolling.
@@ -215,10 +215,11 @@ export default function(started) {
   function mousedowned() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
-        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true).call(nodrag),
+        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
         p0 = mouse(this),
         p1 = this.__zoom.invert(p0);
 
+    dragDisable(event.view);
     nopropagation();
     mousemoving = false;
     g.pointers.mouse = [p0, p1];
@@ -233,8 +234,8 @@ export default function(started) {
     }
 
     function mouseupped() {
-      v.on("mousemove.zoom mouseup.zoom", null).call(yesdrag);
-      if (mousemoving) v.on("click.drag", noevent, true), setTimeout(function() { v.on("click.drag", null); }, 0);
+      v.on("mousemove.zoom mouseup.zoom", null);
+      dragEnable(event.view, mousemoving);
       noevent();
       delete g.pointers.mouse;
       g.end();
