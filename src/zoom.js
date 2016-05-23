@@ -33,6 +33,7 @@ export default function(started) {
       gestures = [],
       listeners = dispatch("start", "zoom", "end").on("start", started),
       mousemoving,
+      touchending,
       wheelTimer,
       wheelDelay = 150;
 
@@ -212,7 +213,7 @@ export default function(started) {
   }
 
   function mousedowned() {
-    if (!filter.apply(this, arguments)) return;
+    if (touchending || !filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
         v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
         p0 = mouse(this),
@@ -296,13 +297,14 @@ export default function(started) {
     g.zoom("touch");
   }
 
-  // TODO ignore emulated mouse events for 500ms after touchend
   function touchended() {
     var g = gesture(this, arguments),
         touches = event.changedTouches,
         n = touches.length, i, t;
 
     nopropagation();
+    if (touchending) clearTimeout(touchending);
+    touchending = setTimeout(function() { touchending = null; }, 500); // Ghost clicks are delayed!
     for (i = 0; i < n; ++i) {
       t = touches[i];
       if (g.touch0 && g.touch0[2] === t.identifier) delete g.touch0;
