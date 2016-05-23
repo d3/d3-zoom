@@ -6,17 +6,35 @@ export function Transform(k, x, y) {
 
 Transform.prototype = {
   constructor: Transform,
-  apply: function(point) {
-    return [point[0] * this.k + this.x, point[1] * this.k + this.y];
-  },
-  invert: function(location) {
-    return [(location[0] - this.x) / this.k, (location[1] - this.y) / this.k];
-  },
   scale: function(k) {
     return new Transform(this.k * k, this.x, this.y);
   },
   translate: function(x, y) {
     return new Transform(this.k, this.x + this.k * x, this.y + this.k * y);
+  },
+  apply: function(point) {
+    return [point[0] * this.k + this.x, point[1] * this.k + this.y];
+  },
+  applyX: function(x) {
+    return x * this.k + this.x;
+  },
+  applyY: function(y) {
+    return y * this.k + this.y;
+  },
+  invert: function(location) {
+    return [(location[0] - this.x) / this.k, (location[1] - this.y) / this.k];
+  },
+  invertX: function(x) {
+    return (x - this.x) / this.k;
+  },
+  invertY: function(y) {
+    return (y - this.y) / this.k;
+  },
+  rescaleX: function(x) {
+    return x.copy().domain(x.range().map(this.invertX, this).map(x.invert));
+  },
+  rescaleY: function(y) {
+    return y.copy().domain(y.range().map(this.invertY, this).map(y.invert));
   },
   toString: function() {
     return "translate(" + this.x + "," + this.y + ") scale(" + this.k + ")";
