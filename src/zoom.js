@@ -33,7 +33,9 @@ export default function(started) {
       gestures = [],
       listeners = dispatch("start", "zoom", "end").on("start", started),
       mousemoving,
+      touchstarting,
       touchending,
+      touchDelay = 500,
       wheelTimer,
       wheelDelay = 150;
 
@@ -255,7 +257,6 @@ export default function(started) {
     else select(this).call(zoom.transform, t1);
   }
 
-  // TODO dbltap zoom-in
   function touchstarted() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
@@ -269,8 +270,15 @@ export default function(started) {
       if (!g.touch0) g.touch0 = p;
       else if (!g.touch1) g.touch1 = p;
     }
-    interrupt(this);
-    g.start();
+    if (touchstarting) {
+      touchstarting = clearTimeout(touchstarting);
+      if (!g.touch1) return g.end(), dblclicked.apply(this, arguments);
+    }
+    if (event.touches.length === n) {
+      touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
+      interrupt(this);
+      g.start();
+    }
   }
 
   function touchmoved() {
@@ -279,6 +287,7 @@ export default function(started) {
         n = touches.length, i, t, p, l;
 
     noevent();
+    if (touchstarting) touchstarting = clearTimeout(touchstarting);
     for (i = 0; i < n; ++i) {
       t = touches[i], p = touch(this, touches, t.identifier);
       if (g.touch0 && g.touch0[2] === t.identifier) g.touch0[0] = p;
@@ -306,7 +315,7 @@ export default function(started) {
 
     nopropagation();
     if (touchending) clearTimeout(touchending);
-    touchending = setTimeout(function() { touchending = null; }, 500); // Ghost clicks are delayed!
+    touchending = setTimeout(function() { touchending = null; }, touchDelay);
     for (i = 0; i < n; ++i) {
       t = touches[i];
       if (g.touch0 && g.touch0[2] === t.identifier) delete g.touch0;
