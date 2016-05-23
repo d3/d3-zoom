@@ -1,7 +1,7 @@
 import {dispatch} from "d3-dispatch";
 import {dragDisable, dragEnable} from "d3-drag";
 import {interpolateZoom} from "d3-interpolate";
-import {event, customEvent, select, mouse} from "d3-selection";
+import {event, customEvent, select, mouse, touch} from "d3-selection";
 import {interrupt} from "d3-transition";
 import constant from "./constant";
 import ZoomEvent from "./event";
@@ -146,7 +146,6 @@ export default function(started) {
     this.args = args;
     this.index = -1;
     this.active = 0;
-    this.pointers = {};
   }
 
   Gesture.prototype = {
@@ -158,11 +157,11 @@ export default function(started) {
       return this;
     },
     zoom: function(key) {
-      for (var k in this.pointers) {
-        if (k !== key) {
-          this.pointers[k][1] = this.that.__zoom.invert(this.pointers[k][0]);
-        }
-      }
+      var transform = this.that.__zoom;
+      if (this.wheel && key !== "wheel") this.wheel[1] = transform.invert(this.wheel[0]);
+      if (this.mouse && key !== "mouse") this.mouse[1] = transform.invert(this.mouse[0]);
+      if (this.touch0 && key !== "touch") this.touch0[1] = transform.invert(this.touch0[0]);
+      if (this.touch1 && key !== "touch") this.touch1[1] = transform.invert(this.touch1[0]);
       this.emit("zoom");
       return this;
     },
@@ -188,14 +187,14 @@ export default function(started) {
         k1 = t0.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
 
     // If there were recently wheel events, use the existing point and location.
-    if (g.pointers.wheel) {
-      p0 = g.pointers.wheel[0], p1 = g.pointers.wheel[1];
+    if (g.wheel) {
+      p0 = g.wheel[0], p1 = g.wheel[1];
       clearTimeout(wheelTimer);
     }
 
     // Otherwise, capture the mouse point (or center) and location at the start.
     else {
-      g.pointers.wheel = [p0 = center || mouse(this), p1 = t0.invert(p0)];
+      g.wheel = [p0 = center || mouse(this), p1 = t0.invert(p0)];
       interrupt(this);
       g.start();
     }
@@ -207,7 +206,7 @@ export default function(started) {
 
     function wheelidled() {
       wheelTimer = null;
-      delete g.pointers.wheel;
+      delete g.wheel;
       g.end();
     }
   }
@@ -222,14 +221,14 @@ export default function(started) {
     dragDisable(event.view);
     nopropagation();
     mousemoving = false;
-    g.pointers.mouse = [p0, p1];
+    g.mouse = [p0, p1];
     interrupt(this);
     g.start();
 
     function mousemoved() {
       noevent();
       mousemoving = true;
-      g.that.__zoom = translate(g.that.__zoom, g.pointers.mouse[0] = mouse(g.that), g.pointers.mouse[1])
+      g.that.__zoom = translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1])
       g.zoom("mouse");
     }
 
@@ -237,7 +236,7 @@ export default function(started) {
       v.on("mousemove.zoom mouseup.zoom", null);
       dragEnable(event.view, mousemoving);
       noevent();
-      delete g.pointers.mouse;
+      delete g.mouse;
       g.end();
     }
   }
@@ -253,16 +252,64 @@ export default function(started) {
     else select(this).call(zoom.transform, t1);
   }
 
+  // TODO dbltap zoom-in
   function touchstarted() {
-    // TODO
+    if (!filter.apply(this, arguments)) return;
+    var g = gesture(this, arguments),
+        touches = event.changedTouches,
+        n = touches.length, i, t, p;
+
+    nopropagation();
+    for (i = 0; i < n; ++i) {
+      t = touches[i], p = touch(this, touches, t.identifier);
+      p = [p, this.__zoom.invert(p), t.identifier];
+      if (!g.touch0) g.touch0 = p;
+      else if (!g.touch1) g.touch1 = p;
+    }
+    interrupt(this);
+    g.start();
   }
 
   function touchmoved() {
-    // TODO
+    var g = gesture(this, arguments),
+        touches = event.changedTouches,
+        n = touches.length, i, t, p, l;
+
+    noevent();
+    for (i = 0; i < n; ++i) {
+      t = touches[i], p = touch(this, touches, t.identifier);
+      if (g.touch0 && g.touch0[2] === t.identifier) g.touch0[0] = p;
+      else if (g.touch1 && g.touch1[2] === t.identifier) g.touch1[0] = p;
+    }
+    if (g.touch1) {
+      var p0 = g.touch0[0], l0 = g.touch0[1],
+          p1 = g.touch1[0], l1 = g.touch1[1],
+          dp = (dp = p1[0] - p0[0]) * dp + (dp = p1[1] - p0[1]) * dp,
+          dl = (dl = l1[0] - l0[0]) * dl + (dl = l1[1] - l0[1]) * dl;
+      g.that.__zoom = scale(g.that.__zoom, Math.sqrt(dp / dl));
+      p = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
+      l = [(l0[0] + l1[0]) / 2, (l0[1] + l1[1]) / 2];
+    }
+    else if (g.touch0) p = g.touch0[0], l = g.touch0[1];
+    else return;
+    g.that.__zoom = translate(g.that.__zoom, p, l);
+    g.zoom("touch");
   }
 
+  // TODO ignore emulated mouse events for 500ms after touchend
   function touchended() {
-    // TODO
+    var g = gesture(this, arguments),
+        touches = event.changedTouches,
+        n = touches.length, i, t;
+
+    nopropagation();
+    for (i = 0; i < n; ++i) {
+      t = touches[i];
+      if (g.touch0 && g.touch0[2] === t.identifier) delete g.touch0;
+      else if (g.touch1 && g.touch1[2] === t.identifier) delete g.touch1;
+    }
+    if (g.touch1 && !g.touch0) g.touch0 = g.touch1, delete g.touch1;
+    if (!g.touch0) g.end();
   }
 
   zoom.filter = function(_) {
