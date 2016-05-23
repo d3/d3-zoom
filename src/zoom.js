@@ -247,7 +247,7 @@ export default function(started) {
   function dblclicked() {
     if (!filter.apply(this, arguments)) return;
     var t0 = this.__zoom,
-        p0 = center || mouse(this),
+        p0 = mouse(this),
         p1 = t0.invert(p0),
         k1 = t0.k * (event.shiftKey ? 0.5 : 2),
         t1 = translate(scale(t0, k1), p0, p1);
