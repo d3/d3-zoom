@@ -249,6 +249,8 @@ export default function(started) {
         p1 = t0.invert(p0),
         k1 = t0.k * (event.shiftKey ? 0.5 : 2),
         t1 = translate(scale(t0, k1), p0, p1);
+
+    noevent();
     if (duration > 0) select(this).transition().duration(duration).call(schedule, t1, p0);
     else select(this).call(zoom.transform, t1);
   }
