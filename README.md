@@ -149,19 +149,44 @@ When a [zoom event listener](#zoom_on) is invoked, [d3.event](https://github.com
 
 <a href="#zoomTransform" name="zoomTransform">#</a> d3.<b>zoomTransform</b>([<i>node</i>])
 
-…
-
-* `x` - the translation amount along the *x*-axis.
-* `y` - the translation amount along the *y*-axis.
-* `k` - the scale factor.
-
-Equivalently, the transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
+Returns the current transform for the specified *node*. If a *node* is not specified, or the given *node* has no defined transform, returns the identity transformation where *k* = 1, *t<sub>x</sub>* = *t<sub>y</sub>* = 0. The returned transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
 
 *k* 0 *t<sub>x</sub>*
 <br>0 *k* *t<sub>y</sub>*
 <br>0 0 1
 
-The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩.
+The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
+
+* `x` - the translation amount *t<sub>x</sub>* along the *x*-axis.
+* `y` - the translation amount *t<sub>y</sub>* along the *y*-axis.
+* `k` - the scale factor.
+
+For example, to apply the equivalent transformation to a [Canvas 2D context](https://www.w3.org/TR/2dcontext/):
+
+```js
+context.translate(transform.x, transform.y);
+context.scale(transform.k, transform.k);
+```
+
+Similarly, to apply the transformation to HTML elements via [CSS](https://www.w3.org/TR/css-transforms-1/):
+
+```js
+div.style("transform", "translate(" + transform.x + "px," + transform.y + "px) scale(" + transform.k + ")");
+```
+
+To apply the transformation to [SVG](https://www.w3.org/TR/SVG/coords.html#TransformAttribute):
+
+```js
+g.attr("transform", "translate(" + transform.x + "," + transform.y + ") scale(" + transform.k + ")");
+```
+
+Or more simply, taking advantage of [*transform*.toString](#transform_toString):
+
+```js
+g.attr("transform", transform);
+```
+
+Note that the order of transformations matters! The translate must be applied before the scale.
 
 <a href="#transform_scale" name="transform_scale">#</a> <i>transform</i>.<b>scale</b>(<i>k</i>)
 
