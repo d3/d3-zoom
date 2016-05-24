@@ -117,13 +117,9 @@ function size() {
 
 … Defaults to [0, ∞].
 
-<a href="#zoom_center" name="zoom_center">#</a> <i>zoom</i>.<b>center</b>([<i>center</i>])
-
-… Defaults to null.
-
 <a href="#zoom_duration" name="zoom_duration">#</a> <i>zoom</i>.<b>duration</b>([<i>duration</i>])
 
-… Defaults to 250 milliseconds.
+If *duration* is specified, sets the duration for zoom transitions on double-click and double-tap to the specified number of milliseconds and returns the zoom behavior. If *duration* is not specified, returns the current duration, which defaults to 250 milliseconds. If the duration is not greater than zero, double-click and -tap trigger instantaneous changes to the zoom transform rather than initiating smooth transitions.
 
 <a href="#zoom_on" name="zoom_on">#</a> <i>zoom</i>.<b>on</b>(<i>typenames</i>[, <i>listener</i>])
 

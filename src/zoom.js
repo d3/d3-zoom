@@ -28,7 +28,6 @@ export default function(started) {
       size = defaultSize,
       scaleMin = 0,
       scaleMax = Infinity,
-      center = null,
       duration = 250,
       gestures = [],
       listeners = dispatch("start", "zoom", "end").on("start", started),
@@ -56,7 +55,7 @@ export default function(started) {
     transform = clamp(transform);
     selection.property("__zoom", defaultTransform);
     if (collection !== selection) {
-      schedule(collection, transform, center);
+      schedule(collection, transform);
     } else {
       selection.interrupt().each(function() {
         var g = gesture(this, arguments).start();
@@ -77,7 +76,7 @@ export default function(started) {
   zoom.scaleTo = function(selection, k) {
     zoom.transform(selection, function() {
       var t0 = this.__zoom,
-          p0 = center || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
+          p0 = (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
           p1 = t0.invert(p0),
           k1 = typeof k === "function" ? k.apply(this, arguments) : k;
       return translate(scale(t0, k1), p0, p1);
@@ -97,7 +96,7 @@ export default function(started) {
     return function() {
       var t = typeof transform === "function" ? transform.apply(this, arguments) : transform;
       if (scaleMin > t.k || t.k > scaleMax) {
-        var p0 = center || (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
+        var p0 = (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
             p1 = t.invert(p0);
         t = translate(scale(t, t.k), p0, p1);
       }
@@ -195,9 +194,9 @@ export default function(started) {
       clearTimeout(wheelTimer);
     }
 
-    // Otherwise, capture the mouse point (or center) and location at the start.
+    // Otherwise, capture the mouse point and location at the start.
     else {
-      g.wheel = [p0 = center || mouse(this), p1 = t0.invert(p0)];
+      g.wheel = [p0 = mouse(this), p1 = t0.invert(p0)];
       interrupt(this);
       g.start();
     }
@@ -335,10 +334,6 @@ export default function(started) {
 
   zoom.scaleExtent = function(_) {
     return arguments.length ? (scaleMin = +_[0], scaleMax = +_[1], zoom) : [scaleMin, scaleMax];
-  };
-
-  zoom.center = function(_) {
-    return arguments.length ? (center = _ == null ? null : [+_[0], +_[1]], zoom) : center;
   };
 
   zoom.duration = function(_) {
