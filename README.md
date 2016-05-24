@@ -56,11 +56,23 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 
 <a href="#zoom" name="zoom">#</a> d3.<b>zoom</b>()
 
-…
+Creates a new zoom behavior. The returned behavior, [*zoom*](#_drag), is both an object and a function, and is typically applied to selected elements via [*selection*.call](https://github.com/d3/d3-selection#selection_call).
 
 <a href="#_zoom" name="_zoom">#</a> <i>zoom</i>(<i>selection</i>)
 
-…
+Applies this zoom behavior to the specified [*selection*](https://github.com/d3/d3-selection). This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call). For example, to instantiate a zoom behavior and apply it to a selection:
+
+```js
+d3.selectAll(".node").call(d3.zoom().on("zoom", zoomed));
+```
+
+Internally, the zoom behavior uses [*selection*.on](https://github.com/d3/d3-selection#selection_on) to bind the necessary event listeners for zooming. The listeners use the name `.zoom`, so you can subsequently unbind the zoom behavior as follows:
+
+```js
+selection.on(".zoom", null);
+```
+
+Applying the zoom behavior also sets the [-webkit-tap-highlight-color](https://developer.apple.com/library/mac/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html#//apple_ref/doc/uid/TP40006510-SW5) style to transparent, disabling the tap highlight on iOS. If you want a different tap highlight color, remove or re-apply this style after applying the drag behavior.
 
 <a href="#zoom_transform" name="zoom_transform">#</a> <i>zoom</i>.<b>transform</b>(<i>selection</i>, <i>transform</i>)
 
@@ -68,35 +80,50 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 
 <a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>x</i>, <i>y</i>)
 
-…
+… A convenience alias for [*zoom*.transform](#zoom_transform).
 
 <a href="#zoom_scaleBy" name="zoom_scaleBy">#</a> <i>zoom</i>.<b>scaleBy</b>(<i>selection</i>, <i>k</i>)
 
-…
+… A convenience alias for [*zoom*.transform](#zoom_transform).
 
 <a href="#zoom_scaleTo" name="zoom_scaleTo">#</a> <i>zoom</i>.<b>scaleTo</b>(<i>selection</i>, <i>k</i>)
 
-…
+… A convenience alias for [*zoom*.transform](#zoom_transform).
 
 <a href="#zoom_filter" name="zoom_filter">#</a> <i>zoom</i>.<b>filter</b>([<i>filter</i>])
 
-…
+If *filter* is specified, sets the filter to the specified function and returns the zoom behavior. If *filter* is not specified, returns the current filter, which defaults to:
+
+```js
+function filter() {
+  return event.type === "wheel" ? event.deltaY : !event.button;
+}
+```
+
+If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu. The default filter also ignores horizontal wheeling, since only vertical wheeling triggers a zoom.
 
 <a href="#zoom_size" name="zoom_size">#</a> <i>zoom</i>.<b>size</b>([<i>size</i>])
 
 …
 
+```js
+function size() {
+  var node = this.ownerSVGElement || this;
+  return [node.clientWidth, node.clientHeight];
+}
+```
+
 <a href="#zoom_scaleExtent" name="zoom_scaleExtent">#</a> <i>zoom</i>.<b>scaleExtent</b>([<i>scaleExtent</i>])
 
-…
+… Defaults to [0, ∞].
 
 <a href="#zoom_center" name="zoom_center">#</a> <i>zoom</i>.<b>center</b>([<i>center</i>])
 
-…
+… Defaults to null.
 
 <a href="#zoom_duration" name="zoom_duration">#</a> <i>zoom</i>.<b>duration</b>([<i>duration</i>])
 
-…
+… Defaults to 250 milliseconds.
 
 <a href="#zoom_on" name="zoom_on">#</a> <i>zoom</i>.<b>on</b>(<i>typenames</i>[, <i>listener</i>])
 
