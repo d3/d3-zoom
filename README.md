@@ -211,7 +211,7 @@ Returns the transformation of the specified *point* which is a two-element array
 
 Returns the transformation of the specified *x*-coordinate, *x* × *k* + *t<sub>x</sub>*.
 
-<a href="#transform_applyy" name="transform_applyy">#</a> <i>transform</i>.<b>applyY</b>(<i>y</i>)
+<a href="#transform_applyY" name="transform_applyY">#</a> <i>transform</i>.<b>applyY</b>(<i>y</i>)
 
 Returns the transformation of the specified *y*-coordinate, *y* × *k* + *t<sub>y</sub>*.
 
@@ -223,7 +223,7 @@ Returns the inverse transformation of the specified *point* which is a two-eleme
 
 Returns the inverse transformation of the specified *x*-coordinate, (*x* - *t<sub>x</sub>*) / *k*.
 
-<a href="#transform_inverty" name="transform_inverty">#</a> <i>transform</i>.<b>invertY</b>(<i>y</i>)
+<a href="#transform_invertY" name="transform_invertY">#</a> <i>transform</i>.<b>invertY</b>(<i>y</i>)
 
 Returns the inverse transformation of the specified *y*-coordinate, (*y* - *t<sub>y</sub>*) / *k*.
 
