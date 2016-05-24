@@ -196,7 +196,7 @@ Returns a new transform, multiplying this transform’s scale *k₀* by the spec
 
 <a href="#transform_translate" name="transform_translate">#</a> <i>transform</i>.<b>translate</b>(<i>x</i>, <i>y</i>)
 
-Returns a new transform, incrementing this transform’s translation *t<sub>x</sub>* and *t<sub>y</sub>* by the specified numbers *x* and *y*, respectively. The returned transform’s translation is equal to *t<sub>x0</sub>* + *x* and *t<sub>y0</sub>* + *y*.
+Returns a new transform, incrementing this transform’s translation *t<sub>x0</sub>* and *t<sub>y0</sub>* by the specified numbers *x* and *y*, respectively. The returned transform’s translation is equal to *t<sub>x0</sub>* + *x* and *t<sub>y0</sub>* + *y*.
 
 <a href="#transform_apply" name="transform_apply">#</a> <i>transform</i>.<b>apply</b>(<i>point</i>)
 
