@@ -7,10 +7,10 @@ export function Transform(k, x, y) {
 Transform.prototype = {
   constructor: Transform,
   scale: function(k) {
-    return new Transform(this.k * k, this.x, this.y);
+    return k === 1 ? this : new Transform(this.k * k, this.x, this.y);
   },
   translate: function(x, y) {
-    return new Transform(this.k, this.x + this.k * x, this.y + this.k * y);
+    return x === 0 & y === 0 ? this : new Transform(this.k, this.x + this.k * x, this.y + this.k * y);
   },
   apply: function(point) {
     return [point[0] * this.k + this.x, point[1] * this.k + this.y];
