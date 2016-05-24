@@ -161,7 +161,9 @@ The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y*
 * `y` - the translation amount *t<sub>y</sub>* along the *y*-axis.
 * `k` - the scale factor.
 
-For example, to apply the equivalent transformation to a [Canvas 2D context](https://www.w3.org/TR/2dcontext/):
+These properties should be considered read-only. Instead of mutating a transform, use [*transform*.scale](#transform_scale) and [*transform*.translate](#transform_translate) to derive a new transform. (Also see [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy) for convenience methods on the zoom behavior.)
+
+To apply the transformation to a [Canvas 2D context](https://www.w3.org/TR/2dcontext/), use [*context*.translate](https://www.w3.org/TR/2dcontext/#dom-context-2d-translate) followed by [*context*.scale](https://www.w3.org/TR/2dcontext/#dom-context-2d-scale):
 
 ```js
 context.translate(transform.x, transform.y);
@@ -190,11 +192,11 @@ Note that the order of transformations matters! The translate must be applied be
 
 <a href="#transform_scale" name="transform_scale">#</a> <i>transform</i>.<b>scale</b>(<i>k</i>)
 
-…
+Returns a new transform, multiplying the scale factor by the specified number *k*. The returned transform’s scale factor *k₁* is equal to *k₀* × *k*, where *k₀* is this transform’s scale factor.
 
 <a href="#transform_translate" name="transform_translate">#</a> <i>transform</i>.<b>translate</b>(<i>x</i>, <i>y</i>)
 
-…
+Returns a new transform, incrementing the translation factors *t<sub>x</sub>* and *t<sub>y</sub>* by the specified numbers *x* and *y*, respectively. The returned transform’s translation factors *t<sub>x1</sub>* and *t<sub>y1</sub>* are equal to *t<sub>x0</sub>* + *x* and *t<sub>y0</sub>* + *y*, where *t<sub>x0</sub>* and *t<sub>y0</sub>* are this transform’s scale factor.
 
 <a href="#transform_apply" name="transform_apply">#</a> <i>transform</i>.<b>apply</b>(<i>point</i>)
 
