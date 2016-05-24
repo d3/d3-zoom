@@ -26,8 +26,8 @@ function defaultTransform() {
 export default function(started) {
   var filter = defaultFilter,
       size = defaultSize,
-      scaleMin = 0,
-      scaleMax = Infinity,
+      k0 = 0,
+      k1 = Infinity,
       duration = 250,
       gestures = [],
       listeners = dispatch("start", "zoom", "end").on("start", started),
@@ -95,7 +95,7 @@ export default function(started) {
   function clamp(transform) {
     return function() {
       var t = typeof transform === "function" ? transform.apply(this, arguments) : transform;
-      if (scaleMin > t.k || t.k > scaleMax) {
+      if (k0 > t.k || t.k > k1) {
         var p0 = (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
             p1 = t.invert(p0);
         t = translate(scale(t, t.k), p0, p1);
@@ -105,7 +105,7 @@ export default function(started) {
   }
 
   function scale(transform, k) {
-    return new Transform(Math.max(scaleMin, Math.min(scaleMax, k)), transform.x, transform.y);
+    return new Transform(Math.max(k0, Math.min(k1, k)), transform.x, transform.y);
   }
 
   function translate(transform, p0, p1) {
@@ -333,7 +333,7 @@ export default function(started) {
   };
 
   zoom.scaleExtent = function(_) {
-    return arguments.length ? (scaleMin = +_[0], scaleMax = +_[1], zoom) : [scaleMin, scaleMax];
+    return arguments.length ? (k0 = +_[0], k1 = +_[1], zoom) : [k0, k1];
   };
 
   zoom.duration = function(_) {
