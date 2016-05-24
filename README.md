@@ -66,7 +66,7 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 
 …
 
-<a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>k</i>)
+<a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>x</i>, <i>y</i>)
 
 …
 
