@@ -155,11 +155,11 @@ Returns the current transform for the specified *node*. If a *node* is not speci
 <br>0 *k* *t<sub>y</sub>*
 <br>0 0 1
 
-The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
+(This matrix is only capable of representing scale and translate; a future release may allow rotation, though this would probably not be a backwards-compatible change.) The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
 
 * `x` - the translation amount *t<sub>x</sub>* along the *x*-axis.
 * `y` - the translation amount *t<sub>y</sub>* along the *y*-axis.
-* `k` - the scale factor.
+* `k` - the scale factor *k*.
 
 These properties should be considered read-only. Instead of mutating a transform, use [*transform*.scale](#transform_scale) and [*transform*.translate](#transform_translate) to derive a new transform. (Also see [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy) for convenience methods on the zoom behavior.)
 
