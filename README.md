@@ -149,11 +149,11 @@ When a [zoom event listener](#zoom_on) is invoked, [d3.event](https://github.com
 
 The zoom behavior stores the zoom state on the element to which the zoom behavior was [applied](#_zoom), not on the zoom behavior itself. This is because the zoom behavior can be applied to many elements simultaneously, and each element can be zoomed independently. The zoom state can change either on user interaction or programmatically via [*zoom*.transform](#zoom_transform).
 
-To retrieve the zoom state, use *event*.transform on the current [zoom event](#zoom-events) within a zoom event listener (see [*zoom*.on](#zoom_on)), or use [d3.zoomTransform](#zoomTransform) for a given node. The latter is particularly useful for modifying the zoom state programmatically, say to implement buttons for zooming in and out. Internally, an element’s transform is stored as *element*.\_\_zoom; however, you should retrieve the transform through d3.zoomTransform rather than accessing it directly.
+To retrieve the zoom state, use *event*.transform on the current [zoom event](#zoom-events) within a zoom event listener (see [*zoom*.on](#zoom_on)), or use [d3.zoomTransform](#zoomTransform) for a given node. The latter is particularly useful for modifying the zoom state programmatically, say to implement buttons for zooming in and out.
 
 <a href="#zoomTransform" name="zoomTransform">#</a> d3.<b>zoomTransform</b>([<i>node</i>])
 
-Returns the current transform for the specified *node*. If a *node* is not specified, or the given *node* has no defined transform, returns the identity transformation where *k* = 1, *t<sub>x</sub>* = *t<sub>y</sub>* = 0. The returned transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
+Returns the current transform for the specified *node*. Internally, an element’s transform is stored as *element*.\_\_zoom; however, you should use this method rather than accessing it directly. If a *node* is not specified, or the given *node* has no defined transform, returns the identity transformation where *k* = 1, *t<sub>x</sub>* = *t<sub>y</sub>* = 0. The returned transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
 
 *k* 0 *t<sub>x</sub>*
 <br>0 *k* *t<sub>y</sub>*
@@ -228,11 +228,31 @@ Returns the inverse transformation of the specified *y*-coordinate, (*y* - *t<su
 
 <a href="#transform_rescaleX" name="transform_rescaleX">#</a> <i>transform</i>.<b>rescaleX</b>(<i>x</i>)
 
-…
+Returns a [copy](https://github.com/d3/d3-scale#continuous_copy) of the given [continuous scale](https://github.com/d3/d3-scale#continuous-scales) *x* whose [domain](https://github.com/d3/d3-scale#continuous_domain) is transformed by this transform. This is implemented by first applying the [inverse transform](#transform_invertX) on the scale’s [range](https://github.com/d3/d3-scale#continuous_range), and then applying the [inverse scale](https://github.com/d3/d3-scale#continuous_invert) to compute the corresponding domain:
+
+```js
+function rescaleX(x) {
+  var range = x.range().map(transform.invertX, transform),
+      domain = range.map(x.invert, x);
+  return x.copy().domain(domain);
+}
+```
+
+This method does not modify the given scale *x*. The input scale *x* thus represents the untransformed scale, while the returned scale represents the transformed view of the scale.
 
 <a href="#transform_rescaley" name="transform_rescaley">#</a> <i>transform</i>.<b>rescaleY</b>(<i>y</i>)
 
-…
+Returns a [copy](https://github.com/d3/d3-scale#continuous_copy) of the given [continuous scale](https://github.com/d3/d3-scale#continuous-scales) *y* whose [domain](https://github.com/d3/d3-scale#continuous_domain) is transformed by this transform. This is implemented by first applying the [inverse transform](#transform_invertY) on the scale’s [range](https://github.com/d3/d3-scale#continuous_range), and then applying the [inverse scale](https://github.com/d3/d3-scale#continuous_invert) to compute the corresponding domain:
+
+```js
+function rescaleY(y) {
+  var range = y.range().map(transform.invertY, transform),
+      domain = range.map(y.invert, y);
+  return y.copy().domain(domain);
+}
+```
+
+This method does not modify the given scale *y*. The input scale *y* thus represents the untransformed scale, while the returned scale represents the transformed view of the scale.
 
 <a href="#transform_toString" name="transform_toString">#</a> <i>transform</i>.<b>toString</b>()
 

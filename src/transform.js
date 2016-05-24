@@ -31,10 +31,10 @@ Transform.prototype = {
     return (y - this.y) / this.k;
   },
   rescaleX: function(x) {
-    return x.copy().domain(x.range().map(this.invertX, this).map(x.invert));
+    return x.copy().domain(x.range().map(this.invertX, this).map(x.invert, x));
   },
   rescaleY: function(y) {
-    return y.copy().domain(y.range().map(this.invertY, this).map(y.invert));
+    return y.copy().domain(y.range().map(this.invertY, this).map(y.invert, y));
   },
   toString: function() {
     return "translate(" + this.x + "," + this.y + ") scale(" + this.k + ")";
