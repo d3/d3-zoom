@@ -241,7 +241,7 @@ function rescaleX(x) {
 
 This method does not modify the input scale *x*; *x* thus represents the untransformed scale, while the returned scale represents its transformed view.
 
-<a href="#transform_rescaley" name="transform_rescaley">#</a> <i>transform</i>.<b>rescaleY</b>(<i>y</i>)
+<a href="#transform_rescaleY" name="transform_rescaleY">#</a> <i>transform</i>.<b>rescaleY</b>(<i>y</i>)
 
 Returns a [copy](https://github.com/d3/d3-scale#continuous_copy) of the [continuous scale](https://github.com/d3/d3-scale#continuous-scales) *y* whose [domain](https://github.com/d3/d3-scale#continuous_domain) is transformed. This is implemented by first applying the [inverse *y*-transform](#transform_invertY) on the scale’s [range](https://github.com/d3/d3-scale#continuous_range), and then applying the [inverse scale](https://github.com/d3/d3-scale#continuous_invert) to compute the corresponding domain:
 
