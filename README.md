@@ -200,27 +200,27 @@ Returns a new transform, incrementing this transform’s translation *t<sub>x0</
 
 <a href="#transform_apply" name="transform_apply">#</a> <i>transform</i>.<b>apply</b>(<i>point</i>)
 
-…
+Returns the transformation of the specified *point* which is a two-element array of numbers [*x*, *y*]. The returned point is equal to [*x* × *k* + *t<sub>x</sub>*, *y* × *k* + *t<sub>y</sub>*].
 
 <a href="#transform_applyX" name="transform_applyX">#</a> <i>transform</i>.<b>applyX</b>(<i>x</i>)
 
-…
+Returns the transformation of the specified *x*-coordinate, *x* × *k* + *t<sub>x</sub>*.
 
 <a href="#transform_applyy" name="transform_applyy">#</a> <i>transform</i>.<b>applyY</b>(<i>y</i>)
 
-…
+Returns the transformation of the specified *y*-coordinate, *y* × *k* + *t<sub>y</sub>*.
 
 <a href="#transform_invert" name="transform_invert">#</a> <i>transform</i>.<b>invert</b>(<i>point</i>)
 
-…
+Returns the inverse transformation of the specified *point* which is a two-element array of numbers [*x*, *y*]. The returned point is equal to [(*x* - *t<sub>x</sub>*) / *k*, (*y* - *t<sub>y</sub>*) / *k*].
 
 <a href="#transform_invertX" name="transform_invertX">#</a> <i>transform</i>.<b>invertX</b>(<i>x</i>)
 
-…
+Returns the inverse transformation of the specified *x*-coordinate, (*x* - *t<sub>x</sub>*) / *k*.
 
 <a href="#transform_inverty" name="transform_inverty">#</a> <i>transform</i>.<b>invertY</b>(<i>y</i>)
 
-…
+Returns the inverse transformation of the specified *y*-coordinate, (*y* - *t<sub>y</sub>*) / *k*.
 
 <a href="#transform_rescaleX" name="transform_rescaleX">#</a> <i>transform</i>.<b>rescaleX</b>(<i>x</i>)
 
