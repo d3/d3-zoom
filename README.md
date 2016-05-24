@@ -192,11 +192,11 @@ Note that the order of transformations matters! The translate must be applied be
 
 <a href="#transform_scale" name="transform_scale">#</a> <i>transform</i>.<b>scale</b>(<i>k</i>)
 
-Returns a new transform, multiplying the scale factor by the specified number *k*. The returned transform’s scale factor *k₁* is equal to *k₀* × *k*, where *k₀* is this transform’s scale factor.
+Returns a new transform, multiplying the scale by the specified number *k*. The returned transform’s scale *k₁* is equal to *k₀* × *k*, where *k₀* is this transform’s scale.
 
 <a href="#transform_translate" name="transform_translate">#</a> <i>transform</i>.<b>translate</b>(<i>x</i>, <i>y</i>)
 
-Returns a new transform, incrementing the translation factors *t<sub>x</sub>* and *t<sub>y</sub>* by the specified numbers *x* and *y*, respectively. The returned transform’s translation factors *t<sub>x1</sub>* and *t<sub>y1</sub>* are equal to *t<sub>x0</sub>* + *x* and *t<sub>y0</sub>* + *y*, where *t<sub>x0</sub>* and *t<sub>y0</sub>* are this transform’s scale factor.
+Returns a new transform, incrementing the translation *t<sub>x</sub>* and *t<sub>y</sub>* by the specified numbers *x* and *y*, respectively. The returned transform’s translation *t<sub>x1</sub>* and *t<sub>y1</sub>* are equal to *t<sub>x0</sub>* + *x* and *t<sub>y0</sub>* + *y*, where *t<sub>x0</sub>* and *t<sub>y0</sub>* are this transform’s translation.
 
 <a href="#transform_apply" name="transform_apply">#</a> <i>transform</i>.<b>apply</b>(<i>point</i>)
 
