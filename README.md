@@ -14,7 +14,7 @@ If you use NPM, `npm install d3-zoom`. Otherwise, download the [latest release](
 <script src="https://d3js.org/d3-selection.v0.7.min.js"></script>
 <script src="https://d3js.org/d3-timer.v0.4.min.js"></script>
 <script src="https://d3js.org/d3-transition.v0.2.min.js"></script>
-<script src="https://d3js.org/d3-drag.v0.1.min.js"></script>
+<script src="https://d3js.org/d3-drag.v0.2.min.js"></script>
 <script src="https://d3js.org/d3-zoom.v0.0.min.js"></script>
 <script>
 

@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "d3-dispatch": "~0.4.3",
-    "d3-drag": "~0.1.5",
+    "d3-drag": "~0.2.0",
     "d3-interpolate": "~0.8.0",
     "d3-selection": "~0.7.2",
     "d3-transition": "~0.2.8"
