@@ -137,6 +137,7 @@ See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 
 When a [zoom event listener](#zoom_on) is invoked, [d3.event](https://github.com/d3/d3-selection#event) is set to the current zoom event. The *event* object exposes several fields:
 
+* `target` - the associated [zoom behavior](#zoom).
 * `type` - the string “start”, “zoom” or “end”; see [*zoom*.on](#zoom_on).
 * `transform` - the current [zoom transform](#zoom-transforms).
 * `sourceEvent` - the underlying input event, such as mousemove or touchmove.

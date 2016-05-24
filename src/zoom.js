@@ -176,7 +176,7 @@ export default function(started) {
       return this;
     },
     emit: function(type) {
-      customEvent(new ZoomEvent(type, this.that.__zoom), listeners.apply, listeners, [type, this.that, this.args]);
+      customEvent(new ZoomEvent(zoom, type, this.that.__zoom), listeners.apply, listeners, [type, this.that, this.args]);
     }
   };
 
