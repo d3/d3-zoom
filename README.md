@@ -149,7 +149,7 @@ When a [zoom event listener](#zoom_on) is invoked, [d3.event](https://github.com
 
 The zoom behavior stores the zoom state on the element to which the zoom behavior was [applied](#_zoom), not on the zoom behavior itself. This is because the zoom behavior can be applied to many elements simultaneously, and each element can be zoomed independently. The zoom state can change either on user interaction or programmatically via [*zoom*.transform](#zoom_transform).
 
-To retrieve the zoom state, use *event*.transform on the current [zoom event](#zoom-events) within a zoom event listener (see [*zoom*.on](#zoom_on)), or use [d3.zoomTransform](#zoomTransform) for a given node. The latter is particularly useful for modifying the zoom state programmatically, say to implement buttons for zooming in and out.
+To retrieve the zoom state, use *event*.transform on the current [zoom event](#zoom-events) within a zoom event listener (see [*zoom*.on](#zoom_on)), or use [d3.zoomTransform](#zoomTransform) for a given node. The latter is particularly useful for modifying the zoom state programmatically, say to implement buttons for zooming in and out. Internally, an element’s transform is stored as *element*.\_\_zoom; however, you should retrieve the transform through d3.zoomTransform rather than accessing it directly.
 
 <a href="#zoomTransform" name="zoomTransform">#</a> d3.<b>zoomTransform</b>([<i>node</i>])
 
