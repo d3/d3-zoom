@@ -57,9 +57,10 @@ export default function(started) {
       schedule(collection, transform);
     } else {
       selection.interrupt().each(function() {
-        var g = gesture(this, arguments).start();
-        this.__zoom = typeof transform === "function" ? transform.apply(this, arguments) : transform;
-        g.zoom().end();
+        gesture(this, arguments)
+            .start()
+            .zoom(null, typeof transform === "function" ? transform.apply(this, arguments) : transform)
+            .end();
       });
     }
   };
@@ -126,9 +127,9 @@ export default function(started) {
               b = typeof transform === "function" ? transform.apply(that, args) : transform,
               i = interpolateZoom(a.invert(p).concat(w / a.k), b.invert(p).concat(w / b.k));
           return function(t) {
-            if (t === 1) that.__zoom = b; // Avoid rounding error on end.
-            else { var l = i(t), k = w / l[2]; that.__zoom = new Transform(k, p[0] - l[0] * k, p[1] - l[1] * k); }
-            g.zoom();
+            if (t === 1) t = b; // Avoid rounding error on end.
+            else { var l = i(t), k = w / l[2]; t = new Transform(k, p[0] - l[0] * k, p[1] - l[1] * k); }
+            g.zoom(null, t);
           };
         });
   }
@@ -157,12 +158,12 @@ export default function(started) {
       }
       return this;
     },
-    zoom: function(key) {
-      var transform = this.that.__zoom;
+    zoom: function(key, transform) {
       if (this.wheel && key !== "wheel") this.wheel[1] = transform.invert(this.wheel[0]);
       if (this.mouse && key !== "mouse") this.mouse[1] = transform.invert(this.mouse[0]);
       if (this.touch0 && key !== "touch") this.touch0[1] = transform.invert(this.touch0[0]);
       if (this.touch1 && key !== "touch") this.touch1[1] = transform.invert(this.touch1[0]);
+      this.that.__zoom = transform;
       this.emit("zoom");
       return this;
     },
@@ -206,8 +207,7 @@ export default function(started) {
 
     noevent();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    this.__zoom = translate(scale(t, k * Math.pow(2, y)), p0, p1);
-    g.zoom("wheel");
+    g.zoom("wheel", translate(scale(t, k * Math.pow(2, y)), p0, p1));
 
     function wheelidled() {
       wheelTimer = null;
@@ -233,8 +233,7 @@ export default function(started) {
     function mousemoved() {
       noevent();
       mousemoving = true;
-      g.that.__zoom = translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1])
-      g.zoom("mouse");
+      g.zoom("mouse", translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]));
     }
 
     function mouseupped() {
@@ -295,19 +294,19 @@ export default function(started) {
       if (g.touch0 && g.touch0[2] === t.identifier) g.touch0[0] = p;
       else if (g.touch1 && g.touch1[2] === t.identifier) g.touch1[0] = p;
     }
+    t = g.that.__zoom;
     if (g.touch1) {
       var p0 = g.touch0[0], l0 = g.touch0[1],
           p1 = g.touch1[0], l1 = g.touch1[1],
           dp = (dp = p1[0] - p0[0]) * dp + (dp = p1[1] - p0[1]) * dp,
           dl = (dl = l1[0] - l0[0]) * dl + (dl = l1[1] - l0[1]) * dl;
-      g.that.__zoom = scale(g.that.__zoom, Math.sqrt(dp / dl));
+      t = scale(t, Math.sqrt(dp / dl));
       p = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
       l = [(l0[0] + l1[0]) / 2, (l0[1] + l1[1]) / 2];
     }
     else if (g.touch0) p = g.touch0[0], l = g.touch0[1];
     else return;
-    g.that.__zoom = translate(g.that.__zoom, p, l);
-    g.zoom("touch");
+    g.zoom("touch", translate(t, p, l));
   }
 
   function touchended() {
