@@ -155,7 +155,7 @@ Returns the current transform for the specified *node*. If a *node* is not speci
 <br>0 *k* *t<sub>y</sub>*
 <br>0 0 1
 
-(This matrix is only capable of representing scale and translate; a future release may allow rotation, though this would probably not be a backwards-compatible change.) The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
+(This matrix is capable of representing only scale and translate; a future release may allow rotation, though this would probably not be a backwards-compatible change.) The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
 
 * `x` - the translation amount *t<sub>x</sub>* along the *x*-axis.
 * `y` - the translation amount *t<sub>y</sub>* along the *y*-axis.
