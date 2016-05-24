@@ -151,9 +151,17 @@ When a [zoom event listener](#zoom_on) is invoked, [d3.event](https://github.com
 
 …
 
-* `x` - the *x*-coordinate translation amount.
-* `y` - the *y*-coordinate translation amount.
+* `x` - the translation amount along the *x*-axis.
+* `y` - the translation amount along the *y*-axis.
 * `k` - the scale factor.
+
+Equivalently, the transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
+
+*k* 0 *t<sub>x</sub>*
+0 *k* *t<sub>y</sub>*
+0 0 1
+
+The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩.
 
 <a href="#transform_scale" name="transform_scale">#</a> <i>transform</i>.<b>scale</b>(<i>k</i>)
 
