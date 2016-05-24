@@ -8,10 +8,9 @@ import ZoomEvent from "./event";
 import {Transform, identity} from "./transform";
 import noevent, {nopropagation} from "./noevent";
 
-// Ignore horizontal scrolling.
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {
-  return event.type === "wheel" ? event.deltaY : !event.button;
+  return !event.button;
 }
 
 function defaultSize() {
@@ -185,8 +184,12 @@ export default function(started) {
     var g = gesture(this, arguments),
         p0,
         p1,
-        t0 = this.__zoom,
-        k1 = t0.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500);
+        y = -event.deltaY * (event.deltaMode ? 120 : 1) / 500,
+        t = this.__zoom,
+        k = t.k;
+
+    // If this wheel event won’t trigger a transform change, ignore it.
+    if (y === 0 || (y < 0 && k === k0) || (y > 0 && k === k1)) return;
 
     // If there were recently wheel events, use the existing point and location.
     if (g.wheel) {
@@ -196,14 +199,14 @@ export default function(started) {
 
     // Otherwise, capture the mouse point and location at the start.
     else {
-      g.wheel = [p0 = mouse(this), p1 = t0.invert(p0)];
+      g.wheel = [p0 = mouse(this), p1 = t.invert(p0)];
       interrupt(this);
       g.start();
     }
 
     noevent();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    this.__zoom = translate(scale(t0, k1), p0, p1);
+    this.__zoom = translate(scale(t, k * Math.pow(2, y)), p0, p1);
     g.zoom("wheel");
 
     function wheelidled() {

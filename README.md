@@ -96,11 +96,11 @@ If *filter* is specified, sets the filter to the specified function and returns 
 
 ```js
 function filter() {
-  return event.type === "wheel" ? event.deltaY : !event.button;
+  return !event.button;
 }
 ```
 
-If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu. The default filter also ignores horizontal wheeling, since only vertical wheeling triggers a zoom.
+If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
 <a href="#zoom_size" name="zoom_size">#</a> <i>zoom</i>.<b>size</b>([<i>size</i>])
 
