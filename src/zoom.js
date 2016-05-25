@@ -92,11 +92,13 @@ export default function(started) {
   };
 
   function scale(transform, k) {
-    return new Transform(Math.max(k0, Math.min(k1, k)), transform.x, transform.y);
+    k = Math.max(k0, Math.min(k1, k));
+    return k === transform.k ? transform : new Transform(k, transform.x, transform.y);
   }
 
   function translate(transform, p0, p1) {
-    return p1 = transform.apply(p1), new Transform(transform.k, transform.x + p0[0] - p1[0], transform.y + p0[1] - p1[1]);
+    p1 = transform.apply(p1); var x = p0[0] - p1[0], y = p0[1] - p1[1];
+    return x === 0 && y === 0 ? transform : new Transform(transform.k, transform.x + x, transform.y + y);
   }
 
   function schedule(transition, transform, center) {
