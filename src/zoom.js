@@ -198,7 +198,7 @@ export default function(started) {
 
     // If the mouse is in the same location as before, reuse it.
     // If there were recent wheel events, reset the wheel idle timeout.
-    if (g.active) {
+    if (wheelTimer) {
       var point = mouse(this);
       if (mousePoint[0] !== point[0] || mousePoint[1] !== point[1]) {
         mouseLocation = t.invert(mousePoint = point);
