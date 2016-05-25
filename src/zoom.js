@@ -175,6 +175,7 @@ export default function(started) {
     end: function() {
       if (--this.active === 0) {
         gestures.splice(this.index, 1);
+        mousePoint = mouseLocation = null;
         this.index = -1;
         this.emit("end");
       }
