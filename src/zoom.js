@@ -165,7 +165,7 @@ export default function(started) {
       return this;
     },
     zoom: function(key, transform) {
-      if (key !== "mouse") mouseLocation = transform.invert(mousePoint);
+      if (mousePoint && key !== "mouse") mouseLocation = transform.invert(mousePoint);
       if (this.touch0 && key !== "touch") this.touch0[1] = transform.invert(this.touch0[0]);
       if (this.touch1 && key !== "touch") this.touch1[1] = transform.invert(this.touch1[0]);
       this.that.__zoom = transform;
