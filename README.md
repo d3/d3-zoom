@@ -81,13 +81,13 @@ If *selection* is a selection, sets the current zoom transform of the selected e
 This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call) or [*transition*.call](https://github.com/d3/d3-transition#transition_call). For example, to reset the zoom transform to the identity transform instantaneously:
 
 ```js
-d3.selectAll(".node").call(zoom.transform, d3.zoomTransform());
+d3.selectAll(".node").call(zoom.transform, d3.zoomIdentity);
 ```
 
 To smoothly reset the zoom transform to the identity transform over 750 milliseconds:
 
 ```js
-d3.selectAll(".node").transition().duration(750).call(zoom.transform, d3.zoomTransform());
+d3.selectAll(".node").transition().duration(750).call(zoom.transform, d3.zoomIdentity);
 ```
 
 This method requires that you specify the new zoom transform completely, and does not enforce the defined [scale extent](#zoom_scaleExtent) and [translate extent](#zoom_translateExtent), if any. To derive a new transform from the existing transform, and to enforce the scale and translate extents, see the convenience methods [*zoom*.translateBy](#zoom_translateBy), [*zoom*.scaleBy](#zoom_scaleBy) and [*zoom*.scaleTo](#zoom_scaleTo).
@@ -166,9 +166,9 @@ The zoom behavior stores the zoom state on the element to which the zoom behavio
 
 To retrieve the zoom state, use *event*.transform on the current [zoom event](#zoom-events) within a zoom event listener (see [*zoom*.on](#zoom_on)), or use [d3.zoomTransform](#zoomTransform) for a given node. The latter is particularly useful for modifying the zoom state programmatically, say to implement buttons for zooming in and out.
 
-<a href="#zoomTransform" name="zoomTransform">#</a> d3.<b>zoomTransform</b>([<i>node</i>])
+<a href="#zoomTransform" name="zoomTransform">#</a> d3.<b>zoomTransform</b>(<i>node</i>)
 
-Returns the current transform for the specified *node*. Internally, an element’s transform is stored as *element*.\_\_zoom; however, you should use this method rather than accessing it directly. If a *node* is not specified, or the given *node* has no defined transform, returns the identity transformation where *k* = 1, *t<sub>x</sub>* = *t<sub>y</sub>* = 0. The returned transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
+Returns the current transform for the specified *node*. Internally, an element’s transform is stored as *element*.\_\_zoom; however, you should use this method rather than accessing it directly. If the given *node* has no defined transform, returns the [identity transformation](#zoomIdentity). The returned transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
 
 *k* 0 *t<sub>x</sub>*
 <br>0 *k* *t<sub>y</sub>*
@@ -183,7 +183,7 @@ Returns the current transform for the specified *node*. Internally, an element�
 These properties should be considered read-only; instead of mutating a transform, use [*transform*.scale](#transform_scale) and [*transform*.translate](#transform_translate) to derive a new transform. Also see [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy) for convenience methods on the zoom behavior. To create a transform with a given *k*, *t<sub>x</sub>*, and *t<sub>y</sub>*:
 
 ```js
-var t = d3.zoomTransform().translate(x, y).scale(k);
+var t = d3.zoomIdentity.translate(x, y).scale(k);
 ```
 
 To apply the transformation to a [Canvas 2D context](https://www.w3.org/TR/2dcontext/), use [*context*.translate](https://www.w3.org/TR/2dcontext/#dom-context-2d-translate) followed by [*context*.scale](https://www.w3.org/TR/2dcontext/#dom-context-2d-scale):
@@ -282,3 +282,7 @@ function toString() {
   return "translate(" + this.x + "," + this.y + ") scale(" + this.k + ")";
 }
 ```
+
+<a href="#zoomIdentity" name="zoomIdentity">#</a> d3.<b>zoomIdentity</b>
+
+The identity transform, where *k* = 1, *t<sub>x</sub>* = *t<sub>y</sub>* = 0.

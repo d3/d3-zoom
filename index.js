@@ -1,3 +1,3 @@
 export {version} from "./build/package";
 export {default as zoom} from "./src/zoom";
-export {default as zoomTransform} from "./src/transform";
+export {default as zoomTransform, identity as zoomIdentity} from "./src/transform";
