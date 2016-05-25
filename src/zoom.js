@@ -13,9 +13,9 @@ function defaultFilter() {
   return !event.button;
 }
 
-function defaultSize() {
+function defaultExtent() {
   var node = this.ownerSVGElement || this;
-  return [node.clientWidth, node.clientHeight];
+  return [[0, 0], [node.clientWidth, node.clientHeight]];
 }
 
 function defaultTransform() {
@@ -24,9 +24,13 @@ function defaultTransform() {
 
 export default function(started) {
   var filter = defaultFilter,
-      size = defaultSize,
+      extent = defaultExtent,
       k0 = 0,
       k1 = Infinity,
+      x0 = -k1,
+      x1 = k1,
+      y0 = x0,
+      y1 = x1,
       duration = 250,
       gestures = [],
       listeners = dispatch("start", "zoom", "end").on("start", started),
@@ -74,20 +78,21 @@ export default function(started) {
 
   zoom.scaleTo = function(selection, k) {
     zoom.transform(selection, function() {
-      var t0 = this.__zoom,
-          p0 = (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
+      var e = extent.apply(this, arguments),
+          t0 = this.__zoom,
+          p0 = centroid(e),
           p1 = t0.invert(p0),
           k1 = typeof k === "function" ? k.apply(this, arguments) : k;
-      return translate(scale(t0, k1), p0, p1);
+      return constrain(translate(scale(t0, k1), p0, p1), e);
     });
   };
 
   zoom.translateBy = function(selection, x, y) {
     zoom.transform(selection, function() {
-      return this.__zoom.translate(
+      return constrain(this.__zoom.translate(
         typeof x === "function" ? x.apply(this, arguments) : x,
         typeof y === "function" ? y.apply(this, arguments) : y
-      );
+      ), extent.apply(this, arguments));
     });
   };
 
@@ -101,6 +106,16 @@ export default function(started) {
     return x === 0 && y === 0 ? transform : new Transform(transform.k, transform.x + x, transform.y + y);
   }
 
+  function constrain(transform, extent) {
+    var dx = Math.min(0, transform.invertX(extent[0][0]) - x0) || Math.max(0, transform.invertX(extent[1][0]) - x1),
+        dy = Math.min(0, transform.invertY(extent[0][1]) - y0) || Math.max(0, transform.invertY(extent[1][1]) - y1);
+    return dx || dy ? transform.translate(dx, dy) : transform;
+  }
+
+  function centroid(extent) {
+    return [(+extent[0][0] + +extent[1][0]) / 2, (+extent[0][1] + +extent[1][1]) / 2];
+  }
+
   function schedule(transition, transform, center) {
     transition
         .on("start.zoom", function() { gesture(this, arguments).start(); })
@@ -109,9 +124,9 @@ export default function(started) {
           var that = this,
               args = arguments,
               g = gesture(that, args),
-              s = size.apply(that, args),
-              p = center || [s[0] / 2, s[1] / 2],
-              w = Math.max(s[0], s[1]),
+              e = extent.apply(that, args),
+              p = center || centroid(e),
+              w = Math.max(e[1][0] - e[0][0], e[1][1] - e[0][1]),
               a = that.__zoom,
               b = typeof transform === "function" ? transform.apply(that, args) : transform,
               i = interpolateZoom(a.invert(p).concat(w / a.k), b.invert(p).concat(w / b.k));
@@ -189,6 +204,7 @@ export default function(started) {
 
     // Otherwise, capture the mouse point and location at the start.
     else {
+      g.extent = extent.apply(this, arguments);
       g.wheel = [p0 = mouse(this), p1 = t.invert(p0)];
       interrupt(this);
       g.start();
@@ -196,7 +212,7 @@ export default function(started) {
 
     noevent();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    g.zoom("wheel", translate(scale(t, k * Math.pow(2, y)), p0, p1));
+    g.zoom("wheel", constrain(translate(scale(t, k * Math.pow(2, y)), p0, p1), g.extent));
 
     function wheelidled() {
       wheelTimer = null;
@@ -215,6 +231,7 @@ export default function(started) {
     dragDisable(event.view);
     nopropagation();
     mousemoving = false;
+    g.extent = extent.apply(this, arguments);
     g.mouse = [p0, p1];
     interrupt(this);
     g.start();
@@ -222,7 +239,7 @@ export default function(started) {
     function mousemoved() {
       noevent();
       mousemoving = true;
-      g.zoom("mouse", translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]));
+      g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]), g.extent));
     }
 
     function mouseupped() {
@@ -240,7 +257,7 @@ export default function(started) {
         p0 = mouse(this),
         p1 = t0.invert(p0),
         k1 = t0.k * (event.shiftKey ? 0.5 : 2),
-        t1 = translate(scale(t0, k1), p0, p1);
+        t1 = constrain(translate(scale(t0, k1), p0, p1), extent.apply(this, arguments));
 
     noevent();
     if (duration > 0) select(this).transition().duration(duration).call(schedule, t1, p0);
@@ -267,6 +284,7 @@ export default function(started) {
     if (event.touches.length === n) {
       touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
       interrupt(this);
+      g.extent = extent.apply(this, arguments);
       g.start();
     }
   }
@@ -295,7 +313,7 @@ export default function(started) {
     }
     else if (g.touch0) p = g.touch0[0], l = g.touch0[1];
     else return;
-    g.zoom("touch", translate(t, p, l));
+    g.zoom("touch", constrain(translate(t, p, l), g.extent));
   }
 
   function touchended() {
@@ -319,12 +337,16 @@ export default function(started) {
     return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), zoom) : filter;
   };
 
-  zoom.size = function(_) {
-    return arguments.length ? (size = typeof _ === "function" ? _ : constant([+_[0], +_[1]]), zoom) : size;
+  zoom.extent = function(_) {
+    return arguments.length ? (extent = typeof _ === "function" ? _ : constant([[+_[0][0], +_[0][1]], [+_[1][0], +_[1][1]]]), zoom) : extent;
   };
 
   zoom.scaleExtent = function(_) {
     return arguments.length ? (k0 = +_[0], k1 = +_[1], zoom) : [k0, k1];
+  };
+
+  zoom.translateExtent = function(_) {
+    return arguments.length ? (x0 = +_[0][0], x1 = +_[1][0], y0 = +_[0][1], y1 = +_[1][1], zoom) : [[x0, y0], [x1, y1]];
   };
 
   zoom.duration = function(_) {

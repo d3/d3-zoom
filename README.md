@@ -102,20 +102,24 @@ function filter() {
 
 If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
-<a href="#zoom_size" name="zoom_size">#</a> <i>zoom</i>.<b>size</b>([<i>size</i>])
+<a href="#zoom_extent" name="zoom_extent">#</a> <i>zoom</i>.<b>extent</b>([<i>extent</i>])
 
 …
 
 ```js
-function size() {
+function extent() {
   var node = this.ownerSVGElement || this;
-  return [node.clientWidth, node.clientHeight];
+  return [[0, 0], [node.clientWidth, node.clientHeight]];
 }
 ```
 
-<a href="#zoom_scaleExtent" name="zoom_scaleExtent">#</a> <i>zoom</i>.<b>scaleExtent</b>([<i>scaleExtent</i>])
+<a href="#zoom_scaleExtent" name="zoom_scaleExtent">#</a> <i>zoom</i>.<b>scaleExtent</b>([<i>extent</i>])
 
-… Defaults to [0, ∞]. Enforced on interaction and when using [*zoom*.scaleBy](#zoom_scaleBy) or [*zoom*.scaleTo](#zoom_scaleTo); not enforced when using [*zoom*.transform](#zoom_transform) to set the transform explicitly.
+… Defaults to [0, ∞]. Enforced on interaction and when using [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy); not enforced when using [*zoom*.transform](#zoom_transform) to set the transform explicitly.
+
+<a href="#zoom_translateExtent" name="zoom_translateExtent">#</a> <i>zoom</i>.<b>translateExtent</b>([<i>extent</i>])
+
+… Defaults to [[-∞, -∞], [+∞, +∞]]. Enforced on interaction and when using [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy); not enforced when using [*zoom*.transform](#zoom_transform) to set the transform explicitly.
 
 <a href="#zoom_duration" name="zoom_duration">#</a> <i>zoom</i>.<b>duration</b>([<i>duration</i>])
 
