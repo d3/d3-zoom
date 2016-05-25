@@ -51,7 +51,6 @@ export default function(started) {
 
   zoom.transform = function(collection, transform) {
     var selection = collection.selection ? collection.selection() : collection;
-    transform = clamp(transform);
     selection.property("__zoom", defaultTransform);
     if (collection !== selection) {
       schedule(collection, transform);
@@ -91,18 +90,6 @@ export default function(started) {
       );
     });
   };
-
-  function clamp(transform) {
-    return function() {
-      var t = typeof transform === "function" ? transform.apply(this, arguments) : transform;
-      if (k0 > t.k || t.k > k1) {
-        var p0 = (p0 = size.apply(this, arguments), [p0[0] / 2, p0[1] / 2]),
-            p1 = t.invert(p0);
-        t = translate(scale(t, t.k), p0, p1);
-      }
-      return t;
-    };
-  }
 
   function scale(transform, k) {
     return new Transform(Math.max(k0, Math.min(k1, k)), transform.x, transform.y);

@@ -115,7 +115,7 @@ function size() {
 
 <a href="#zoom_scaleExtent" name="zoom_scaleExtent">#</a> <i>zoom</i>.<b>scaleExtent</b>([<i>scaleExtent</i>])
 
-… Defaults to [0, ∞].
+… Defaults to [0, ∞]. Enforced on interaction and when using [*zoom*.scaleBy](#zoom_scaleBy) or [*zoom*.scaleTo](#zoom_scaleTo); not enforced when using [*zoom*.transform](#zoom_transform) to set the transform explicitly.
 
 <a href="#zoom_duration" name="zoom_duration">#</a> <i>zoom</i>.<b>duration</b>([<i>duration</i>])
 
