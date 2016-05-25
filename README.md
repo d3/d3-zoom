@@ -60,7 +60,7 @@ Creates a new zoom behavior. The returned behavior, [*zoom*](#_drag), is both an
 
 <a href="#_zoom" name="_zoom">#</a> <i>zoom</i>(<i>selection</i>)
 
-Applies this zoom behavior to the specified [*selection*](https://github.com/d3/d3-selection). This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call). For example, to instantiate a zoom behavior and apply it to a selection:
+Applies this zoom behavior to the specified [*selection*](https://github.com/d3/d3-selection), binding the necessary event listeners to allow panning and zooming, and initializing the [zoom transform](#zoom-transforms) on each selected element to the identity transform if not already defined. This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call). For example, to instantiate a zoom behavior and apply it to a selection:
 
 ```js
 d3.selectAll(".node").call(d3.zoom().on("zoom", zoomed));
@@ -76,7 +76,21 @@ Applying the zoom behavior also sets the [-webkit-tap-highlight-color](https://d
 
 <a href="#zoom_transform" name="zoom_transform">#</a> <i>zoom</i>.<b>transform</b>(<i>selection</i>, <i>transform</i>)
 
-…
+If *selection* is a selection, sets the current zoom transform of the selected elements to the specifed *transform*. If *selection* is a transition, defines a zoom transition to the specified *transform* using [d3.interpolateZoom](https://github.com/d3/d3-interpolate#interpolateZoom). The *transform* may be specified either as a [zoom transform](#zoom-transforms) or as a function that returns a zoom transform. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
+
+This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call) or [*transition*.call](https://github.com/d3/d3-transition#transition_call). For example, to reset the zoom transform to the identity transform instantaneously:
+
+```js
+d3.selectAll(".node").call(zoom.transform, d3.zoomTransform());
+```
+
+To smoothly reset the zoom transform to the identity transform over 750 milliseconds:
+
+```js
+d3.selectAll(".node").transition().duration(750).call(zoom.transform, d3.zoomTransform());
+```
+
+This method requires that you specify the new zoom transform completely, and does not enforce the defined [scale extent](#zoom_scaleExtent) and [translate extent](#zoom_translateExtent), if any. To derive a new transform from the existing transform, and to enforce the scale and translate extents, see the convenience methods [*zoom*.translateBy](#zoom_translateBy), [*zoom*.scaleBy](#zoom_scaleBy) and [*zoom*.scaleTo](#zoom_scaleTo).
 
 <a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>x</i>, <i>y</i>)
 
