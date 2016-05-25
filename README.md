@@ -76,7 +76,7 @@ Applying the zoom behavior also sets the [-webkit-tap-highlight-color](https://d
 
 <a href="#zoom_transform" name="zoom_transform">#</a> <i>zoom</i>.<b>transform</b>(<i>selection</i>, <i>transform</i>)
 
-If *selection* is a selection, sets the current zoom transform of the selected elements to the specifed *transform*, instantaneously emitting start, zoom and end [events](#zoom-events). If *selection* is a transition, defines a zoom transition to the specified *transform* using [d3.interpolateZoom](https://github.com/d3/d3-interpolate#interpolateZoom), emitting a start event when the transition starts, zoom events for each tick of the transition, and then an end event when the transition ends (or is interrupted).
+If *selection* is a selection, sets the current zoom transform of the selected elements to the specifed *transform*, instantaneously emitting start, zoom and end [events](#zoom-events). If *selection* is a transition, defines a “zoom” tween to the specified *transform* using [d3.interpolateZoom](https://github.com/d3/d3-interpolate#interpolateZoom), emitting a start event when the transition starts, zoom events for each tick of the transition, and then an end event when the transition ends (or is interrupted).
 
 The *transform* may be specified either as a [zoom transform](#zoom-transforms) or as a function that returns a zoom transform. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 

@@ -122,7 +122,7 @@ export default function(started) {
     transition
         .on("start.zoom", function() { gesture(this, arguments).start(); })
         .on("interrupt.zoom end.zoom", function() { gesture(this, arguments).end(); })
-        .tween("zoom:zoom", function() {
+        .tween("zoom", function() {
           var that = this,
               args = arguments,
               g = gesture(that, args),
