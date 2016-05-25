@@ -35,6 +35,8 @@ export default function(started) {
       gestures = [],
       listeners = dispatch("start", "zoom", "end").on("start", started),
       mousemoving,
+      mousePoint,
+      mouseLocation,
       touchstarting,
       touchending,
       touchDelay = 500,
@@ -163,8 +165,7 @@ export default function(started) {
       return this;
     },
     zoom: function(key, transform) {
-      if (this.wheel && key !== "wheel") this.wheel[1] = transform.invert(this.wheel[0]);
-      if (this.mouse && key !== "mouse") this.mouse[1] = transform.invert(this.mouse[0]);
+      if (key !== "mouse") mouseLocation = transform.invert(mousePoint);
       if (this.touch0 && key !== "touch") this.touch0[1] = transform.invert(this.touch0[0]);
       if (this.touch1 && key !== "touch") this.touch1[1] = transform.invert(this.touch1[0]);
       this.that.__zoom = transform;
@@ -187,8 +188,6 @@ export default function(started) {
   function wheeled() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
-        p0,
-        p1,
         y = -event.deltaY * (event.deltaMode ? 120 : 1) / 500,
         t = this.__zoom,
         k = t.k;
@@ -196,27 +195,30 @@ export default function(started) {
     // If this wheel event won’t trigger a transform change, ignore it.
     if (y === 0 || (y < 0 && k === k0) || (y > 0 && k === k1)) return;
 
-    // If there were recently wheel events, use the existing point and location.
-    if (g.wheel) {
-      p0 = g.wheel[0], p1 = g.wheel[1];
+    // If the mouse is in the same location as before, reuse it.
+    // If there were recent wheel events, reset the wheel idle timeout.
+    if (g.active) {
+      var point = mouse(this);
+      if (mousePoint[0] !== point[0] || mousePoint[1] !== point[1]) {
+        mouseLocation = t.invert(mousePoint = point);
+      }
       clearTimeout(wheelTimer);
     }
 
     // Otherwise, capture the mouse point and location at the start.
     else {
       g.extent = extent.apply(this, arguments);
-      g.wheel = [p0 = mouse(this), p1 = t.invert(p0)];
+      mouseLocation = t.invert(mousePoint = mouse(this));
       interrupt(this);
       g.start();
     }
 
     noevent();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    g.zoom("wheel", constrain(translate(scale(t, k * Math.pow(2, y)), p0, p1), g.extent));
+    g.zoom("mouse", constrain(translate(scale(t, k * Math.pow(2, y)), mousePoint, mouseLocation), g.extent));
 
     function wheelidled() {
       wheelTimer = null;
-      delete g.wheel;
       g.end();
     }
   }
@@ -224,29 +226,26 @@ export default function(started) {
   function mousedowned() {
     if (touchending || !filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
-        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
-        p0 = mouse(this),
-        p1 = this.__zoom.invert(p0);
+        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true);
 
     dragDisable(event.view);
     nopropagation();
     mousemoving = false;
     g.extent = extent.apply(this, arguments);
-    g.mouse = [p0, p1];
+    mouseLocation = this.__zoom.invert(mousePoint = mouse(this));
     interrupt(this);
     g.start();
 
     function mousemoved() {
       noevent();
       mousemoving = true;
-      g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]), g.extent));
+      g.zoom("mouse", constrain(translate(g.that.__zoom, mousePoint = mouse(g.that), mouseLocation), g.extent));
     }
 
     function mouseupped() {
       v.on("mousemove.zoom mouseup.zoom", null);
       dragEnable(event.view, mousemoving);
       noevent();
-      delete g.mouse;
       g.end();
     }
   }
