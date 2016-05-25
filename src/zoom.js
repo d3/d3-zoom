@@ -104,8 +104,8 @@ export default function(started) {
   }
 
   function translate(transform, p0, p1) {
-    p1 = transform.apply(p1); var x = p0[0] - p1[0], y = p0[1] - p1[1];
-    return x === 0 && y === 0 ? transform : new Transform(transform.k, transform.x + x, transform.y + y);
+    var x = p0[0] - p1[0] * transform.k, y = p0[1] - p1[1] * transform.k;
+    return x === transform.x && y === transform.y ? transform : new Transform(transform.k, x, y);
   }
 
   function constrain(transform, extent) {
