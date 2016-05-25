@@ -63,7 +63,7 @@ Creates a new zoom behavior. The returned behavior, [*zoom*](#_drag), is both an
 Applies this zoom behavior to the specified [*selection*](https://github.com/d3/d3-selection), binding the necessary event listeners to allow panning and zooming, and initializing the [zoom transform](#zoom-transforms) on each selected element to the identity transform if not already defined. This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call). For example, to instantiate a zoom behavior and apply it to a selection:
 
 ```js
-d3.selectAll(".node").call(d3.zoom().on("zoom", zoomed));
+selection.call(d3.zoom().on("zoom", zoomed));
 ```
 
 Internally, the zoom behavior uses [*selection*.on](https://github.com/d3/d3-selection#selection_on) to bind the necessary event listeners for zooming. The listeners use the name `.zoom`, so you can subsequently unbind the zoom behavior as follows:
@@ -80,31 +80,37 @@ If *selection* is a selection, sets the current zoom transform of the selected e
 
 The *transform* may be specified either as a [zoom transform](#zoom-transforms) or as a function that returns a zoom transform. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
-This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call) or [*transition*.call](https://github.com/d3/d3-transition#transition_call). For example, to reset the zoom transform to the identity transform instantaneously:
+This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call) or [*transition*.call](https://github.com/d3/d3-transition#transition_call). For example, to reset the zoom transform to the [identity transform](#zoomIdentity) instantaneously:
 
 ```js
-d3.selectAll(".node").call(zoom.transform, d3.zoomIdentity);
+selection.call(zoom.transform, d3.zoomIdentity);
 ```
 
 To smoothly reset the zoom transform to the identity transform over 750 milliseconds:
 
 ```js
-d3.selectAll(".node").transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+selection.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
 ```
 
 This method requires that you specify the new zoom transform completely, and does not enforce the defined [scale extent](#zoom_scaleExtent) and [translate extent](#zoom_translateExtent), if any. To derive a new transform from the existing transform, and to enforce the scale and translate extents, see the convenience methods [*zoom*.translateBy](#zoom_translateBy), [*zoom*.scaleBy](#zoom_scaleBy) and [*zoom*.scaleTo](#zoom_scaleTo).
 
 <a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>x</i>, <i>y</i>)
 
-… A convenience alias for [*zoom*.transform](#zoom_transform).
+If *selection* is a selection, [translates](#transform_translate) the current zoom transform of the selected elements by *x* and *y*, such that the new *t<sub>x1</sub>* = *t<sub>x0</sub>* + *k* × *x* and *t<sub>y1</sub>* = *t<sub>y0</sub>* + *k* × *y*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform).
+
+The *x* and *y* translation amounts may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
 <a href="#zoom_scaleBy" name="zoom_scaleBy">#</a> <i>zoom</i>.<b>scaleBy</b>(<i>selection</i>, <i>k</i>)
 
-… A convenience alias for [*zoom*.transform](#zoom_transform).
+If *selection* is a selection, [scales](#transform_scale) the current zoom transform of the selected elements by *k*, such that the new *k₁* = *k₀* × *k*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform).
+
+The *k* scale factor may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
 <a href="#zoom_scaleTo" name="zoom_scaleTo">#</a> <i>zoom</i>.<b>scaleTo</b>(<i>selection</i>, <i>k</i>)
 
-… A convenience alias for [*zoom*.transform](#zoom_transform).
+If *selection* is a selection, [scales](#transform_scale) the current zoom transform of the selected elements to *k*, such that the new *k₁* = *k*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform).
+
+The *k* scale factor may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
 <a href="#zoom_filter" name="zoom_filter">#</a> <i>zoom</i>.<b>filter</b>([<i>filter</i>])
 
