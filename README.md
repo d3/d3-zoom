@@ -1,6 +1,6 @@
 # d3-zoom
 
-…
+Pan and zoom SVG, HTML or Canvas using mouse or touch input.
 
 ## Installing
 
