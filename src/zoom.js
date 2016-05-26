@@ -24,7 +24,7 @@ function defaultTransform() {
   return this.__zoom || identity;
 }
 
-export default function(started) {
+export default function() {
   var filter = defaultFilter,
       extent = defaultExtent,
       k0 = 0,
@@ -35,7 +35,7 @@ export default function(started) {
       y1 = x1,
       duration = 250,
       gestures = [],
-      listeners = dispatch("start", "zoom", "end").on("start", started),
+      listeners = dispatch("start", "zoom", "end"),
       mousemoving,
       mousePoint,
       mouseLocation,
