@@ -14,8 +14,10 @@ function defaultFilter() {
 }
 
 function defaultExtent() {
-  var node = this.ownerSVGElement || this;
-  return [[0, 0], [node.clientWidth, node.clientHeight]];
+  var svg = this.ownerSVGElement;
+  return [[0, 0], svg
+      ? [svg.width.baseVal.value, svg.height.baseVal.value]
+      : [this.clientWidth, this.clientHeight]];
 }
 
 function defaultTransform() {

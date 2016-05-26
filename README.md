@@ -122,8 +122,10 @@ If *extent* is specified, sets the viewport extent to the specified array of poi
 
 ```js
 function extent() {
-  var node = this.ownerSVGElement || this;
-  return [[0, 0], [node.clientWidth, node.clientHeight]];
+  var svg = this.ownerSVGElement;
+  return [[0, 0], svg
+      ? [svg.width.baseVal.value, svg.height.baseVal.value]
+      : [this.clientWidth, this.clientHeight]];
 }
 ```
 
