@@ -189,12 +189,8 @@ export default function(started) {
   function wheeled() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
-        y = -event.deltaY * (event.deltaMode ? 120 : 1) / 500,
         t = this.__zoom,
-        k = t.k;
-
-    // If this wheel event won’t trigger a transform change, ignore it.
-    if (y === 0 || (y < 0 && k === k0) || (y > 0 && k === k1)) return;
+        k = Math.max(k0, Math.min(k1, t.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500)));
 
     // If the mouse is in the same location as before, reuse it.
     // If there were recent wheel events, reset the wheel idle timeout.
@@ -206,6 +202,9 @@ export default function(started) {
       clearTimeout(wheelTimer);
     }
 
+    // If this wheel event won’t trigger a transform change, ignore it.
+    else if (t.k === k) return;
+
     // Otherwise, capture the mouse point and location at the start.
     else {
       g.extent = extent.apply(this, arguments);
@@ -216,7 +215,7 @@ export default function(started) {
 
     noevent();
     wheelTimer = setTimeout(wheelidled, wheelDelay);
-    g.zoom("mouse", constrain(translate(scale(t, k * Math.pow(2, y)), mousePoint, mouseLocation), g.extent));
+    g.zoom("mouse", constrain(translate(scale(t, k), mousePoint, mouseLocation), g.extent));
 
     function wheelidled() {
       wheelTimer = null;
