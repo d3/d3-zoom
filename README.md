@@ -1,8 +1,8 @@
 # d3-zoom
 
-Panning and zooming are popular interaction techniques which let the user focus on a region of interest by restricting the view. It is easy to learn due to direct manipulation: click-and-drag to pan, spin the wheel to zoom, or use touch. Panning and zooming are widely used in web-based mapping, but can also be used with time-series or scatterplots.
+Panning and zooming are popular interaction techniques which let the user focus on a region of interest by restricting the view. It is easy to learn due to direct manipulation: click-and-drag to pan (translate), spin the wheel to zoom (scale), or use touch. Panning and zooming are widely used in web-based mapping, but can also be used with visualizations such as time-series and scatterplots.
 
-The zoom behavior implemented by d3-zoom is a convenient but flexible abstraction for enabling pan-and-zoom on [selections](https://github.com/d3/d3-selection). The zoom behavior is agnostic about the DOM, so you can use it with SVG, HTML or Canvas.
+The zoom behavior implemented by d3-zoom is a convenient but flexible abstraction for enabling pan-and-zoom on [selections](https://github.com/d3/d3-selection). It handles a surprising variety of [input events](#api-reference ) and browser quirks. The zoom behavior is agnostic about the DOM, so you can use it with SVG, HTML or Canvas.
 
 [<img alt="Canvas Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/dots.png" width="420" height="219">](http://bl.ocks.org/mbostock/d1f7b58631e71fbf9c568345ee04a60e)[<img alt="SVG Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/dots.png" width="420" height="219">](http://bl.ocks.org/mbostock/4e3925cdc804db257a86fdef3a032a45)
 
@@ -10,7 +10,7 @@ The zoom behavior is also designed to work with [d3-scale](https://github.com/d3
 
 [<img alt="Axis Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/axis.png" width="420" height="219">](http://bl.ocks.org/mbostock/db6b4335bf1662b413e7968910104f0f)
 
-As well as enabling interaction, the zoom behavior can be controlled programmatically using [*zoom*.transform](#zoom_transform). Best of all, it implements smooth zoom transitions based on [“Smooth and efficient zooming and panning”](http://www.win.tue.nl/~vanwijk/zoompan.pdf) by Jarke J. van Wijk and Wim A.A. Nuij:
+The zoom behavior can be controlled programmatically using [*zoom*.transform](#zoom_transform), allowing you to implement user interface elements which control the display, such as zoom buttons, or to stage animated tours through your data. Best of all, it implements smooth zoom transitions based on [“Smooth and efficient zooming and panning”](http://www.win.tue.nl/~vanwijk/zoompan.pdf) by Jarke J. van Wijk and Wim A.A. Nuij:
 
 [<img alt="Zoom Transitions" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/transition.png" width="420" height="219">](http://bl.ocks.org/mbostock/b783fbb2e673561d214e09c7fb5cedee)
 
