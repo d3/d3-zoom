@@ -6,7 +6,7 @@ The zoom behavior implemented by d3-zoom is a convenient but flexible abstractio
 
 [<img alt="Canvas Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/dots.png" width="420" height="219">](http://bl.ocks.org/mbostock/d1f7b58631e71fbf9c568345ee04a60e)[<img alt="SVG Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/dots.png" width="420" height="219">](http://bl.ocks.org/mbostock/4e3925cdc804db257a86fdef3a032a45)
 
-The zoom behavior is also designed to work with [d3-scale](https://github.com/d3/d3-scale) and [d3-axis](https://github.com/d3/d3-axis); see [*transform*.rescaleX](#transform_rescaleX) and [*transform*.rescaleY](#transform_rescaleY).
+The zoom behavior is also designed to work with [d3-scale](https://github.com/d3/d3-scale) and [d3-axis](https://github.com/d3/d3-axis); see [*transform*.rescaleX](#transform_rescaleX) and [*transform*.rescaleY](#transform_rescaleY). You can also restrict zooming using [*zoom*.scaleExtent](#zoom_scaleExtent) and panning using [*zoom*.translateExtent](#zoom_translateExtent).
 
 [<img alt="Axis Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/axis.png" width="420" height="219">](http://bl.ocks.org/mbostock/db6b4335bf1662b413e7968910104f0f)
 
