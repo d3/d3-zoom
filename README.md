@@ -259,7 +259,7 @@ function rescaleX(x) {
 }
 ```
 
-This method does not modify the input scale *x*; *x* thus represents the untransformed scale, while the returned scale represents its transformed view.
+The scale *x* must use [d3.interpolateNumber](https://github.com/d3/d3-interpolate#interpolateNumber); do not use [*continuous*.rangeRound](https://github.com/d3/d3-scale#continuous_rangeRound) as this reduces the accuracy of [*continuous*.invert](https://github.com/d3/d3-scale#continuous_invert) and can lead to an inaccurate rescaled domain. This method does not modify the input scale *x*; *x* thus represents the untransformed scale, while the returned scale represents its transformed view.
 
 <a href="#transform_rescaleY" name="transform_rescaleY">#</a> <i>transform</i>.<b>rescaleY</b>(<i>y</i>)
 
@@ -273,7 +273,7 @@ function rescaleY(y) {
 }
 ```
 
-This method does not modify the input scale *y*; *y* thus represents the untransformed scale, while the returned scale represents its transformed view.
+The scale *y* must use [d3.interpolateNumber](https://github.com/d3/d3-interpolate#interpolateNumber); do not use [*continuous*.rangeRound](https://github.com/d3/d3-scale#continuous_rangeRound) as this reduces the accuracy of [*continuous*.invert](https://github.com/d3/d3-scale#continuous_invert) and can lead to an inaccurate rescaled domain. This method does not modify the input scale *y*; *y* thus represents the untransformed scale, while the returned scale represents its transformed view.
 
 <a href="#transform_toString" name="transform_toString">#</a> <i>transform</i>.<b>toString</b>()
 
