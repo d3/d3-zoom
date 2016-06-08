@@ -16,21 +16,21 @@ The zoom behavior can be controlled programmatically using [*zoom*.transform](#z
 
 ## Installing
 
-If you use NPM, `npm install d3-zoom`. Otherwise, download the [latest release](https://github.com/d3/d3-zoom/releases/latest). You can also load directly from [d3js.org](https://d3js.org), either as a [standalone library](https://d3js.org/d3-zoom.v0.2.min.js) or as part of [D3 4.0](https://github.com/d3/d3). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `d3_zoom` global is exported:
+If you use NPM, `npm install d3-zoom`. Otherwise, download the [latest release](https://github.com/d3/d3-zoom/releases/latest). You can also load directly from [d3js.org](https://d3js.org), either as a [standalone library](https://d3js.org/d3-zoom.v0.3.min.js) or as part of [D3 4.0](https://github.com/d3/d3). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `d3` global is exported:
 
 ```html
-<script src="https://d3js.org/d3-color.v0.4.min.js"></script>
-<script src="https://d3js.org/d3-dispatch.v0.4.min.js"></script>
-<script src="https://d3js.org/d3-ease.v0.7.min.js"></script>
-<script src="https://d3js.org/d3-interpolate.v0.8.min.js"></script>
-<script src="https://d3js.org/d3-selection.v0.7.min.js"></script>
-<script src="https://d3js.org/d3-timer.v0.4.min.js"></script>
-<script src="https://d3js.org/d3-transition.v0.2.min.js"></script>
-<script src="https://d3js.org/d3-drag.v0.2.min.js"></script>
-<script src="https://d3js.org/d3-zoom.v0.2.min.js"></script>
+<script src="https://d3js.org/d3-color.v0.5.min.js"></script>
+<script src="https://d3js.org/d3-dispatch.v0.5.min.js"></script>
+<script src="https://d3js.org/d3-ease.v0.8.min.js"></script>
+<script src="https://d3js.org/d3-interpolate.v0.9.min.js"></script>
+<script src="https://d3js.org/d3-selection.v0.8.min.js"></script>
+<script src="https://d3js.org/d3-timer.v0.5.min.js"></script>
+<script src="https://d3js.org/d3-transition.v0.3.min.js"></script>
+<script src="https://d3js.org/d3-drag.v0.3.min.js"></script>
+<script src="https://d3js.org/d3-zoom.v0.3.min.js"></script>
 <script>
 
-var zoom = d3_zoom.zoom();
+var zoom = d3.zoom();
 
 </script>
 ```
