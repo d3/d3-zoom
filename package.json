@@ -4,6 +4,7 @@
   "description": "Pan and zoom SVG, HTML or Canvas using mouse or touch input.",
   "keywords": [
     "d3",
+    "d3-module",
     "zoom",
     "behavior",
     "interaction"
