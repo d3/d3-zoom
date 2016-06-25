@@ -14,10 +14,16 @@ function defaultFilter() {
 }
 
 function defaultExtent() {
-  var svg = this.ownerSVGElement;
-  return [[0, 0], svg
-      ? [svg.width.baseVal.value, svg.height.baseVal.value]
-      : [this.clientWidth, this.clientHeight]];
+  var e = this, w, h;
+  if (e instanceof SVGElement) {
+    e = e.ownerSVGElement || e;
+    w = e.width.baseVal.value;
+    h = e.height.baseVal.value;
+  } else {
+    w = e.clientWidth;
+    h = e.clientHeight;
+  }
+  return [[0, 0], [w, h]];
 }
 
 function defaultTransform() {
