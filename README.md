@@ -1,4 +1,4 @@
-# d3-zoom
+# d3-zoom [![Build Status](https://travis-ci.org/d3/d3-zoom.svg)](https://travis-ci.org/d3/d3-zoom)
 
 Panning and zooming are popular interaction techniques which let the user focus on a region of interest by restricting the view. It is easy to learn due to direct manipulation: click-and-drag to pan (translate), spin the wheel to zoom (scale), or use touch. Panning and zooming are widely used in web-based mapping, but can also be used with visualizations such as time-series and scatterplots.
 
