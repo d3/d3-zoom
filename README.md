@@ -50,7 +50,7 @@ This table describes how the zoom behavior interprets native events:
 | selectstart² | window            | -           | yes                |
 | click³       | window            | -           | yes                |
 | dblclick     | selection         | *multiple*⁶ | yes                |
-| wheel        | selection         | zoom⁷       | yes                |
+| wheel⁸       | selection         | zoom⁷       | yes                |
 | touchstart   | selection         | *multiple*⁶ | no⁴                |
 | touchmove    | selection         | zoom        | yes                |
 | touchend     | selection         | end         | no⁴                |
@@ -65,6 +65,7 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 <br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
 <br>⁶ Double-click and double-tap initiate a transition that emits start, zoom and end events.
 <br>⁷ The first wheel event emits a start event; an end event is emitted when no wheel events are received for 150ms.
+<br>⁸ Ignored if already at the corresponding limit of the [scale extent](#zoom_scaleExtent).
 
 <a href="#zoom" name="zoom">#</a> d3.<b>zoom</b>() [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js "Source")
 
@@ -139,6 +140,14 @@ The viewport extent affects several functions: the center of the viewport remain
 <a href="#zoom_scaleExtent" name="zoom_scaleExtent">#</a> <i>zoom</i>.<b>scaleExtent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L344 "Source")
 
 If *extent* is specified, sets the scale extent to the specified array of numbers [*k0*, *k1*] where *k0* is the minimum allowed scale factor and *k1* is the maximum allowed scale factor, and returns this zoom behavior. If *extent* is not specified, returns the current scale extent, which defaults to [0, ∞]. The scale extent restricts zooming in and out. It is enforced on interaction and when using [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy); however, it is not enforced when using [*zoom*.transform](#zoom_transform) to set the transform explicitly.
+
+If the user tries to zoom using the wheel when already at the corresponding limit of the scale extent, the wheel events will be ignored and not initiate a zoom gesture. This allows the user to scroll down past a zoomable area after zooming all the way in, or scroll up after zooming all the way out. If you would prefer to always prevent scrolling on wheel events regardless of the scale extent, simply register a wheel event listener to prevent the browser default behavior:
+
+```js
+selection
+    .call(zoom)
+    .on("wheel", function() { d3.event.preventDefault(); });
+```
 
 <a href="#zoom_translateExtent" name="zoom_translateExtent">#</a> <i>zoom</i>.<b>translateExtent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L348 "Source")
 
