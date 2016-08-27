@@ -157,6 +157,14 @@ If *extent* is specified, sets the translate extent to the specified array of po
 
 If *duration* is specified, sets the duration for zoom transitions on double-click and double-tap to the specified number of milliseconds and returns the zoom behavior. If *duration* is not specified, returns the current duration, which defaults to 250 milliseconds. If the duration is not greater than zero, double-click and -tap trigger instantaneous changes to the zoom transform rather than initiating smooth transitions.
 
+To disable double-click and double-tap transitions, you can remove the zoom behavior’s dblclick event listener after applying the zoom behavior to the selection:
+
+```js
+selection
+    .call(zoom)
+    .on("dblclick.zoom", null);
+```
+
 <a href="#zoom_interpolate" name="zoom_interpolate">#</a> <i>zoom</i>.<b>interpolate</b>([<i>interpolate</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L357 "Source")
 
 If *interpolate* is specified, sets the interpolation factory for zoom transitions to the specified function. If *interpolate* is not specified, returns the current interpolation factory, which defaults to [d3.interpolateZoom](https://github.com/d3/d3-interpolate#interpolateZoom) to implement smooth zooming. To apply direct interpolation between two views, try [d3.interpolate](https://github.com/d3/d3-interpolate#interpolate) instead.

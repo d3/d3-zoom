@@ -279,10 +279,18 @@ export default function() {
       if (!g.touch0) g.touch0 = p;
       else if (!g.touch1) g.touch1 = p;
     }
+
+    // If this is a dbltap, reroute to the (optional) dblclick.zoom handler.
     if (touchstarting) {
       touchstarting = clearTimeout(touchstarting);
-      if (!g.touch1) return g.end(), dblclicked.apply(this, arguments);
+      if (!g.touch1) {
+        g.end();
+        p = select(this).on("dblclick.zoom");
+        if (p) p.apply(this, arguments);
+        return;
+      }
     }
+
     if (event.touches.length === n) {
       touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
       interrupt(this);
