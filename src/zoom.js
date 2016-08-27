@@ -114,9 +114,14 @@ export default function() {
   }
 
   function constrain(transform, extent) {
-    var dx = Math.min(0, transform.invertX(extent[0][0]) - x0) || Math.max(0, transform.invertX(extent[1][0]) - x1),
-        dy = Math.min(0, transform.invertY(extent[0][1]) - y0) || Math.max(0, transform.invertY(extent[1][1]) - y1);
-    return dx || dy ? transform.translate(dx, dy) : transform;
+    var dx0 = transform.invertX(extent[0][0]) - x0,
+        dx1 = transform.invertX(extent[1][0]) - x1,
+        dy0 = transform.invertY(extent[0][1]) - y0,
+        dy1 = transform.invertY(extent[1][1]) - y1;
+    return transform.translate(
+      dx1 > dx0 ? (dx0 + dx1) / 2 : Math.min(0, dx0) || Math.max(0, dx1),
+      dy1 > dy0 ? (dy0 + dy1) / 2 : Math.min(0, dy0) || Math.max(0, dy1)
+    );
   }
 
   function centroid(extent) {
