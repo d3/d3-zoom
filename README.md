@@ -200,7 +200,7 @@ To retrieve the zoom state, use *event*.transform on the current [zoom event](#z
 
 <a href="#zoomTransform" name="zoomTransform">#</a> d3.<b>zoomTransform</b>(<i>node</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/transform.js "Source")
 
-Returns the current transform for the specified *node*. Note that *node* should typically be a DOM element, and not a *selection*. If you have a selection, call [*selection*.node](https://github.com/d3/d3-selection#selection_node) first:
+Returns the current transform for the specified *node*. Note that *node* should typically be a DOM element, not a *selection*. (A selection may consist of multiple nodes, in different states, and this function only returns a single transform.) If you have a selection, call [*selection*.node](https://github.com/d3/d3-selection#selection_node) first:
 
 ```js
 var transform = d3.zoomTransform(selection.node());
