@@ -46,11 +46,13 @@ export default function() {
       touchstarting,
       touchending,
       touchDelay = 500,
-      wheelDelay = 150;
+      wheelDelay = 150,
+      // Test for wheel event ype
+      wheelSupport = document.onmousewheel !== undefined ? "mousewheel" : "wheel";
 
   function zoom(selection) {
     selection
-        .on("wheel.zoom", wheeled)
+        .on(wheelSupport + ".zoom", wheeled)
         .on("mousedown.zoom", mousedowned)
         .on("dblclick.zoom", dblclicked)
         .on("touchstart.zoom", touchstarted)
@@ -200,7 +202,8 @@ export default function() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
         t = this.__zoom,
-        k = Math.max(k0, Math.min(k1, t.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500))),
+	deltaY = wheelSupport == "wheel" ? -event.deltaY : event.wheelDeltaY,
+        k = Math.max(k0, Math.min(k1, t.k * Math.pow(2, deltaY * (event.deltaMode ? 120 : 1) / 500))),
         p = mouse(this);
 
     // If the mouse is in the same location as before, reuse it.
