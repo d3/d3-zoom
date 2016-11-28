@@ -275,13 +275,14 @@ export default function() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
         touches = event.changedTouches,
+        started,
         n = touches.length, i, t, p;
 
     nopropagation();
     for (i = 0; i < n; ++i) {
       t = touches[i], p = touch(this, touches, t.identifier);
       p = [p, this.__zoom.invert(p), t.identifier];
-      if (!g.touch0) g.touch0 = p;
+      if (!g.touch0) g.touch0 = p, started = true;
       else if (!g.touch1) g.touch1 = p;
     }
 
@@ -296,7 +297,7 @@ export default function() {
       }
     }
 
-    if (event.touches.length === n) {
+    if (started) {
       touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
       interrupt(this);
       g.start();
