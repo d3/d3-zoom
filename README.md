@@ -91,6 +91,16 @@ Internally, the zoom behavior uses [*selection*.on](https://github.com/d3/d3-sel
 selection.on(".zoom", null);
 ```
 
+To disable just wheel-driven zooming (say to not interfere with native scrolling), you can remove the zoom behavior’s wheel event listener after applying the zoom behavior to the selection:
+
+```js
+selection
+    .call(zoom)
+    .on("wheel.zoom", null);
+```
+
+Alternatively, use [*zoom*.filter](#zoom_filter) for greater control over which events can initiate zoom gestures.
+
 Applying the zoom behavior also sets the [-webkit-tap-highlight-color](https://developer.apple.com/library/mac/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html#//apple_ref/doc/uid/TP40006510-SW5) style to transparent, disabling the tap highlight on iOS. If you want a different tap highlight color, remove or re-apply this style after applying the drag behavior.
 
 <a href="#zoom_transform" name="zoom_transform">#</a> <i>zoom</i>.<b>transform</b>(<i>selection</i>, <i>transform</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L63 "Source")
