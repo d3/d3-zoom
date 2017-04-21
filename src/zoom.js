@@ -246,8 +246,14 @@ export default function() {
 
     function mousemoved() {
       noevent();
+      var m = mouse(g.that);
+      if (m[0] == g.mouse[0][0] && m[1] == g.mouse[0][1]) {
+        // Mouse hasn't actually moved, so should not mark the gesture
+        // as having moved.
+        return;
+      }
       g.moved = true;
-      g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]), g.extent));
+      g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = m, g.mouse[1]), g.extent));
     }
 
     function mouseupped() {
