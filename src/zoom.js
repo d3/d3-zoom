@@ -249,8 +249,10 @@ export default function() {
 
     function mousemoved() {
       noevent();
-      var dx = event.clientX - x0, dy = event.clientY - y0;
-      g.moved = g.moved || dx * dx + dy * dy > clickDistance2;
+      if (!g.moved) {
+        var dx = event.clientX - x0, dy = event.clientY - y0;
+        g.moved = dx * dx + dy * dy > clickDistance2;
+      }
       g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]), g.extent));
     }
 
