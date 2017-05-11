@@ -235,9 +235,9 @@ export default function() {
 
   function mousedowned() {
     if (touchending || !filter.apply(this, arguments)) return;
-    var g  = gesture(this, arguments),
-        v  = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
-        p  = mouse(this),
+    var g = gesture(this, arguments),
+        v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
+        p = mouse(this),
         x0 = event.clientX,
         y0 = event.clientY;
 
@@ -249,7 +249,8 @@ export default function() {
 
     function mousemoved() {
       noevent();
-      g.moved = g.moved || Math.pow(event.clientX - x0, 2) + Math.pow(event.clientY - y0, 2) > clickDistance2;
+      var dx = event.clientX - x0, dy = event.clientY - y0;
+      g.moved = g.moved || dx * dx + dy * dy > clickDistance2;
       g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]), g.extent));
     }
 
@@ -382,7 +383,7 @@ export default function() {
   };
 
   zoom.clickDistance = function(_) {
-    return arguments.length ? (clickDistance2 = Math.pow(+_, 2), zoom) : Math.pow(clickDistance2, 0.5);
+    return arguments.length ? (clickDistance2 = (_ = +_) * _, zoom) : Math.sqrt(clickDistance2);
   };
     
   return zoom;
