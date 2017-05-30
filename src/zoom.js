@@ -30,9 +30,14 @@ function defaultTransform() {
   return this.__zoom || identity;
 }
 
+function defaultWheelDelta() {
+  return -event.deltaY * (event.deltaMode ? 120 : 1) / 500;
+}
+
 export default function() {
   var filter = defaultFilter,
       extent = defaultExtent,
+      wheelDelta = defaultWheelDelta,
       k0 = 0,
       k1 = Infinity,
       x0 = -k1,
@@ -201,7 +206,7 @@ export default function() {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
         t = this.__zoom,
-        k = Math.max(k0, Math.min(k1, t.k * Math.pow(2, -event.deltaY * (event.deltaMode ? 120 : 1) / 500))),
+        k = Math.max(k0, Math.min(k1, t.k * Math.pow(2, wheelDelta.apply(this, arguments)))),
         p = mouse(this);
 
     // If the mouse is in the same location as before, reuse it.
@@ -354,6 +359,10 @@ export default function() {
     if (g.touch0) g.touch0[1] = this.__zoom.invert(g.touch0[0]);
     else g.end();
   }
+
+  zoom.wheelDelta = function(_) {
+    return arguments.length ? (wheelDelta = typeof _ === "function" ? _ : constant(+_), zoom) : wheelDelta;
+  };
 
   zoom.filter = function(_) {
     return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), zoom) : filter;
