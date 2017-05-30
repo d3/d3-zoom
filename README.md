@@ -145,7 +145,7 @@ function filter() {
 
 If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
-<a href="#zoom_wheelDelta" name="zoom_wheelDelta">#</a> <i>zoom</i>.<b>wheelDelta</b>(<i>wheekDelta</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L363 "Source")
+<a href="#zoom_wheelDelta" name="zoom_wheelDelta">#</a> <i>zoom</i>.<b>wheelDelta</b>([<i>wheelDelta</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L363 "Source")
 
 If *wheelDelta* is specified, sets the wheelDelta to the specified function and returns the zoom behavior. If *wheelDelta* is not specified, returns the current wheelDelta, which defaults to:
 
