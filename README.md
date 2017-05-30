@@ -155,7 +155,7 @@ function wheelDelta() {
 }
 ```
 
-The value returned by the wheel delta function determines the amount of scaling applied in response to a [WheelEvent](https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent). The scale factor [*transform*.k](#zoomTransform) is multiplied by 2<sup>*delta*</sup>; for example, a *delta* of +1 doubles the scale factor, *delta* of -1 halves the scale factor.
+The value *Δ* returned by the wheel delta function determines the amount of scaling applied in response to a [WheelEvent](https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent). The scale factor [*transform*.k](#zoomTransform) is multiplied by 2<sup>*Δ*</sup>; for example, a *Δ* of +1 doubles the scale factor, *Δ* of -1 halves the scale factor.
 
 <a href="#zoom_extent" name="zoom_extent">#</a> <i>zoom</i>.<b>extent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L371 "Source")
 
