@@ -139,7 +139,7 @@ If *filter* is specified, sets the filter to the specified function and returns 
 
 ```js
 function filter() {
-  return !event.button;
+  return !d3.event.button;
 }
 ```
 
@@ -151,7 +151,7 @@ If *delta* is specified, sets the wheel delta function to the specified function
 
 ```js
 function wheelDelta() {
-  return -event.deltaY * (event.deltaMode ? 120 : 1) / 500;
+  return -d3.event.deltaY * (d3.event.deltaMode ? 120 : 1) / 500;
 }
 ```
 
@@ -217,10 +217,10 @@ See [*dispatch*.on](https://github.com/d3/d3-dispatch#dispatch_on) for more.
 
 When a [zoom event listener](#zoom_on) is invoked, [d3.event](https://github.com/d3/d3-selection#event) is set to the current zoom event. The *event* object exposes several fields:
 
-* `target` - the associated [zoom behavior](#zoom).
-* `type` - the string “start”, “zoom” or “end”; see [*zoom*.on](#zoom_on).
-* `transform` - the current [zoom transform](#zoom-transforms).
-* `sourceEvent` - the underlying input event, such as mousemove or touchmove.
+* *event*.target - the associated [zoom behavior](#zoom).
+* *event*.type - the string “start”, “zoom” or “end”; see [*zoom*.on](#zoom_on).
+* *event*.transform - the current [zoom transform](#zoom-transforms).
+* *event*.sourceEvent - the underlying input event, such as mousemove or touchmove.
 
 ### Zoom Transforms
 
@@ -250,9 +250,9 @@ Internally, an element’s transform is stored as *element*.\_\_zoom; however, y
 
 (This matrix is capable of representing only scale and translation; a future release may also allow rotation, though this would probably not be a backwards-compatible change.) The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
 
-* `x` - the translation amount *t<sub>x</sub>* along the *x*-axis.
-* `y` - the translation amount *t<sub>y</sub>* along the *y*-axis.
-* `k` - the scale factor *k*.
+* *transform*.x - the translation amount *t<sub>x</sub>* along the *x*-axis.
+* *transform*.y - the translation amount *t<sub>y</sub>* along the *y*-axis.
+* *transform*.k - the scale factor *k*.
 
 These properties should be considered read-only; instead of mutating a transform, use [*transform*.scale](#transform_scale) and [*transform*.translate](#transform_translate) to derive a new transform. Also see [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy) for convenience methods on the zoom behavior. To create a transform with a given *k*, *t<sub>x</sub>*, and *t<sub>y</sub>*:
 
