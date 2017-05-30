@@ -145,9 +145,9 @@ function filter() {
 
 If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
-<a href="#zoom_wheelDelta" name="zoom_wheelDelta">#</a> <i>zoom</i>.<b>wheelDelta</b>([<i>wheelDelta</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L363 "Source")
+<a href="#zoom_wheelDelta" name="zoom_wheelDelta">#</a> <i>zoom</i>.<b>wheelDelta</b>([<i>delta</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L363 "Source")
 
-If *wheelDelta* is specified, sets the wheelDelta to the specified function and returns the zoom behavior. If *wheelDelta* is not specified, returns the current wheelDelta, which defaults to:
+If *delta* is specified, sets the wheel delta function to the specified function and returns the zoom behavior. If *delta* is not specified, returns the current wheel delta function, which defaults to:
 
 ```js
 function wheelDelta() {
@@ -155,7 +155,7 @@ function wheelDelta() {
 }
 ```
 
-The wheelDelta function defines the amount of scaling applied when the [WheelEvent](https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent) occurs. Returned value of 1 doubles the scale, returned value of -1 halves the scale.
+The value returned by the wheel delta function determines the amount of scaling applied in response to a [WheelEvent](https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent). The scale factor [*transform*.k](#zoomTransform) is multiplied by 2<sup>*delta*</sup>; for example, a *delta* of +1 doubles the scale factor, *delta* of -1 halves the scale factor.
 
 <a href="#zoom_extent" name="zoom_extent">#</a> <i>zoom</i>.<b>extent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L371 "Source")
 
