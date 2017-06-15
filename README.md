@@ -267,7 +267,7 @@ context.translate(transform.x, transform.y);
 context.scale(transform.k, transform.k);
 ```
 
-Similarly, to apply the transformation to HTML elements via [CSS](https://www.w3.org/TR/css-transforms-1/):
+Similarly, to apply the transformation to HTML elements via [CSS](https://www.w3.org/TR/css-transforms-1/) (the element will also need a `transform-origin: 0 0;` style):
 
 ```js
 div.style("transform", "translate(" + transform.x + "px," + transform.y + "px) scale(" + transform.k + ")");
