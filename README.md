@@ -267,10 +267,11 @@ context.translate(transform.x, transform.y);
 context.scale(transform.k, transform.k);
 ```
 
-Similarly, to apply the transformation to HTML elements via [CSS](https://www.w3.org/TR/css-transforms-1/) (the element will also need a `transform-origin: 0 0;` style):
+Similarly, to apply the transformation to HTML elements via [CSS](https://www.w3.org/TR/css-transforms-1/):
 
 ```js
 div.style("transform", "translate(" + transform.x + "px," + transform.y + "px) scale(" + transform.k + ")");
+div.style("transform-origin", "0 0");
 ```
 
 To apply the transformation to [SVG](https://www.w3.org/TR/SVG/coords.html#TransformAttribute):
