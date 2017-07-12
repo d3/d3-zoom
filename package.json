@@ -23,9 +23,9 @@
     "url": "https://github.com/d3/d3-zoom.git"
   },
   "scripts": {
-    "pretest": "rm -rf build && mkdir build && rollup --banner \"$(preamble)\" -g d3-dispatch:d3,d3-drag:d3,d3-interpolate:d3,d3-selection:d3,d3-transition:d3 -f umd -n d3 -o build/d3-zoom.js -- index.js",
+    "pretest": "rm -rf build && mkdir build && rollup -c --banner \"$(preamble)\" -g d3-dispatch:d3,d3-drag:d3,d3-interpolate:d3,d3-selection:d3,d3-transition:d3 -o build/d3-zoom.js",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
-    "prepublish": "npm run test && uglifyjs --preamble \"$(preamble)\" build/d3-zoom.js -c -m -o build/d3-zoom.min.js",
+    "prepublish": "npm run test && uglifyjs -b beautify=false,preamble=\"'$(preamble)'\" build/d3-zoom.js -c -m -o build/d3-zoom.min.js",
     "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../d3-zoom/build/d3-zoom.js d3-zoom.v1.js && cp ../d3-zoom/build/d3-zoom.min.js d3-zoom.v1.min.js && git add d3-zoom.v1.js d3-zoom.v1.min.js && git commit -m \"d3-zoom ${npm_package_version}\" && git push && cd - && zip -j build/d3-zoom.zip -- LICENSE README.md build/d3-zoom.js build/d3-zoom.min.js"
   },
   "dependencies": {
@@ -38,8 +38,8 @@
   "devDependencies": {
     "eslint": "3",
     "package-preamble": "0.1",
-    "rollup": "0.41",
+    "rollup": "0.45",
     "tape": "4",
-    "uglify-js": "^2.8.11"
+    "uglify-js": "3"
   }
 }
