@@ -115,6 +115,15 @@ export default function() {
     });
   };
 
+  zoom.translateTo = function(selection, x, y) {
+    zoom.transform(selection, function() {
+      return constrain(identity.scale(this.__zoom.k).translate(
+        typeof x === "function" ? x.apply(this, arguments) : x,
+        typeof y === "function" ? y.apply(this, arguments) : y
+      ), extent.apply(this, arguments));
+    });
+  };
+
   function scale(transform, k) {
     k = Math.max(k0, Math.min(k1, k));
     return k === transform.k ? transform : new Transform(k, transform.x, transform.y);
