@@ -123,15 +123,15 @@ This method requires that you specify the new zoom transform completely, and doe
 
 <a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>x</i>, <i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L109 "Source")
 
-If *selection* is a selection, [translates](#transform_translate) the [current zoom transform](#zoomTransform) of the selected elements by *x* and *y*, such that the new *t<sub>x1</sub>* = *t<sub>x0</sub>* + *k* × *x* and *t<sub>y1</sub>* = *t<sub>y0</sub>* + *k* × *y*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *x* and *y* translation amounts may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
+If *selection* is a selection, [translates](#transform_translate) the [current zoom transform](#zoomTransform) of the selected elements by *x* and *y*, such that the new *t<sub>x1</sub>* = *t<sub>x0</sub>* + *kx* and *t<sub>y1</sub>* = *t<sub>y0</sub>* + *ky*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *x* and *y* translation amounts may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
 <a href="#zoom_translateTo" name="zoom_translateTo">#</a> <i>zoom</i>.<b>translateTo</b>(<i>selection</i>, <i>x</i>, <i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L118 "Source")
 
-If *selection* is a selection, [translates](#transform_translate) the [current zoom transform](#zoomTransform) of the selected elements such that the specified position ⟨*x*, *y*⟩ appears at the center of the [viewport extent](#zoom_extent). The new *t<sub>x</sub>* = *c<sub>x</sub>* - *k* × *x* and *t<sub>y</sub>* = *c<sub>y</sub>* - *k* × *y*, where ⟨*c<sub>x</sub>*, *c<sub>y</sub>*⟩ is the center. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *x* and *y* coordinates may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
+If *selection* is a selection, [translates](#transform_translate) the [current zoom transform](#zoomTransform) of the selected elements such that the specified position ⟨*x*,*y*⟩ appears at the center of the [viewport extent](#zoom_extent). The new *t<sub>x</sub>* = *c<sub>x</sub>* - *kx* and *t<sub>y</sub>* = *c<sub>y</sub>* - *ky*, where ⟨*c<sub>x</sub>*,*c<sub>y</sub>*⟩ is the center. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *x* and *y* coordinates may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
 <a href="#zoom_scaleBy" name="zoom_scaleBy">#</a> <i>zoom</i>.<b>scaleBy</b>(<i>selection</i>, <i>k</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L90 "Source")
 
-If *selection* is a selection, [scales](#transform_scale) the [current zoom transform](#zoomTransform) of the selected elements by *k*, such that the new *k₁* = *k₀* × *k*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *k* scale factor may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
+If *selection* is a selection, [scales](#transform_scale) the [current zoom transform](#zoomTransform) of the selected elements by *k*, such that the new *k₁* = *k₀k*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *k* scale factor may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
 <a href="#zoom_scaleTo" name="zoom_scaleTo">#</a> <i>zoom</i>.<b>scaleTo</b>(<i>selection</i>, <i>k</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L98 "Source")
 
@@ -252,7 +252,7 @@ Internally, an element’s transform is stored as *element*.\_\_zoom; however, y
 <br>0 *k* *t<sub>y</sub>*
 <br>0 0 1
 
-(This matrix is capable of representing only scale and translation; a future release may also allow rotation, though this would probably not be a backwards-compatible change.) The position ⟨*x*,*y*⟩ is transformed to ⟨*x* × *k* + *t<sub>x</sub>*,*y* × *k* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
+(This matrix is capable of representing only scale and translation; a future release may also allow rotation, though this would probably not be a backwards-compatible change.) The position ⟨*x*,*y*⟩ is transformed to ⟨*xk* + *t<sub>x</sub>*,*yk* + *t<sub>y</sub>*⟩. The transform object exposes the following properties:
 
 * *transform*.x - the translation amount *t<sub>x</sub>* along the *x*-axis.
 * *transform*.y - the translation amount *t<sub>y</sub>* along the *y*-axis.
@@ -294,7 +294,7 @@ Note that the order of transformations matters! The translate must be applied be
 
 <a href="#transform_scale" name="transform_scale">#</a> <i>transform</i>.<b>scale</b>(<i>k</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/transform.js#L9 "Source")
 
-Returns a transform whose scale *k₁* is equal to *k₀* × *k*, where *k₀* is this transform’s scale.
+Returns a transform whose scale *k₁* is equal to *k₀k*, where *k₀* is this transform’s scale.
 
 <a href="#transform_translate" name="transform_translate">#</a> <i>transform</i>.<b>translate</b>(<i>x</i>, <i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/transform.js#L12 "Source")
 
@@ -302,15 +302,15 @@ Returns a transform whose translation *t<sub>x1</sub>* and *t<sub>y1</sub>* is e
 
 <a href="#transform_apply" name="transform_apply">#</a> <i>transform</i>.<b>apply</b>(<i>point</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/transform.js#L15 "Source")
 
-Returns the transformation of the specified *point* which is a two-element array of numbers [*x*, *y*]. The returned point is equal to [*x* × *k* + *t<sub>x</sub>*, *y* × *k* + *t<sub>y</sub>*].
+Returns the transformation of the specified *point* which is a two-element array of numbers [*x*, *y*]. The returned point is equal to [*xk* + *t<sub>x</sub>*, *yk* + *t<sub>y</sub>*].
 
 <a href="#transform_applyX" name="transform_applyX">#</a> <i>transform</i>.<b>applyX</b>(<i>x</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/transform.js#L18 "Source")
 
-Returns the transformation of the specified *x*-coordinate, *x* × *k* + *t<sub>x</sub>*.
+Returns the transformation of the specified *x*-coordinate, *xk* + *t<sub>x</sub>*.
 
 <a href="#transform_applyY" name="transform_applyY">#</a> <i>transform</i>.<b>applyY</b>(<i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/transform.js#L21 "Source")
 
-Returns the transformation of the specified *y*-coordinate, *y* × *k* + *t<sub>y</sub>*.
+Returns the transformation of the specified *y*-coordinate, *yk* + *t<sub>y</sub>*.
 
 <a href="#transform_invert" name="transform_invert">#</a> <i>transform</i>.<b>invert</b>(<i>point</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/transform.js#L24 "Source")
 
