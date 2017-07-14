@@ -36,7 +36,7 @@
     "d3-transition": "1"
   },
   "devDependencies": {
-    "eslint": "3",
+    "eslint": "4",
     "package-preamble": "0.1",
     "rollup": "0.45",
     "tape": "4",
