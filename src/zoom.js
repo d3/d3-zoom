@@ -34,7 +34,7 @@ function defaultWheelDelta() {
   return -event.deltaY * (event.deltaMode ? 120 : 1) / 500;
 }
 
-function touchable() {
+function defaultTouchable() {
   return "ontouchstart" in this;
 }
 
@@ -42,6 +42,7 @@ export default function() {
   var filter = defaultFilter,
       extent = defaultExtent,
       wheelDelta = defaultWheelDelta,
+      touchable = defaultTouchable,
       k0 = 0,
       k1 = Infinity,
       x0 = -k1,
@@ -384,6 +385,10 @@ export default function() {
 
   zoom.filter = function(_) {
     return arguments.length ? (filter = typeof _ === "function" ? _ : constant(!!_), zoom) : filter;
+  };
+
+  zoom.touchable = function(_) {
+    return arguments.length ? (touchable = typeof _ === "function" ? _ : constant(!!_), zoom) : touchable;
   };
 
   zoom.extent = function(_) {

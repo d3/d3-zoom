@@ -77,7 +77,7 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 
 Creates a new zoom behavior. The returned behavior, [*zoom*](#_drag), is both an object and a function, and is typically applied to selected elements via [*selection*.call](https://github.com/d3/d3-selection#selection_call).
 
-<a href="#_zoom" name="_zoom">#</a> <i>zoom</i>(<i>selection</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L61 "Source")
+<a href="#_zoom" name="_zoom">#</a> <i>zoom</i>(<i>selection</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L62 "Source")
 
 Applies this zoom behavior to the specified [*selection*](https://github.com/d3/d3-selection), binding the necessary event listeners to allow panning and zooming, and initializing the [zoom transform](#zoom-transforms) on each selected element to the identity transform if not already defined. This function is typically not invoked directly, and is instead invoked via [*selection*.call](https://github.com/d3/d3-selection#selection_call). For example, to instantiate a zoom behavior and apply it to a selection:
 
@@ -103,7 +103,7 @@ Alternatively, use [*zoom*.filter](#zoom_filter) for greater control over which 
 
 Applying the zoom behavior also sets the [-webkit-tap-highlight-color](https://developer.apple.com/library/mac/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html#//apple_ref/doc/uid/TP40006510-SW5) style to transparent, disabling the tap highlight on iOS. If you want a different tap highlight color, remove or re-apply this style after applying the drag behavior.
 
-<a href="#zoom_transform" name="zoom_transform">#</a> <i>zoom</i>.<b>transform</b>(<i>selection</i>, <i>transform</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L75 "Source")
+<a href="#zoom_transform" name="zoom_transform">#</a> <i>zoom</i>.<b>transform</b>(<i>selection</i>, <i>transform</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L76 "Source")
 
 If *selection* is a selection, sets the [current zoom transform](#zoomTransform) of the selected elements to the specified *transform*, instantaneously emitting start, zoom and end [events](#zoom-events). If *selection* is a transition, defines a “zoom” tween to the specified *transform* using [d3.interpolateZoom](https://github.com/d3/d3-interpolate#interpolateZoom), emitting a start event when the transition starts, zoom events for each tick of the transition, and then an end event when the transition ends (or is interrupted). The *transform* may be specified either as a [zoom transform](#zoom-transforms) or as a function that returns a zoom transform. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
@@ -121,23 +121,23 @@ selection.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
 
 This method requires that you specify the new zoom transform completely, and does not enforce the defined [scale extent](#zoom_scaleExtent) and [translate extent](#zoom_translateExtent), if any. To derive a new transform from the existing transform, and to enforce the scale and translate extents, see the convenience methods [*zoom*.translateBy](#zoom_translateBy), [*zoom*.scaleBy](#zoom_scaleBy) and [*zoom*.scaleTo](#zoom_scaleTo).
 
-<a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>x</i>, <i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L109 "Source")
+<a href="#zoom_translateBy" name="zoom_translateBy">#</a> <i>zoom</i>.<b>translateBy</b>(<i>selection</i>, <i>x</i>, <i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L110 "Source")
 
 If *selection* is a selection, [translates](#transform_translate) the [current zoom transform](#zoomTransform) of the selected elements by *x* and *y*, such that the new *t<sub>x1</sub>* = *t<sub>x0</sub>* + *kx* and *t<sub>y1</sub>* = *t<sub>y0</sub>* + *ky*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *x* and *y* translation amounts may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
-<a href="#zoom_translateTo" name="zoom_translateTo">#</a> <i>zoom</i>.<b>translateTo</b>(<i>selection</i>, <i>x</i>, <i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L118 "Source")
+<a href="#zoom_translateTo" name="zoom_translateTo">#</a> <i>zoom</i>.<b>translateTo</b>(<i>selection</i>, <i>x</i>, <i>y</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L119 "Source")
 
 If *selection* is a selection, [translates](#transform_translate) the [current zoom transform](#zoomTransform) of the selected elements such that the specified position ⟨*x*,*y*⟩ appears at the center of the [viewport extent](#zoom_extent). The new *t<sub>x</sub>* = *c<sub>x</sub>* - *kx* and *t<sub>y</sub>* = *c<sub>y</sub>* - *ky*, where ⟨*c<sub>x</sub>*,*c<sub>y</sub>*⟩ is the center. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *x* and *y* coordinates may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
-<a href="#zoom_scaleBy" name="zoom_scaleBy">#</a> <i>zoom</i>.<b>scaleBy</b>(<i>selection</i>, <i>k</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L90 "Source")
+<a href="#zoom_scaleBy" name="zoom_scaleBy">#</a> <i>zoom</i>.<b>scaleBy</b>(<i>selection</i>, <i>k</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L91 "Source")
 
 If *selection* is a selection, [scales](#transform_scale) the [current zoom transform](#zoomTransform) of the selected elements by *k*, such that the new *k₁* = *k₀k*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *k* scale factor may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
-<a href="#zoom_scaleTo" name="zoom_scaleTo">#</a> <i>zoom</i>.<b>scaleTo</b>(<i>selection</i>, <i>k</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L98 "Source")
+<a href="#zoom_scaleTo" name="zoom_scaleTo">#</a> <i>zoom</i>.<b>scaleTo</b>(<i>selection</i>, <i>k</i>) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L99 "Source")
 
 If *selection* is a selection, [scales](#transform_scale) the [current zoom transform](#zoomTransform) of the selected elements to *k*, such that the new *k₁* = *k*. If *selection* is a transition, defines a “zoom” tween translating the current transform. This method is a convenience method for [*zoom*.transform](#zoom_transform). The *k* scale factor may be specified either as numbers or as functions that returns numbers. If a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
-<a href="#zoom_filter" name="zoom_filter">#</a> <i>zoom</i>.<b>filter</b>([<i>filter</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L373 "Source")
+<a href="#zoom_filter" name="zoom_filter">#</a> <i>zoom</i>.<b>filter</b>([<i>filter</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L386 "Source")
 
 If *filter* is specified, sets the filter to the specified function and returns the zoom behavior. If *filter* is not specified, returns the current filter, which defaults to:
 
@@ -149,7 +149,19 @@ function filter() {
 
 If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
-<a href="#zoom_wheelDelta" name="zoom_wheelDelta">#</a> <i>zoom</i>.<b>wheelDelta</b>([<i>delta</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L369 "Source")
+<a href="#zoom_touchable" name="zoom_touchable">#</a> <i>zoom</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L390 "Source")
+
+If *touchable* is specified, sets the touch support detector to the specified function and returns the zoom behavior. If *touchable* is not specified, returns the current touch support detector, which defaults to:
+
+```js
+function touchable() {
+  return "ontouchstart" in this;
+}
+```
+
+Touch event listeners are only registered if the detector returns truthy for the corresponding element when the zoom behavior is [applied](#_zoom). The default detector works well for most browsers that are capable of touch input, but not all; Chrome’s mobile device emulator, for example, fails detection.
+
+<a href="#zoom_wheelDelta" name="zoom_wheelDelta">#</a> <i>zoom</i>.<b>wheelDelta</b>([<i>delta</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L382 "Source")
 
 If *delta* is specified, sets the wheel delta function to the specified function and returns the zoom behavior. If *delta* is not specified, returns the current wheel delta function, which defaults to:
 
@@ -161,7 +173,7 @@ function wheelDelta() {
 
 The value *Δ* returned by the wheel delta function determines the amount of scaling applied in response to a [WheelEvent](https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent). The scale factor [*transform*.k](#zoomTransform) is multiplied by 2<sup>*Δ*</sup>; for example, a *Δ* of +1 doubles the scale factor, *Δ* of -1 halves the scale factor.
 
-<a href="#zoom_extent" name="zoom_extent">#</a> <i>zoom</i>.<b>extent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L377 "Source")
+<a href="#zoom_extent" name="zoom_extent">#</a> <i>zoom</i>.<b>extent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L394 "Source")
 
 If *extent* is specified, sets the viewport extent to the specified array of points [[*x0*, *y0*], [*x1*, *y1*]], where [*x0*, *y0*] is the top-left corner of the viewport and [*x1*, *y1*] is the bottom-right corner of the viewport, and returns this zoom behavior. The *extent* may also be specified as a function which returns such an array; if a function, it is invoked for each selected element, being passed the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
@@ -169,7 +181,7 @@ If *extent* is not specified, returns the current extent accessor, which default
 
 The viewport extent affects several functions: the center of the viewport remains fixed during changes by [*zoom*.scaleBy](#zoom_scaleBy) and [*zoom*.scaleTo](#zoom_scaleTo); the viewport center and dimensions affect the path chosen by [d3.interpolateZoom](https://github.com/d3/d3-interpolate#interpolateZoom); and the viewport extent is needed to enforce the optional [translate extent](#zoom_translateExtent.)
 
-<a href="#zoom_scaleExtent" name="zoom_scaleExtent">#</a> <i>zoom</i>.<b>scaleExtent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L381 "Source")
+<a href="#zoom_scaleExtent" name="zoom_scaleExtent">#</a> <i>zoom</i>.<b>scaleExtent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L398 "Source")
 
 If *extent* is specified, sets the scale extent to the specified array of numbers [*k0*, *k1*] where *k0* is the minimum allowed scale factor and *k1* is the maximum allowed scale factor, and returns this zoom behavior. If *extent* is not specified, returns the current scale extent, which defaults to [0, ∞]. The scale extent restricts zooming in and out. It is enforced on interaction and when using [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy); however, it is not enforced when using [*zoom*.transform](#zoom_transform) to set the transform explicitly.
 
@@ -181,15 +193,15 @@ selection
     .on("wheel", function() { d3.event.preventDefault(); });
 ```
 
-<a href="#zoom_translateExtent" name="zoom_translateExtent">#</a> <i>zoom</i>.<b>translateExtent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L385 "Source")
+<a href="#zoom_translateExtent" name="zoom_translateExtent">#</a> <i>zoom</i>.<b>translateExtent</b>([<i>extent</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L402 "Source")
 
 If *extent* is specified, sets the translate extent to the specified array of points [[*x0*, *y0*], [*x1*, *y1*]], where [*x0*, *y0*] is the top-left corner of the world and [*x1*, *y1*] is the bottom-right corner of the world, and returns this zoom behavior. If *extent* is not specified, returns the current translate extent, which defaults to [[-∞, -∞], [+∞, +∞]]. The translate extent restricts panning, and may cause translation on zoom out. It is enforced on interaction and when using [*zoom*.scaleBy](#zoom_scaleBy), [*zoom*.scaleTo](#zoom_scaleTo) and [*zoom*.translateBy](#zoom_translateBy); however, it is not enforced when using [*zoom*.transform](#zoom_transform) to set the transform explicitly.
 
-<a href="#zoom_clickDistance" name="zoom_clickDistance">#</a> <i>zoom</i>.<b>clickDistance</b>([<i>distance</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L402 "Source")
+<a href="#zoom_clickDistance" name="zoom_clickDistance">#</a> <i>zoom</i>.<b>clickDistance</b>([<i>distance</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L419 "Source")
 
 If *distance* is specified, sets the maximum distance that the mouse can move between mousedown and mouseup that will trigger a subsequent click event. If at any point between mousedown and mouseup the mouse is greater than or equal to *distance* from its position on mousedown, the click event follwing mouseup will be suppressed. If *distance* is not specified, returns the current distance threshold, which defaults to zero. The distance threshold is measured in client coordinates ([*event*.clientX](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientX) and [*event*.clientY](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientY)).
 
-<a href="#zoom_duration" name="zoom_duration">#</a> <i>zoom</i>.<b>duration</b>([<i>duration</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L389 "Source")
+<a href="#zoom_duration" name="zoom_duration">#</a> <i>zoom</i>.<b>duration</b>([<i>duration</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L406 "Source")
 
 If *duration* is specified, sets the duration for zoom transitions on double-click and double-tap to the specified number of milliseconds and returns the zoom behavior. If *duration* is not specified, returns the current duration, which defaults to 250 milliseconds. If the duration is not greater than zero, double-click and -tap trigger instantaneous changes to the zoom transform rather than initiating smooth transitions.
 
@@ -201,11 +213,11 @@ selection
     .on("dblclick.zoom", null);
 ```
 
-<a href="#zoom_interpolate" name="zoom_interpolate">#</a> <i>zoom</i>.<b>interpolate</b>([<i>interpolate</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L393 "Source")
+<a href="#zoom_interpolate" name="zoom_interpolate">#</a> <i>zoom</i>.<b>interpolate</b>([<i>interpolate</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L410 "Source")
 
 If *interpolate* is specified, sets the interpolation factory for zoom transitions to the specified function. If *interpolate* is not specified, returns the current interpolation factory, which defaults to [d3.interpolateZoom](https://github.com/d3/d3-interpolate#interpolateZoom) to implement smooth zooming. To apply direct interpolation between two views, try [d3.interpolate](https://github.com/d3/d3-interpolate#interpolate) instead.
 
-<a href="#zoom_on" name="zoom_on">#</a> <i>zoom</i>.<b>on</b>(<i>typenames</i>[, <i>listener</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L397 "Source")
+<a href="#zoom_on" name="zoom_on">#</a> <i>zoom</i>.<b>on</b>(<i>typenames</i>[, <i>listener</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js#L414 "Source")
 
 If *listener* is specified, sets the event *listener* for the specified *typenames* and returns the zoom behavior. If an event listener was already registered for the same type and name, the existing listener is removed before the new listener is added. If *listener* is null, removes the current event listeners for the specified *typenames*, if any. If *listener* is not specified, returns the first currently-assigned listener matching the specified *typenames*, if any. When a specified event is dispatched, each *listener* will be invoked with the same context and arguments as [*selection*.on](https://github.com/d3/d3-selection#selection_on) listeners: the current datum `d` and index `i`, with the `this` context as the current DOM element.
 
