@@ -139,13 +139,15 @@ export default function() {
   }
 
   function constrain(transform, extent) {
-    var dx0 = transform.invertX(extent[0][0]) - x0,
-        dx1 = transform.invertX(extent[1][0]) - x1,
-        dy0 = transform.invertY(extent[0][1]) - y0,
-        dy1 = transform.invertY(extent[1][1]) - y1;
+    var cx = transform.invertX((extent[1][0] - extent[0][0]) / 2),
+        cy = transform.invertY((extent[1][1] - extent[0][1]) / 2);
+        dcx0 = Math.min(0, cx - x0),
+        dcx1 = Math.max(0, cx - x1),
+        dcy0 = Math.min(0, cy - y0),
+        dcy1 = Math.max(0, cy - y1);
     return transform.translate(
-      dx1 > dx0 ? (dx0 + dx1) / 2 : Math.min(0, dx0) || Math.max(0, dx1),
-      dy1 > dy0 ? (dy0 + dy1) / 2 : Math.min(0, dy0) || Math.max(0, dy1)
+      Math.min(0, dcx0) || Math.max(0, dcx1),
+      Math.min(0, dcy0) || Math.max(0, dcy1)
     );
   }
 
