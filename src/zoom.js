@@ -56,7 +56,7 @@ export default function() {
       wheelDelta = defaultWheelDelta,
       touchable = defaultTouchable,
       scaleExtent = [0, Infinity],
-      translateExtent = [[Infinity, Infinity], [-Infinity, -Infinity]],
+      translateExtent = [[-Infinity, -Infinity], [Infinity, Infinity]],
       duration = 250,
       interpolate = interpolateZoom,
       gestures = [],
