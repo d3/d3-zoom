@@ -337,7 +337,7 @@ export default function() {
         n = touches.length, i, t, p, l;
 
     noevent();
-    if (touchstarting) touchstarting = clearTimeout(touchstarting);
+    if (touchstarting) return;
     for (i = 0; i < n; ++i) {
       t = touches[i], p = touch(this, touches, t.identifier);
       if (g.touch0 && g.touch0[2] === t.identifier) g.touch0[0] = p;
