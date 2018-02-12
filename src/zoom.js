@@ -63,7 +63,7 @@ export default function() {
       listeners = dispatch("start", "zoom", "end"),
       touchstarting,
       touchending,
-      touchDelay = 500,
+      touchDelay = 250,
       wheelDelay = 150,
       clickDistance2 = 0;
 
