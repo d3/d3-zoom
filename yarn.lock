@@ -187,41 +187,41 @@ cross-spawn@^6.0.5:
     which "^1.2.9"
 
 d3-color@1:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-1.2.2.tgz#01ffc37603ac46357fb47d7ab02b0369d2a57766"
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-1.2.3.tgz#6c67bb2af6df3cc8d79efcc4d3a3e83e28c8048f"
 
 d3-dispatch@1:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-1.0.4.tgz#d8f284e77ed69d2b35aedaf768a227a4c83d9dc0"
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-1.0.5.tgz#e25c10a186517cd6c82dd19ea018f07e01e39015"
 
 d3-drag@1:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-1.2.2.tgz#1d884a3736514630ab51114ab608dab6591f3882"
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-1.2.3.tgz#46e206ad863ec465d88c588098a1df444cd33c64"
   dependencies:
     d3-dispatch "1"
     d3-selection "1"
 
 d3-ease@1:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-1.0.4.tgz#b612e7fc83e95569f299264ee2eca2520d6c4003"
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-1.0.5.tgz#8ce59276d81241b1b72042d6af2d40e76d936ffb"
 
 d3-interpolate@1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-1.3.1.tgz#a710ec00b8791c3d7c9c0b5eceb5808de76fb0e4"
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-1.3.2.tgz#417d3ebdeb4bc4efcc8fd4361c55e4040211fd68"
   dependencies:
     d3-color "1"
 
 d3-selection@1, d3-selection@^1.1.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.3.1.tgz#c2ea7e009637301d6344891a679c541f311f4925"
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.3.2.tgz#6e70a9df60801c8af28ac24d10072d82cbfdf652"
 
 d3-timer@1:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.8.tgz#717a4560baf809966e782cdb18c3ccd4c4787290"
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.9.tgz#f7bb8c0d597d792ff7131e1c24a36dd471a471ba"
 
 d3-transition@1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/d3-transition/-/d3-transition-1.1.2.tgz#f082787f6d9c29d7bf98458d77717f8dea4fd6bc"
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/d3-transition/-/d3-transition-1.1.3.tgz#3a435b05ce9cef9524fe0d38121cfb6905331ca6"
   dependencies:
     d3-color "1"
     d3-dispatch "1"
