@@ -31,7 +31,14 @@ function defaultTransform() {
 }
 
 function defaultWheelDelta() {
-  return -event.deltaY * (event.deltaMode ? 120 : 1) / 500;
+    var delta = (event.wheelDeltaY!==undefined ? event.wheelDeltaY : -event.deltaY);
+    if (event.deltaMode===0) {
+        return delta / 500;
+    } else if (event.deltaMode===1) {
+        return delta * 40 / 500;
+    } else { // event.deltaMode===2
+        return delta * 800 / 500;
+    }
 }
 
 function defaultTouchable() {
