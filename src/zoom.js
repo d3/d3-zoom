@@ -87,11 +87,17 @@ export default function() {
     if (collection !== selection) {
       schedule(collection, transform);
     } else {
-      selection.interrupt().each(function() {
+      selection.each(function() {
+        interrupt(this);
         gesture(this, arguments)
-            .start()
-            .zoom(null, typeof transform === "function" ? transform.apply(this, arguments) : transform)
-            .end();
+          .start()
+          .zoom(
+            null,
+            typeof transform === "function"
+              ? transform.apply(this, arguments)
+              : transform
+          )
+          .end();
       });
     }
   };
