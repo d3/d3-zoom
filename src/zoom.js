@@ -88,7 +88,6 @@ export default function() {
       schedule(collection, transform);
     } else {
       selection.each(function() {
-        interrupt(this);
         gesture(this, arguments)
           .start()
           .zoom(
