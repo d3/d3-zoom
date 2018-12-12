@@ -65,6 +65,7 @@ export default function() {
       touchending,
       touchDelay = 500,
       wheelDelay = 150,
+      touchActions = false,
       clickDistance2 = 0;
 
   function zoom(selection) {
@@ -77,8 +78,9 @@ export default function() {
         .on("touchstart.zoom", touchstarted)
         .on("touchmove.zoom", touchmoved)
         .on("touchend.zoom touchcancel.zoom", touchended)
-        .style("touch-action", "none")
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
+
+    if (!touchActions) selection.style("touch-action", "none");
   }
 
   zoom.transform = function(collection, transform) {
@@ -336,7 +338,7 @@ export default function() {
         touches = event.changedTouches,
         n = touches.length, i, t, p, l;
 
-    noevent();
+    if (!touchActions) noevent();
     if (touchstarting) touchstarting = clearTimeout(touchstarting);
     for (i = 0; i < n; ++i) {
       t = touches[i], p = touch(this, touches, t.identifier);
@@ -419,6 +421,10 @@ export default function() {
 
   zoom.clickDistance = function(_) {
     return arguments.length ? (clickDistance2 = (_ = +_) * _, zoom) : Math.sqrt(clickDistance2);
+  };
+
+  zoom.touchActions = function(_) {
+    return arguments.length ? (touchActions = +_, zoom) : touchActions;
   };
 
   return zoom;
