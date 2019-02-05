@@ -332,6 +332,7 @@ export default function() {
   }
 
   function touchmoved() {
+    if (!gestures.length) return; // No active gesture!
     var g = gesture(this, arguments),
         touches = event.changedTouches,
         n = touches.length, i, t, p, l;
