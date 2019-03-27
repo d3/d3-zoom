@@ -134,7 +134,7 @@ export default function() {
       var e = extent.apply(this, arguments),
           t = this.__zoom,
           p = centroid(e);
-      return constrain(identity.translate(p[0], p[1]).scale(t.a, t.d).translate(
+      return constrain(identity.translate(p[0], p[1]).scale(t, t.a, t.d).translate(
         typeof x === "function" ? -x.apply(this, arguments) : -x,
         typeof y === "function" ? -y.apply(this, arguments) : -y
       ), e, translateExtent);
@@ -146,15 +146,14 @@ export default function() {
         kx1 = scaleExtent[0][1],
         ky0 = scaleExtent[1][0],
         ky1 = scaleExtent[1][1];
-        kx = Math.max(kx0, Math.min(kx1, kx));
-        ky = Math.max(ky0, Math.min(ky1, ky));
-    return new Transform(transform.a * kx, transform.b, transform.c, 
-                         transform.d * ky, transform.tx, transform.ty);
+
+        var kyFinal = Math.max(ky0, Math.min(ky1, ky));
+        var kxFinal = Math.max(kx0, Math.min(kx1, kx));
+    return transform.scale(kxFinal, kyFinal);
   }
 
   function translate(transform, p0, p1) {
     var x = p0[0] - p1[0] * transform.a, y = p0[1] - p1[1] * transform.d;
-
     return x === transform.x && y === transform.y ? 
     transform : new Transform(transform.a, transform.b, transform.c, transform.d, 
                               transform.tx + transform.a * x + transform.c * y,
@@ -240,28 +239,19 @@ export default function() {
       customEvent(new ZoomEvent(zoom, type, this.that.__zoom), listeners.apply, listeners, [type, this.that, this.args]);
     }
   };
-  
     function wheeled() {
       if (!filter.apply(this, arguments)) return;
       var g = gesture(this, arguments),
           t = this.__zoom,
-          kx = Math.max(scaleExtent[0][0], Math.min(scaleExtent[0][1], t.kx * (1 + (-1 + Math.pow(2, wheelDelta.apply(this, arguments)))))),
-          ky = Math.max(scaleExtent[1][0], Math.min(scaleExtent[1][1], t.ky * (1 + (-1 + Math.pow(2, wheelDelta.apply(this, arguments)))))),
-          p = mouse(this);
-
-      // clamp the scale factors if they exceed extents
-      if (t.a === scaleExtent[0][0]) {
-        kx = ky >= scaleExtent[0][0] ? kx : scaleExtent[0][0];
-      }
-      if (t.a === scaleExtent[0][1]) {
-        kx = ky <= scaleExtent[0][1] ? kx : scaleExtent[0][1];
-      }
-      if (t.d === scaleExtent[1][0]) {
-        ky = kx >= scaleExtent[1][0] ? ky : scaleExtent[1][0];
-      }
-      if (t.d === scaleExtent[1][1]) {
-        ky = kx <= scaleExtent[1][1] ? ky : scaleExtent[1][1];
-      }
+          p = mouse(this),
+          xMin = scaleExtent[0][0],
+          xMax = scaleExtent[0][1],
+          yMin = scaleExtent[1][0],
+          yMax = scaleExtent[1][1],
+          kx = Math.max(xMin, Math.min(xMax, t.a + wheelDelta.apply(this, arguments))),
+          ky = Math.max(yMin, Math.min(yMax, t.d + wheelDelta.apply(this, arguments)));
+      if (ky >= yMax || ky <= yMin) return;
+      if (kx >= xMax || kx <= xMin) return;
 
       // If the mouse is in the same location as before, reuse it.
       // If there were recent wheel events, reset the wheel idle timeout.
@@ -271,10 +261,6 @@ export default function() {
         }
         clearTimeout(g.wheel);
       }
-  
-      // If this wheel event won’t trigger a transform change, ignore it.
-      else if (t.kx === 1 && t.ky === 1) return;
-  
       // Otherwise, capture the mouse point and location at the start.
       else {
         g.mouse = [p, t.invert(p)];
@@ -388,7 +374,7 @@ export default function() {
           p1 = g.touch1[0], l1 = g.touch1[1],
           dp = (dp = p1[0] - p0[0]) * dp + (dp = p1[1] - p0[1]) * dp,
           dl = (dl = l1[0] - l0[0]) * dl + (dl = l1[1] - l0[1]) * dl;
-      t = scale(t, Math.sqrt(dp / dl));
+      t = scale(t, Math.sqrt(dp / dl), 1);
       p = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
       l = [(l0[0] + l1[0]) / 2, (l0[1] + l1[1]) / 2];
     }

@@ -1,6 +1,6 @@
 // transform object modelled after CSS Matrix
 // https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/matrix
-// matrix(a, b, c, d, e, f)
+// matrix(a, b, c, d, tx, ty)
 export function Transform(a, b, c, d, tx, ty) {
   this.a = a;
   this.b = b;
@@ -67,15 +67,13 @@ Transform.prototype = {
       return this.d * y + this.ty;
   },
   invert: function(location) {
-    var x = this.d * location[0] / (this.a * this.d - this.b * this.c) -
+      var x = this.d * location[0] / (this.a * this.d - this.b * this.c) -
             this.c * location[1] / (this.a * this.d - this.b * this.c) +
             (this.c * this.ty - this.d * this.tx) / (this.a * this.d - this.b * this.c);
-    
-    var y = - this.b * location[0] / (this.a * this.d - this.b * this.c) +
+      var y = - this.b * location[0] / (this.a * this.d - this.b * this.c) +
             this.a * location[1] / (this.a * this.d - this.b * this.c) +
             (this.b * this.tx - this.a * this.ty) / (this.a * this.d - this.b * this.c);
-    
-    return [x, y]
+      return [x, y]
   },
   invertX: function(x) {
       return this.d * x / (this.a * this.d - this.b * this.c) +
