@@ -14,16 +14,16 @@ function defaultFilter() {
 }
 
 function defaultExtent() {
-  var e = this, w, h;
+  var e = this;
   if (e instanceof SVGElement) {
     e = e.ownerSVGElement || e;
-    w = e.width.baseVal.value;
-    h = e.height.baseVal.value;
-  } else {
-    w = e.clientWidth;
-    h = e.clientHeight;
+    if (e.hasAttribute("viewBox")) {
+      e = e.viewBox.baseVal;
+      return [[e.x, e.y], [e.x + e.width, e.y + e.height]];
+    }
+    return [[0, 0], [e.width.baseVal.value, e.height.baseVal.value]];
   }
-  return [[0, 0], [w, h]];
+  return [[0, 0], [e.clientWidth, e.clientHeight]];
 }
 
 function defaultTransform() {
