@@ -35,7 +35,7 @@ function defaultWheelDelta() {
 }
 
 function defaultTouchable() {
-  return "ontouchstart" in this;
+  return navigator.maxTouchPoints || ("ontouchstart" in this);
 }
 
 function defaultConstrain(transform, extent, translateExtent) {

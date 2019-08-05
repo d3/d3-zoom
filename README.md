@@ -174,7 +174,7 @@ If *touchable* is specified, sets the touch support detector to the specified fu
 
 ```js
 function touchable() {
-  return "ontouchstart" in this;
+  return navigator.maxTouchPoints || ("ontouchstart" in this);
 }
 ```
 
