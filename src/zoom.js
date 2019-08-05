@@ -59,7 +59,6 @@ export default function() {
       translateExtent = [[-Infinity, -Infinity], [Infinity, Infinity]],
       duration = 250,
       interpolate = interpolateZoom,
-      gestures = [],
       listeners = dispatch("start", "zoom", "end"),
       touchstarting,
       touchending,
@@ -172,19 +171,13 @@ export default function() {
         });
   }
 
-  function gesture(that, args) {
-    for (var i = 0, n = gestures.length, g; i < n; ++i) {
-      if ((g = gestures[i]).that === that) {
-        return g;
-      }
-    }
-    return new Gesture(that, args);
+  function gesture(that, args, clean) {
+    return (!clean && that.__zooming) || new Gesture(that, args);
   }
 
   function Gesture(that, args) {
     this.that = that;
     this.args = args;
-    this.index = -1;
     this.active = 0;
     this.extent = extent.apply(that, args);
   }
@@ -192,7 +185,7 @@ export default function() {
   Gesture.prototype = {
     start: function() {
       if (++this.active === 1) {
-        this.index = gestures.push(this) - 1;
+        this.that.__zooming = this;
         this.emit("start");
       }
       return this;
@@ -207,8 +200,7 @@ export default function() {
     },
     end: function() {
       if (--this.active === 0) {
-        gestures.splice(this.index, 1);
-        this.index = -1;
+        delete this.that.__zooming;
         this.emit("end");
       }
       return this;
@@ -256,7 +248,7 @@ export default function() {
 
   function mousedowned() {
     if (touchending || !filter.apply(this, arguments)) return;
-    var g = gesture(this, arguments),
+    var g = gesture(this, arguments, true),
         v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
         p = mouse(this),
         x0 = event.clientX,
@@ -300,10 +292,10 @@ export default function() {
 
   function touchstarted() {
     if (!filter.apply(this, arguments)) return;
-    var g = gesture(this, arguments),
-        touches = event.touches,
-        started,
-        n = touches.length, i, t, p;
+    var touches = event.touches,
+        n = touches.length,
+        g = gesture(this, arguments, event.changedTouches.length === n),
+        started, i, t, p;
 
     nopropagation();
     for (i = 0; i < n; ++i) {
@@ -332,7 +324,7 @@ export default function() {
   }
 
   function touchmoved() {
-    if (!gestures.length) return; // No active gesture!
+    if (!this.__zooming) return;
     var g = gesture(this, arguments),
         touches = event.changedTouches,
         n = touches.length, i, t, p, l;
@@ -360,6 +352,7 @@ export default function() {
   }
 
   function touchended() {
+    if (!this.__zooming) return;
     var g = gesture(this, arguments),
         touches = event.changedTouches,
         n = touches.length, i, t;
