@@ -31,7 +31,7 @@ function defaultTransform() {
 }
 
 function defaultWheelDelta() {
-  return -event.deltaY * (!event.deltaMode ? 0.002 : event.deltaMode === 1 ? 0.05 : 1);
+  return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002);
 }
 
 function defaultTouchable() {
