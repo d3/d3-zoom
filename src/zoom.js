@@ -3,10 +3,10 @@ import {dragDisable, dragEnable} from "d3-drag";
 import {interpolateZoom} from "d3-interpolate";
 import {event, customEvent, select, mouse, touch} from "d3-selection";
 import {interrupt} from "d3-transition";
-import constant from "./constant";
-import ZoomEvent from "./event";
-import {Transform, identity} from "./transform";
-import noevent, {nopropagation} from "./noevent";
+import constant from "./constant.js";
+import ZoomEvent from "./event.js";
+import {Transform, identity} from "./transform.js";
+import noevent, {nopropagation} from "./noevent.js";
 
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {

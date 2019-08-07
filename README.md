@@ -186,7 +186,7 @@ If *delta* is specified, sets the wheel delta function to the specified function
 
 ```js
 function wheelDelta() {
-  return -d3.event.deltaY * (d3.event.deltaMode ? 120 : 1) / 500;
+  return -d3.event.deltaY * (d3.event.deltaMode === 1 ? 0.05 : d3.event.deltaMode ? 1 : 0.002);
 }
 ```
 
