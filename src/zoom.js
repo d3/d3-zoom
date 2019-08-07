@@ -180,6 +180,7 @@ export default function() {
     this.args = args;
     this.active = 0;
     this.extent = extent.apply(that, args);
+    this.taps = 0;
   }
 
   Gesture.prototype = {
@@ -301,14 +302,14 @@ export default function() {
     for (i = 0; i < n; ++i) {
       t = touches[i], p = touch(this, touches, t.identifier);
       p = [p, this.__zoom.invert(p), t.identifier];
-      if (!g.touch0) g.touch0 = p, started = true, g.tap = true, g.consecutive = !!touchstarting;
-      else if (!g.touch1) g.touch1 = p, g.tap = false;
+      if (!g.touch0) g.touch0 = p, started = true, g.taps = 1 + !!touchstarting;
+      else if (!g.touch1) g.touch1 = p, g.taps = 0;
     }
 
     if (touchstarting) touchstarting = clearTimeout(touchstarting);
 
     if (started) {
-      if (!g.consecutive) touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
+      if (g.taps < 2) touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
       interrupt(this);
       g.start();
     }
@@ -322,7 +323,7 @@ export default function() {
 
     noevent();
     if (touchstarting) touchstarting = clearTimeout(touchstarting);
-    g.tap = false;
+    g.taps = 0;
     for (i = 0; i < n; ++i) {
       t = touches[i], p = touch(this, touches, t.identifier);
       if (g.touch0 && g.touch0[2] === t.identifier) g.touch0[0] = p;
@@ -362,7 +363,7 @@ export default function() {
     else {
       g.end();
       // If this was a dbltap, reroute to the (optional) dblclick.zoom handler.
-      if (g.consecutive && g.tap) {
+      if (g.taps === 2) {
         var p = select(this).on("dblclick.zoom");
         if (p) p.apply(this, arguments);
       }
