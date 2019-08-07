@@ -162,7 +162,7 @@ If *filter* is specified, sets the filter to the specified function and returns 
 
 ```js
 function filter() {
-  return !d3.event.button;
+  return !d3.event.ctrlKey && !d3.event.button;
 }
 ```
 
