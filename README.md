@@ -277,7 +277,7 @@ In the context of an [event listener](https://github.com/d3/d3-selection#selecti
 var transform = d3.zoomTransform(this);
 ```
 
-Internally, an element’s transform is stored as *element*.\_\_zoom; however, you should use this method rather than accessing it directly. If the given *node* has no defined transform, returns the [identity transformation](#zoomIdentity). The returned transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
+Internally, an element’s transform is stored as *element*.\_\_zoom; however, you should use this method rather than accessing it directly. If the given *node* has no defined transform, returns the transform of the closest ancestor, or if none exists, the [identity transformation](#zoomIdentity). The returned transform represents a two-dimensional [transformation matrix](https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations) of the form:
 
 *k* 0 *t<sub>x</sub>*
 <br>0 *k* *t<sub>y</sub>*
