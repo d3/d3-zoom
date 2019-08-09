@@ -46,5 +46,6 @@ export var identity = new Transform(1, 0, 0);
 transform.prototype = Transform.prototype;
 
 export default function transform(node) {
-  return node.__zoom || identity;
+  while (!node.__zoom) if (!(node = node.parentNode)) return identity;
+  return node.__zoom;
 }
