@@ -218,9 +218,6 @@ export default function() {
         k = Math.max(scaleExtent[0], Math.min(scaleExtent[1], t.k * Math.pow(2, wheelDelta.apply(this, arguments)))),
         p = mouse(this);
 
-    // If this wheel event won’t trigger a transform change, ignore it.
-    if (t.k === k) return;
-
     // If the mouse is in the same location as before, reuse it.
     // If there were recent wheel events, reset the wheel idle timeout.
     if (g.wheel) {
@@ -229,6 +226,9 @@ export default function() {
       }
       clearTimeout(g.wheel);
     }
+
+    // If this wheel event won’t trigger a transform change, ignore it.
+    else if (t.k === k) return;
 
     // Otherwise, capture the mouse point and location at the start.
     else {
