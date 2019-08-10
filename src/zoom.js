@@ -293,9 +293,9 @@ export default function() {
 
   function touchstarted() {
     if (!filter.apply(this, arguments)) return;
-    var touches = event.changedTouches,
+    var touches = event.touches,
         n = touches.length,
-        g = gesture(this, arguments, event.touches.length === n),
+        g = gesture(this, arguments, event.changedTouches.length === n),
         started, i, t, p;
 
     nopropagation();
@@ -303,7 +303,7 @@ export default function() {
       t = touches[i], p = touch(this, touches, t.identifier);
       p = [p, this.__zoom.invert(p), t.identifier];
       if (!g.touch0) g.touch0 = p, started = true, g.taps = 1 + !!touchstarting;
-      else if (!g.touch1) g.touch1 = p, g.taps = 0;
+      else if (!g.touch1 && g.touch0[2] !== p[2]) g.touch1 = p, g.taps = 0;
     }
 
     if (touchstarting) touchstarting = clearTimeout(touchstarting);
