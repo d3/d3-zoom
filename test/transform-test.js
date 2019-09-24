@@ -1,6 +1,5 @@
 import assert from "assert";
-import {zoomIdentity} from "../src/index.js";
-import {Transform as ZoomTransform} from "../src/transform.js";
+import {zoomIdentity, ZoomTransform} from "../src/index.js";
 
 it("zoomIdentity transform contains k = 1, x = y = 0", () => {
   assert.deepStrictEqual(zoomIdentity, new ZoomTransform(1, 0, 0));
