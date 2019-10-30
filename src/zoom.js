@@ -1,7 +1,7 @@
 import {dispatch} from "d3-dispatch";
 import {dragDisable, dragEnable} from "d3-drag";
 import {interpolateZoom} from "d3-interpolate";
-import {event, customEvent, select, mouse, touch} from "d3-selection";
+import {event, customEvent, select, mouse, touch, clientPoint} from "d3-selection";
 import {interrupt} from "d3-transition";
 import constant from "./constant.js";
 import ZoomEvent from "./event.js";
@@ -49,6 +49,14 @@ function defaultConstrain(transform, extent, translateExtent) {
   );
 }
 
+function pointable() {
+  return "onpointerdown" in this;
+}
+
+function unpointable() {
+  return !pointable.call(this)
+}
+
 export default function() {
   var filter = defaultFilter,
       extent = defaultExtent,
@@ -64,15 +72,24 @@ export default function() {
       touchending,
       touchDelay = 500,
       wheelDelay = 150,
-      clickDistance2 = 0;
+      clickDistance2 = 0,
+      pointers = [];
 
   function zoom(selection) {
-    selection
+    const a = selection
         .property("__zoom", defaultTransform)
-        .on("wheel.zoom", wheeled)
+        .on("wheel.zoom", wheeled);
+    const ptb = a.filter(pointable)
+        .on("pointerdown.zoom", pointdowned)
+        .on("pointermove.zoom", pointmoved)
+        .on("pointerup.zoom", pointupped)
+        .on("pointercancel.zoom", pointupped)
+        .style("touch-action", "none")
+        .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
+    const upb = a.filter(unpointable)
         .on("mousedown.zoom", mousedowned)
         .on("dblclick.zoom", dblclicked)
-      .filter(touchable)
+        .filter(touchable)
         .on("touchstart.zoom", touchstarted)
         .on("touchmove.zoom", touchmoved)
         .on("touchend.zoom touchcancel.zoom", touchended)
@@ -289,6 +306,83 @@ export default function() {
     noevent();
     if (duration > 0) select(this).transition().duration(duration).call(schedule, t1, p0);
     else select(this).call(zoom.transform, t1);
+  }
+
+  function pointdowned() {
+    if (!filter.apply(this, arguments)) return;
+    var g = gesture(this, arguments, pointers.length === 0),
+        i = event.pointerId,
+        started, p;
+
+    event.preventDefault();
+    pointers.push(i);
+    p = clientPoint(this, event);
+    p = [p, this.__zoom.invert(p), i];
+    if (!g.touch0) g.touch0 = p, started = true, g.taps = 1 + !!touchstarting;
+    else if (!g.touch1 && g.touch0[2] !== p[2]) g.touch1 = p, g.taps = 0;
+
+    if (touchstarting) touchstarting = clearTimeout(touchstarting);
+
+    if (started) {
+      if (g.taps < 2) touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
+      interrupt(this);
+      g.start();
+    }
+  }
+
+  function pointmoved() {
+    if (!this.__zooming) return;
+    var g = gesture(this, arguments),
+        i = event.pointerId,
+        t, p, l;
+
+    event.preventDefault();
+    if (touchstarting) touchstarting = clearTimeout(touchstarting);
+    g.taps = 0;
+    p = clientPoint(this, event);
+
+    if (g.touch0 && g.touch0[2] === i) g.touch0[0] = p;
+    else if (g.touch1 && g.touch1[2] === i) g.touch1[0] = p;
+
+    t = g.that.__zoom;
+    if (g.touch1) {
+      var p0 = g.touch0[0], l0 = g.touch0[1],
+          p1 = g.touch1[0], l1 = g.touch1[1],
+          dp = (dp = p1[0] - p0[0]) * dp + (dp = p1[1] - p0[1]) * dp,
+          dl = (dl = l1[0] - l0[0]) * dl + (dl = l1[1] - l0[1]) * dl;
+      t = scale(t, Math.sqrt(dp / dl));
+      p = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
+      l = [(l0[0] + l1[0]) / 2, (l0[1] + l1[1]) / 2];
+    }
+    else if (g.touch0) p = g.touch0[0], l = g.touch0[1];
+    else return;
+    g.zoom("touch", constrain(translate(t, p, l), g.extent, translateExtent));
+  }
+
+  function pointupped() {
+    if (!this.__zooming) return;
+    var g = gesture(this, arguments),
+        i = event.pointerId,
+        x;
+
+    event.preventDefault();
+    if (x = pointers.indexOf(i)) delete pointers[x];
+    if (touchending) clearTimeout(touchending);
+    touchending = setTimeout(function() { touchending = null; }, touchDelay);
+
+    if (g.touch0 && g.touch0[2] === i) delete g.touch0;
+    else if (g.touch1 && g.touch1[2] === i) delete g.touch1;
+
+    if (g.touch1 && !g.touch0) g.touch0 = g.touch1, delete g.touch1;
+    if (g.touch0) g.touch0[1] = this.__zoom.invert(g.touch0[0]);
+    else {
+      g.end();
+      // If this was a dbltap, reroute to the (optional) dblclick.zoom handler.
+      if (g.taps === 2) {
+        var p = select(this).on("dblclick.zoom");
+        if (p) p.apply(this, arguments);
+      }
+    }
   }
 
   function touchstarted() {
