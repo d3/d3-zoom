@@ -64,7 +64,8 @@ export default function() {
       touchending,
       touchDelay = 500,
       wheelDelay = 150,
-      clickDistance2 = 0;
+      clickDistance2 = 0,
+      touchScroll = false;
 
   function zoom(selection) {
     selection
@@ -76,7 +77,6 @@ export default function() {
         .on("touchstart.zoom", touchstarted)
         .on("touchmove.zoom", touchmoved)
         .on("touchend.zoom touchcancel.zoom", touchended)
-        .style("touch-action", "none")
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
   }
 
@@ -321,7 +321,6 @@ export default function() {
         touches = event.changedTouches,
         n = touches.length, i, t, p, l;
 
-    noevent();
     if (touchstarting) touchstarting = clearTimeout(touchstarting);
     g.taps = 0;
     for (i = 0; i < n; ++i) {
@@ -341,7 +340,15 @@ export default function() {
     }
     else if (g.touch0) p = g.touch0[0], l = g.touch0[1];
     else return;
-    g.zoom("touch", constrain(translate(t, p, l), g.extent, translateExtent));
+
+    var move = constrain(translate(t, p, l), g.extent, translateExtent);
+
+    if ((move.x != 0 || move.y != 0) && !touchScroll) {
+      noevent();
+      g.zoom("touch", move);
+    } else {
+      touchScroll = true;
+    }
   }
 
   function touchended() {
@@ -349,6 +356,8 @@ export default function() {
     var g = gesture(this, arguments),
         touches = event.changedTouches,
         n = touches.length, i, t;
+    
+    touchScroll = false;
 
     nopropagation();
     if (touchending) clearTimeout(touchending);
