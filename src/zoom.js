@@ -271,10 +271,13 @@ export default function() {
     }
 
     function mouseupped() {
-      v.on("mousemove.zoom mouseup.zoom", null);
+      v.on("mousemove.zoom", null);
       dragEnable(event.view, g.moved);
       noevent();
       g.end();
+      if (g.active === 0) {
+        v.on("mouseup.zoom", null);
+      }
     }
   }
 
