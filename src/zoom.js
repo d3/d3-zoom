@@ -1,7 +1,7 @@
 import {dispatch} from "d3-dispatch";
 import {dragDisable, dragEnable} from "d3-drag";
 import {interpolateZoom} from "d3-interpolate";
-import {event, customEvent, select, mouse, touch} from "d3-selection";
+import {select, pointer} from "d3-selection";
 import {interrupt} from "d3-transition";
 import constant from "./constant.js";
 import ZoomEvent from "./event.js";
@@ -9,7 +9,7 @@ import {Transform, identity} from "./transform.js";
 import noevent, {nopropagation} from "./noevent.js";
 
 // Ignore right-click, since that should open the context menu.
-function defaultFilter() {
+function defaultFilter(event) {
   return !event.ctrlKey && !event.button;
 }
 
@@ -30,7 +30,7 @@ function defaultTransform() {
   return this.__zoom || identity;
 }
 
-function defaultWheelDelta() {
+function defaultWheelDelta(event) {
   return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002);
 }
 
@@ -207,16 +207,27 @@ export default function() {
       return this;
     },
     emit: function(type) {
-      customEvent(new ZoomEvent(zoom, type, this.that.__zoom), listeners.apply, listeners, [type, this.that, this.args]);
+      var dispatch = listeners.copy();
+      dispatch.call(
+        type,
+        this.that,
+        new ZoomEvent(type, {
+          sourceEvent: event,
+          target: zoom,
+          type,
+          transform: this.that.__zoom,
+          dispatch
+        })
+      );
     }
   };
 
-  function wheeled() {
+  function wheeled(event) {
     if (!filter.apply(this, arguments)) return;
     var g = gesture(this, arguments),
         t = this.__zoom,
         k = Math.max(scaleExtent[0], Math.min(scaleExtent[1], t.k * Math.pow(2, wheelDelta.apply(this, arguments)))),
-        p = mouse(this);
+        p = pointer(event);
 
     // If the mouse is in the same location as before, reuse it.
     // If there were recent wheel events, reset the wheel idle timeout.
@@ -237,7 +248,7 @@ export default function() {
       g.start();
     }
 
-    noevent();
+    noevent(event);
     g.wheel = setTimeout(wheelidled, wheelDelay);
     g.zoom("mouse", constrain(translate(scale(t, k), g.mouse[0], g.mouse[1]), g.extent, translateExtent));
 
@@ -247,60 +258,61 @@ export default function() {
     }
   }
 
-  function mousedowned() {
+  function mousedowned(event) {
     if (touchending || !filter.apply(this, arguments)) return;
     var g = gesture(this, arguments, true),
         v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
-        p = mouse(this),
+        p = pointer(event, currentTarget),
+        currentTarget = event.currentTarget,
         x0 = event.clientX,
         y0 = event.clientY;
 
     dragDisable(event.view);
-    nopropagation();
+    nopropagation(event);
     g.mouse = [p, this.__zoom.invert(p)];
     interrupt(this);
     g.start();
 
-    function mousemoved() {
-      noevent();
+    function mousemoved(event) {
+      noevent(event);
       if (!g.moved) {
         var dx = event.clientX - x0, dy = event.clientY - y0;
         g.moved = dx * dx + dy * dy > clickDistance2;
       }
-      g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = mouse(g.that), g.mouse[1]), g.extent, translateExtent));
+      g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = pointer(event, currentTarget), g.mouse[1]), g.extent, translateExtent));
     }
 
-    function mouseupped() {
+    function mouseupped(event) {
       v.on("mousemove.zoom mouseup.zoom", null);
       dragEnable(event.view, g.moved);
-      noevent();
+      noevent(event);
       g.end();
     }
   }
 
-  function dblclicked() {
+  function dblclicked(event) {
     if (!filter.apply(this, arguments)) return;
     var t0 = this.__zoom,
-        p0 = mouse(this),
+        p0 = pointer(event),
         p1 = t0.invert(p0),
         k1 = t0.k * (event.shiftKey ? 0.5 : 2),
         t1 = constrain(translate(scale(t0, k1), p0, p1), extent.apply(this, arguments), translateExtent);
 
-    noevent();
+    noevent(event);
     if (duration > 0) select(this).transition().duration(duration).call(schedule, t1, p0);
     else select(this).call(zoom.transform, t1);
   }
 
-  function touchstarted() {
+  function touchstarted(event) {
     if (!filter.apply(this, arguments)) return;
     var touches = event.touches,
         n = touches.length,
         g = gesture(this, arguments, event.changedTouches.length === n),
         started, i, t, p;
 
-    nopropagation();
+    nopropagation(event);
     for (i = 0; i < n; ++i) {
-      t = touches[i], p = touch(this, touches, t.identifier);
+      t = touches[i], p = pointer(t, this);
       p = [p, this.__zoom.invert(p), t.identifier];
       if (!g.touch0) g.touch0 = p, started = true, g.taps = 1 + !!touchstarting;
       else if (!g.touch1 && g.touch0[2] !== p[2]) g.touch1 = p, g.taps = 0;
@@ -315,17 +327,17 @@ export default function() {
     }
   }
 
-  function touchmoved() {
+  function touchmoved(event) {
     if (!this.__zooming) return;
     var g = gesture(this, arguments),
         touches = event.changedTouches,
         n = touches.length, i, t, p, l;
 
-    noevent();
+    noevent(event);
     if (touchstarting) touchstarting = clearTimeout(touchstarting);
     g.taps = 0;
     for (i = 0; i < n; ++i) {
-      t = touches[i], p = touch(this, touches, t.identifier);
+      t = touches[i], p = pointer(t, this);
       if (g.touch0 && g.touch0[2] === t.identifier) g.touch0[0] = p;
       else if (g.touch1 && g.touch1[2] === t.identifier) g.touch1[0] = p;
     }
@@ -344,13 +356,13 @@ export default function() {
     g.zoom("touch", constrain(translate(t, p, l), g.extent, translateExtent));
   }
 
-  function touchended() {
+  function touchended(event) {
     if (!this.__zooming) return;
     var g = gesture(this, arguments),
         touches = event.changedTouches,
         n = touches.length, i, t;
 
-    nopropagation();
+    nopropagation(event);
     if (touchending) clearTimeout(touchending);
     touchending = setTimeout(function() { touchending = null; }, touchDelay);
     for (i = 0; i < n; ++i) {
