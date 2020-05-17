@@ -207,7 +207,8 @@ export default function() {
       return this;
     },
     emit: function(type) {
-      var dispatch = listeners.copy();
+      var dispatch = listeners.copy(),
+          d = this.that.__data__; // datum;
       dispatch.call(
         type,
         this.that,
@@ -217,7 +218,8 @@ export default function() {
           type,
           transform: this.that.__zoom,
           dispatch
-        })
+        }),
+        d
       );
     }
   };
