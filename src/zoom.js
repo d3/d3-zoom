@@ -208,12 +208,13 @@ export default function() {
     },
     emit: function(type) {
       var dispatch = listeners.copy(),
-          d = this.that.__data__; // datum;
+          d = select(this.that).datum(),
+          sourceEvent = this.args && this.args[0];
       dispatch.call(
         type,
         this.that,
         new ZoomEvent(type, {
-          sourceEvent: event,
+          sourceEvent,
           target: zoom,
           type,
           transform: this.that.__zoom,
