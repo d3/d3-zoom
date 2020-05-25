@@ -87,7 +87,7 @@ export default function() {
       schedule(collection, transform, point);
     } else {
       selection.interrupt().each(function() {
-        gesture(this, arguments)
+        gesture(this, [null, ...arguments])
             .start()
             .zoom(null, typeof transform === "function" ? transform.apply(this, arguments) : transform)
             .end();
