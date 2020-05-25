@@ -166,7 +166,7 @@ function filter(event) {
 }
 ```
 
-If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
+The filter is passed the current event (`event`) and datum `d`, with the `this` context as the current DOM element. If the filter returns falsey, the initiating event is ignored and no zoom gestures are started. Thus, the filter determines which input events are ignored. The default filter ignores mousedown events on secondary buttons, since those buttons are typically intended for other purposes, such as the context menu.
 
 <a href="#zoom_touchable" name="zoom_touchable">#</a> <i>zoom</i>.<b>touchable</b>([<i>touchable</i>]) [<>](https://github.com/d3/d3-zoom/blob/master/src/zoom.js "Source")
 
