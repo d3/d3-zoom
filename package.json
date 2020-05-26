@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "eslint": "6",
+    "jsdom": "^16.2.2",
     "rollup": "1",
     "rollup-plugin-terser": "5",
     "tape": "4"
