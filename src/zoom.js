@@ -230,9 +230,9 @@ export default function() {
     }
   };
 
-  function wheeled(event) {
+  function wheeled(event, ...args) {
     if (!filter.apply(this, arguments)) return;
-    var g = gesture(this, arguments).event(event),
+    var g = gesture(this, args).event(event),
         t = this.__zoom,
         k = Math.max(scaleExtent[0], Math.min(scaleExtent[1], t.k * Math.pow(2, wheelDelta.apply(this, arguments)))),
         p = pointer(event);
