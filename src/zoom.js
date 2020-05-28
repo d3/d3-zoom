@@ -193,6 +193,7 @@ export default function() {
     start: function() {
       if (++this.active === 1) {
         this.that.__zooming = this;
+        this.dispatch = listeners.copy();
         this.emit("start");
       }
       return this;
@@ -213,7 +214,7 @@ export default function() {
       return this;
     },
     emit: function(type) {
-      var dispatch = listeners.copy(),
+      var dispatch = this.dispatch,
           d = select(this.that).datum();
       dispatch.call(
         type,

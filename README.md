@@ -257,6 +257,25 @@ When a [zoom event listener](#zoom_on) is invoked, it receives the current zoom 
 * *event*.transform - the current [zoom transform](#zoom-transforms).
 * *event*.sourceEvent - the underlying input event, such as mousemove or touchmove.
 
+The *event* object also exposes the [*event*.on](#event_on) method.
+
+<a href="#event_on" name="event_on">#</a> <i>event</i>.<b>on</b>(<i>typenames</i>, [<i>listener</i>]) · [Source](https://github.com/d3/d3-zoom/blob/master/src/event.js)
+
+Equivalent to [*zoom*.on](#zoom_on), but only applies to the current zoom gesture. Before the zoom gesture starts, a [copy](https://github.com/d3/d3-dispatch#dispatch_copy) of the current brush [event listeners](#zoom_on) is made. This copy is bound to the current zoom gesture and modified by *event*.on. This is useful for temporary listeners that only receive events for the current zoom gesture. For example, this start event listener registers temporary zoom and end event listeners as closures:
+
+```js
+function started(event, d) {
+  d3.select(this).classed("zooming", true);
+  event.on("zoom", zoomed).on("end", ended);
+  function zoomed(event, d) {
+    console.log("zooming", d, "with", event.transform);
+  }
+  function ended(event, d) {
+    console.log("zoom on", d, "ended at", event.transform);
+  }
+}
+```
+
 ### Zoom Transforms
 
 The zoom behavior stores the zoom state on the element to which the zoom behavior was [applied](#_zoom), not on the zoom behavior itself. This is because the zoom behavior can be applied to many elements simultaneously, and each element can be zoomed independently. The zoom state can change either on user interaction or programmatically via [*zoom*.transform](#zoom_transform).
