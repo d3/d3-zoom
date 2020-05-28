@@ -50,8 +50,10 @@ tape("zoom.extent receives (d)", function(test) {
     event = { bubbles: true, cancelable: true, detail: { type: "fake" } };
   let a, b;
   zoom.extent(function() {
-      a = arguments; a[-1]= this; return extent.apply(this, arguments); }
-    });
+    a = arguments;
+    a[-1] = this;
+    return extent.apply(this, arguments);
+  });
   div.dispatch("dblclick", event);
   test.equal(a[0], "hello")
   test.equal(a[-1], div.node());

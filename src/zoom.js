@@ -87,10 +87,11 @@ export default function() {
       schedule(collection, transform, point, event);
     } else {
       selection.interrupt().each(function() {
-        gesture(this, [null, ...arguments])
-            .start()
-            .zoom(null, typeof transform === "function" ? transform.apply(this, arguments) : transform)
-            .end();
+        gesture(this, arguments)
+          .event(event)
+          .start()
+          .zoom(null, typeof transform === "function" ? transform.apply(this, arguments) : transform)
+          .end();
       });
     }
   };
@@ -151,12 +152,12 @@ export default function() {
 
   function schedule(transition, transform, point, event) {
     transition
-        .on("start.zoom", function() { gesture(this, [event, ...arguments]).start(); })
-        .on("interrupt.zoom end.zoom", function() { gesture(this, [event, ...arguments]).end(); })
+        .on("start.zoom", function() { gesture(this, arguments).event(event).start(); })
+        .on("interrupt.zoom end.zoom", function() { gesture(this, arguments).event(event).end(); })
         .tween("zoom", function() {
           var that = this,
               args = arguments,
-              g = gesture(that, [event, ...args]),
+              g = gesture(that, args).event(event),
               e = extent.apply(that, args),
               p = point == null ? centroid(e) : typeof point === "function" ? point.apply(that, args) : point,
               w = Math.max(e[1][0] - e[0][0], e[1][1] - e[0][1]),
@@ -179,11 +180,16 @@ export default function() {
     this.that = that;
     this.args = args;
     this.active = 0;
-    this.extent = extent.apply(that, [...args].slice(1, args.length));
+    this.sourceEvent = null;
+    this.extent = extent.apply(that, args);
     this.taps = 0;
   }
 
   Gesture.prototype = {
+    event: function(event) {
+      if (event) this.sourceEvent = event;
+      return this;
+    },
     start: function() {
       if (++this.active === 1) {
         this.that.__zooming = this;
@@ -208,13 +214,12 @@ export default function() {
     },
     emit: function(type) {
       var dispatch = listeners.copy(),
-          d = select(this.that).datum(),
-          sourceEvent = this.args && this.args[0];
+          d = select(this.that).datum();
       dispatch.call(
         type,
         this.that,
         new ZoomEvent(type, {
-          sourceEvent,
+          sourceEvent: this.sourceEvent,
           target: zoom,
           type,
           transform: this.that.__zoom,
@@ -227,7 +232,7 @@ export default function() {
 
   function wheeled(event) {
     if (!filter.apply(this, arguments)) return;
-    var g = gesture(this, arguments),
+    var g = gesture(this, arguments).event(event),
         t = this.__zoom,
         k = Math.max(scaleExtent[0], Math.min(scaleExtent[1], t.k * Math.pow(2, wheelDelta.apply(this, arguments)))),
         p = pointer(event);
@@ -261,9 +266,9 @@ export default function() {
     }
   }
 
-  function mousedowned(event) {
+  function mousedowned(event, ...args) {
     if (touchending || !filter.apply(this, arguments)) return;
-    var g = gesture(this, arguments, true),
+    var g = gesture(this, args, true).event(event),
         v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
         p = pointer(event, currentTarget),
         currentTarget = event.currentTarget,
@@ -282,35 +287,36 @@ export default function() {
         var dx = event.clientX - x0, dy = event.clientY - y0;
         g.moved = dx * dx + dy * dy > clickDistance2;
       }
-      g.zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = pointer(event, currentTarget), g.mouse[1]), g.extent, translateExtent));
+      g.event(event)
+       .zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = pointer(event, currentTarget), g.mouse[1]), g.extent, translateExtent));
     }
 
     function mouseupped(event) {
       v.on("mousemove.zoom mouseup.zoom", null);
       dragEnable(event.view, g.moved);
       noevent(event);
-      g.end();
+      g.event(event).end();
     }
   }
 
-  function dblclicked(event) {
+  function dblclicked(event, ...args) {
     if (!filter.apply(this, arguments)) return;
     var t0 = this.__zoom,
         p0 = pointer(event),
         p1 = t0.invert(p0),
         k1 = t0.k * (event.shiftKey ? 0.5 : 2),
-        t1 = constrain(translate(scale(t0, k1), p0, p1), extent.apply(this, [...arguments].slice(1, arguments.length)), translateExtent);
+        t1 = constrain(translate(scale(t0, k1), p0, p1), extent.apply(this, args), translateExtent);
 
     noevent(event);
     if (duration > 0) select(this).transition().duration(duration).call(schedule, t1, p0, event);
     else select(this).call(zoom.transform, t1, p0, event);
   }
 
-  function touchstarted(event) {
+  function touchstarted(event, ...args) {
     if (!filter.apply(this, arguments)) return;
     var touches = event.touches,
         n = touches.length,
-        g = gesture(this, arguments, event.changedTouches.length === n),
+        g = gesture(this, args, event.changedTouches.length === n).event(event),
         started, i, t, p;
 
     nopropagation(event);
@@ -330,9 +336,9 @@ export default function() {
     }
   }
 
-  function touchmoved(event) {
+  function touchmoved(event, ...args) {
     if (!this.__zooming) return;
-    var g = gesture(this, arguments),
+    var g = gesture(this, args).event(event),
         touches = event.changedTouches,
         n = touches.length, i, t, p, l;
 
@@ -359,9 +365,9 @@ export default function() {
     g.zoom("touch", constrain(translate(t, p, l), g.extent, translateExtent));
   }
 
-  function touchended(event) {
+  function touchended(event, ...args) {
     if (!this.__zooming) return;
-    var g = gesture(this, arguments),
+    var g = gesture(this, args).event(event),
         touches = event.changedTouches,
         n = touches.length, i, t;
 
