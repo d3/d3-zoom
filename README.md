@@ -156,6 +156,18 @@ function constrain(transform, extent, translateExtent) {
 
 The constraint function must return a [*transform*](#zoom-transforms) given the current *transform*, [viewport extent](#zoom_extent) and [translate extent](#zoom_translateExtent). The default implementation attempts to ensure that the viewport extent does not go outside the translate extent.
 
+<a href="#zoom_center" name="zoom_center">#</a> <i>zoom</i>.<b>center</b>([<i>center</i>]) · [Source](https://github.com/d3/d3-zoom/blob/master/src/zoom.js), [Examples](https://observablehq.com/d/48ff4a64c477cc79)
+
+If *center* is a function, sets the center to the specified function, and returns the zoom behavior. If *center* is an array, sets the center to a constant function that returns the specified array. If *center* is not specified, returns the current center, which defaults to the pointer’s position relative to the current DOM element:
+
+```js
+function center(event) {
+  return d3.pointer(event, this);
+}
+```
+
+The center is passed the current event (`event`) and datum `d`, with the `this` context as the current DOM element. It must return the reference position as [*x*, *y*].
+
 <a href="#zoom_filter" name="zoom_filter">#</a> <i>zoom</i>.<b>filter</b>([<i>filter</i>]) · [Source](https://github.com/d3/d3-zoom/blob/master/src/zoom.js)
 
 If *filter* is specified, sets the filter to the specified function and returns the zoom behavior. If *filter* is not specified, returns the current filter, which defaults to:
