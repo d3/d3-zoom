@@ -284,7 +284,7 @@ export default function() {
 
     dragDisable(event.view);
     nopropagation(event);
-    g.mouse = [p, this.__zoom.invert(p)];
+    g.prev = p;
     interrupt(this);
     g.start();
 
@@ -294,8 +294,10 @@ export default function() {
         var dx = event.clientX - x0, dy = event.clientY - y0;
         g.moved = dx * dx + dy * dy > clickDistance2;
       }
+      var p = pointer(event, currentTarget);
       g.event(event)
-       .zoom("mouse", constrain(translate(g.that.__zoom, g.mouse[0] = pointer(event, currentTarget), g.mouse[1]), g.extent, translateExtent));
+       .zoom("mouse", constrain(translate(g.that.__zoom, p, g.that.__zoom.invert(g.prev)), g.extent, translateExtent));
+      g.prev = p;
     }
 
     function mouseupped(event) {
