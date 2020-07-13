@@ -9,8 +9,9 @@ import {Transform, identity} from "./transform.js";
 import noevent, {nopropagation} from "./noevent.js";
 
 // Ignore right-click, since that should open the context menu.
+// except for pinch-to-zoom, which is sent as a wheel+ctrlKey event
 function defaultFilter(event) {
-  return !event.ctrlKey && !event.button;
+  return (!event.ctrlKey || event.type === 'wheel') && !event.button;
 }
 
 function defaultExtent() {
@@ -31,7 +32,7 @@ function defaultTransform() {
 }
 
 function defaultWheelDelta(event) {
-  return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002);
+  return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) * (event.ctrlKey ? 10 : 1);
 }
 
 function defaultTouchable() {
