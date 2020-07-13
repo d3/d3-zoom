@@ -14,6 +14,10 @@ function defaultFilter(event) {
   return (!event.ctrlKey || event.type === 'wheel') && !event.button;
 }
 
+function defaultCenter(event) {
+  return pointer(event, this);
+}
+
 function defaultExtent() {
   var e = this;
   if (e instanceof SVGElement) {
@@ -52,6 +56,7 @@ function defaultConstrain(transform, extent, translateExtent) {
 
 export default function() {
   var filter = defaultFilter,
+      center = defaultCenter,
       extent = defaultExtent,
       constrain = defaultConstrain,
       wheelDelta = defaultWheelDelta,
@@ -243,6 +248,7 @@ export default function() {
     if (g.wheel) {
       if (g.mouse[0][0] !== p[0] || g.mouse[0][1] !== p[1]) {
         g.mouse[1] = t.invert(g.mouse[0] = p);
+        g.mouse[2] = center.apply(this, arguments);
       }
       clearTimeout(g.wheel);
     }
@@ -252,14 +258,14 @@ export default function() {
 
     // Otherwise, capture the mouse point and location at the start.
     else {
-      g.mouse = [p, t.invert(p)];
+      g.mouse = [p, t.invert(p), center.apply(this, arguments)];
       interrupt(this);
       g.start();
     }
 
     noevent(event);
     g.wheel = setTimeout(wheelidled, wheelDelay);
-    g.zoom("mouse", constrain(translate(scale(t, k), g.mouse[0], g.mouse[1]), g.extent, translateExtent));
+    g.zoom("mouse", constrain(translate(scale(t, k), g.mouse[2], t.invert(g.mouse[2])), g.extent, translateExtent));
 
     function wheelidled() {
       g.wheel = null;
@@ -404,6 +410,10 @@ export default function() {
 
   zoom.touchable = function(_) {
     return arguments.length ? (touchable = typeof _ === "function" ? _ : constant(!!_), zoom) : touchable;
+  };
+
+  zoom.center = function(_) {
+    return arguments.length ? (center = typeof _ === "function" ? _ : constant([+_[0], +_[1]]), zoom) : center;
   };
 
   zoom.extent = function(_) {
