@@ -69,7 +69,7 @@ The propagation of all consumed events is [immediately stopped](https://dom.spec
 <br>³ Only applies immediately after some mouse-based gestures; see [*zoom*.clickDistance](#zoom_clickDistance).
 <br>⁴ Necessary to allow [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7) on touch input; see [d3-drag#9](https://github.com/d3/d3-drag/issues/9).
 <br>⁵ Ignored if within 500ms of a touch gesture ending; assumes [click emulation](https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7).
-<br>⁶ Double-click and double-tap initiate a transition that emits start, zoom and end events.
+<br>⁶ Double-click and double-tap initiate a transition that emits start, zoom and end events; see [*zoom*.tapDistance](#zoom_tapDistance)..
 <br>⁷ The first wheel event emits a start event; an end event is emitted when no wheel events are received for 150ms.
 <br>⁸ Ignored if already at the corresponding limit of the [scale extent](#zoom_scaleExtent).
 
@@ -219,6 +219,10 @@ If *extent* is specified, sets the translate extent to the specified array of po
 <a href="#zoom_clickDistance" name="zoom_clickDistance">#</a> <i>zoom</i>.<b>clickDistance</b>([<i>distance</i>]) · [Source](https://github.com/d3/d3-zoom/blob/master/src/zoom.js)
 
 If *distance* is specified, sets the maximum distance that the mouse can move between mousedown and mouseup that will trigger a subsequent click event. If at any point between mousedown and mouseup the mouse is greater than or equal to *distance* from its position on mousedown, the click event following mouseup will be suppressed. If *distance* is not specified, returns the current distance threshold, which defaults to zero. The distance threshold is measured in client coordinates ([*event*.clientX](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientX) and [*event*.clientY](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientY)).
+
+<a href="#zoom_tapDistance" name="zoom_tapDistance">#</a> <i>zoom</i>.<b>tapDistance</b>([<i>distance</i>]) · [Source](https://github.com/d3/d3-zoom/blob/master/src/zoom.js)
+
+If *distance* is specified, sets the maximum distance that a double-tap gesture can move between first touchstart and second touchend that will trigger a subsequent double-click event. If *distance* is not specified, returns the current distance threshold, which defaults to 10. The distance threshold is measured in client coordinates ([*event*.clientX](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientX) and [*event*.clientY](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientY)).
 
 <a href="#zoom_duration" name="zoom_duration">#</a> <i>zoom</i>.<b>duration</b>([<i>duration</i>]) · [Source](https://github.com/d3/d3-zoom/blob/master/src/zoom.js)
 
