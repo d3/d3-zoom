@@ -333,7 +333,7 @@ Returns a transform whose scale *k₁* is equal to *k₀k*, where *k₀* is this
 
 <a href="#transform_translate" name="transform_translate">#</a> <i>transform</i>.<b>translate</b>(<i>x</i>, <i>y</i>) · [Source](https://github.com/d3/d3-zoom/blob/master/src/transform.js)
 
-Returns a transform whose translation *t<sub>x1</sub>* and *t<sub>y1</sub>* is equal to *t<sub>x0</sub>* + *x* and *t<sub>y0</sub>* + *y*, where *t<sub>x0</sub>* and *t<sub>y0</sub>* is this transform’s translation.
+Returns a transform whose translation *t<sub>x1</sub>* and *t<sub>y1</sub>* is equal to *t<sub>x0</sub>* + *t<sub>k</sub> x* and *t<sub>y0</sub>* + *t<sub>k</sub> y*, where *t<sub>x0</sub>* and *t<sub>y0</sub>* is this transform’s translation and *t<sub>k</sub>* is this transform’s scale.
 
 <a href="#transform_apply" name="transform_apply">#</a> <i>transform</i>.<b>apply</b>(<i>point</i>) · [Source](https://github.com/d3/d3-zoom/blob/master/src/transform.js)
 
