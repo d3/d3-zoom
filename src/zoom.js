@@ -78,7 +78,6 @@ export default function() {
         .on("touchstart.zoom", touchstarted)
         .on("touchmove.zoom", touchmoved)
         .on("touchend.zoom touchcancel.zoom", touchended)
-        .style("touch-action", "none")
         .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)");
   }
 
@@ -195,7 +194,6 @@ export default function() {
     start: function() {
       if (++this.active === 1) {
         this.that.__zooming = this;
-        this.dispatch = listeners.copy();
         this.emit("start");
       }
       return this;
@@ -216,9 +214,8 @@ export default function() {
       return this;
     },
     emit: function(type) {
-      var dispatch = this.dispatch,
-          d = select(this.that).datum();
-      dispatch.call(
+      var d = select(this.that).datum();
+      listeners.call(
         type,
         this.that,
         new ZoomEvent(type, {
@@ -226,7 +223,7 @@ export default function() {
           target: zoom,
           type,
           transform: this.that.__zoom,
-          dispatch
+          dispatch: listeners
         }),
         d
       );
