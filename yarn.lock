@@ -295,62 +295,56 @@ cssstyle@^2.2.0:
   dependencies:
     cssom "~0.3.6"
 
-d3-color@1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-1.4.1.tgz#c52002bf8846ada4424d55d97982fef26eb3bc8a"
-  integrity sha512-p2sTHSLCJI2QKunbGb7ocOh7DgTAn8IrLx21QRc/BSnodXM4sv6aLQlnfpvehFMLZEfBc6g9pH9SWQccFYfJ9Q==
+d3-color@>=2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-2.0.0-rc.1.tgz#306e5424d97d7c392fbb5f4e2f71a19692b625d1"
+  integrity sha512-qG47cofgHAELBblsjxvnloC3EQ0wu33aqZ5DdV8wljDKJEcY1eTX6WrIstIG6y93hJvaVFCzQmglNXt6B6bqBA==
 
-d3-dispatch@1, "d3-dispatch@1 - 2":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-1.0.6.tgz#00d37bcee4dd8cd97729dd893a0ac29caaba5d58"
-  integrity sha512-fVjoElzjhCEy+Hbn8KygnmMS7Or0a9sI2UzGwoB7cCtvI1XpVN9GpoYlnb3xt2YV66oXYb1fLJ8GMvP4hdU1RA==
+d3-dispatch@>=2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-2.0.0-rc.1.tgz#cb7a29779b4dd4241ccef5b8a19f46a5e727f47b"
+  integrity sha512-JRzTbYPZ1GDu+eGZPOVyyhveu49PEL3msPVXBFEUDk0xCqhX7Eu2tCVcl+1gculBCkj6LEW2f725QmxWVsOPaA==
 
-d3-drag@2:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-1.2.5.tgz#2537f451acd39d31406677b7dc77c82f7d988f70"
-  integrity sha512-rD1ohlkKQwMZYkQlYVCrSFxsWPzI97+W+PaEIBNTMxRuxz9RF0Hi5nJWHGVJ3Om9d2fRTe1yOBINJyy/ahV95w==
+d3-drag@>=2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-2.0.0-rc.1.tgz#640ab84abe5448d80a9a18972e95cfc64536d8dd"
+  integrity sha512-1xDDuOveEDs5hPbZxwoJFXWLiF0l7xjYXw00WBVzUR0xq6DEcWe9m8EM/ebmZAKnIn2lI/8rdthFpLHD/brxBg==
   dependencies:
-    d3-dispatch "1"
-    d3-selection "1"
+    d3-dispatch ">=2.0.0-rc.1"
+    d3-selection ">=2.0.0-rc.3"
 
-d3-ease@1:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-1.0.6.tgz#ebdb6da22dfac0a22222f2d4da06f66c416a0ec0"
-  integrity sha512-SZ/lVU7LRXafqp7XtIcBdxnWl8yyLpgOmzAk0mWBI9gXNzLDx5ybZgnRbH9dN/yY5tzVBqCQ9avltSnqVwessQ==
+d3-ease@>=2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-2.0.0-rc.1.tgz#35259de8806b89a84a7ccc8939882075f251389f"
+  integrity sha512-BzV2TjCGL59wwt2bgQ/8i+iwu7+FWGybI97DfaO/CnosUYRTHpYB5P+/KfMzx7UJAVeZ4RdyZv0daoKQc3TCZQ==
 
-d3-interpolate@1, "d3-interpolate@1 - 2":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-1.4.0.tgz#526e79e2d80daa383f9e0c1c1c7dcc0f0583e987"
-  integrity sha512-V9znK0zc3jOPV4VD2zZn0sDhZU3WAE2bmlxdIwwQPPzPjvyLkd8B3JUVdS1IDUFDkWZ72c9qnv1GK2ZagTZ8EA==
+d3-interpolate@>=2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-2.0.0-rc.1.tgz#894989e6051c8fef5632be1a67d6734b4974b3e8"
+  integrity sha512-QJ7SdIqRvHada4WDkeCosJbn56ssRCs0QyPQhOZnlgpD3aNw14zssGrwF14E4ZCgrZgDf8J6mXXLAcyFnFhX7A==
   dependencies:
-    d3-color "1"
+    d3-color ">=2.0.0-rc.1"
 
-d3-selection@1, d3-selection@^1.1.0:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.4.1.tgz#98eedbbe085fbda5bafa2f9e3f3a2f4d7d622a98"
-  integrity sha512-BTIbRjv/m5rcVTfBs4AMBLKs4x8XaaLkwm28KWu9S2vKNqXkXt2AH2Qf0sdPZHjFxcWg/YL53zcqAz+3g4/7PA==
+d3-selection@>=2.0.0-rc.3:
+  version "2.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-2.0.0-rc.3.tgz#2275242adba02eae0fdfd12671bb5ab7c7d9713d"
+  integrity sha512-aRSv8+y9u/orAn+fcwErxdSSUnm/7KVzGUPvnOFGaAow01itJmwTbC6Z5dlv4VT3oQsv7xXDr/p4qHrYqbVZ2g==
 
-d3-selection@2:
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-2.0.0-rc.2.tgz#530fffde9fc6007d90c79d39bc4b2777e7288f6e"
-  integrity sha512-3sXAgCMsIi6zmZFGwgI2fFi9f99vzBRUKZoKOJq8yWDDAci00QgJQfe7xW0VqUW2hItUvGVl61M8WY4Cxg8soQ==
+d3-timer@>=2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-2.0.0-rc.1.tgz#8afc777810198f28d9b2ac1ef8765b767ce4bc22"
+  integrity sha512-Kfi4LnjFC1t1MnnjCrHh3TyQIJr9/mMjmjeTFYwG364CtTKtv8snI/juT5zoiCCsMwrxdzwrM7Kmpj24p/AClw==
 
-d3-timer@1:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.10.tgz#dfe76b8a91748831b13b6d9c793ffbd508dd9de5"
-  integrity sha512-B1JDm0XDaQC+uvo4DT79H0XmBskgS3l6Ve+1SBCfxgmtIb1AVrPIoqd+nPSv+loMX8szQ0sVUhGngL7D5QPiXw==
-
-d3-transition@2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/d3-transition/-/d3-transition-1.3.2.tgz#a98ef2151be8d8600543434c1ca80140ae23b398"
-  integrity sha512-sc0gRU4PFqZ47lPVHloMn9tlPcv8jxgOQg+0zjhfZXMQuvppjG6YuwdMBE0TuqCZjeJkLecku/l9R0JPcRhaDA==
+d3-transition@>=2.0.0-rc.3:
+  version "2.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/d3-transition/-/d3-transition-2.0.0-rc.3.tgz#7d796b7f31ed6b814096235dd3dcf12121669f5a"
+  integrity sha512-g3otrqo4z1WEbT3QSRu7lrzwvrrY1t2Ao5YkDA6Cr5qo4vfDpJBZt/uc/Hov6pBOIYCXyaFDVeiIR+jkc8lU3g==
   dependencies:
-    d3-color "1"
-    d3-dispatch "1"
-    d3-ease "1"
-    d3-interpolate "1"
-    d3-selection "^1.1.0"
-    d3-timer "1"
+    d3-color ">=2.0.0-rc.1"
+    d3-dispatch ">=2.0.0-rc.1"
+    d3-ease ">=2.0.0-rc.1"
+    d3-interpolate ">=2.0.0-rc.1"
+    d3-timer ">=2.0.0-rc.1"
 
 dashdash@^1.12.0:
   version "1.14.1"
