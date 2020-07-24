@@ -61,10 +61,12 @@ export default function() {
       interpolate = interpolateZoom,
       listeners = dispatch("start", "zoom", "end"),
       touchstarting,
+      touchfirst,
       touchending,
       touchDelay = 500,
       wheelDelay = 150,
-      clickDistance2 = 0;
+      clickDistance2 = 0,
+      tapDistance = 10;
 
   function zoom(selection) {
     selection
@@ -328,7 +330,7 @@ export default function() {
     if (touchstarting) touchstarting = clearTimeout(touchstarting);
 
     if (started) {
-      if (g.taps < 2) touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
+      if (g.taps < 2) touchfirst = p[0], touchstarting = setTimeout(function() { touchstarting = null; }, touchDelay);
       interrupt(this);
       g.start();
     }
@@ -341,8 +343,6 @@ export default function() {
         n = touches.length, i, t, p, l;
 
     noevent(event);
-    if (touchstarting) touchstarting = clearTimeout(touchstarting);
-    g.taps = 0;
     for (i = 0; i < n; ++i) {
       t = touches[i], p = pointer(t, this);
       if (g.touch0 && g.touch0[2] === t.identifier) g.touch0[0] = p;
@@ -360,6 +360,7 @@ export default function() {
     }
     else if (g.touch0) p = g.touch0[0], l = g.touch0[1];
     else return;
+
     g.zoom("touch", constrain(translate(t, p, l), g.extent, translateExtent));
   }
 
@@ -383,8 +384,11 @@ export default function() {
       g.end();
       // If this was a dbltap, reroute to the (optional) dblclick.zoom handler.
       if (g.taps === 2) {
-        var p = select(this).on("dblclick.zoom");
-        if (p) p.apply(this, arguments);
+        t = pointer(t, this);
+        if (Math.hypot(touchfirst[0] - t[0], touchfirst[1] - t[1]) < tapDistance) {
+          var p = select(this).on("dblclick.zoom");
+          if (p) p.apply(this, arguments);
+        }
       }
     }
   }
@@ -432,6 +436,10 @@ export default function() {
 
   zoom.clickDistance = function(_) {
     return arguments.length ? (clickDistance2 = (_ = +_) * _, zoom) : Math.sqrt(clickDistance2);
+  };
+
+  zoom.tapDistance = function(_) {
+    return arguments.length ? (tapDistance = +_, zoom) : tapDistance;
   };
 
   return zoom;
