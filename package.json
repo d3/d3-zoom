@@ -1,9 +1,6 @@
 {
   "name": "d3-zoom",
   "version": "2.0.0-rc.1",
-  "publishConfig": {
-    "tag": "next"
-  },
   "description": "Pan and zoom SVG, HTML or Canvas using mouse or touch input.",
   "keywords": [
     "d3",
@@ -37,11 +34,11 @@
     "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd - && zip -j dist/${npm_package_name}.zip -- LICENSE README.md dist/${npm_package_name}.js dist/${npm_package_name}.min.js"
   },
   "dependencies": {
-    "d3-dispatch": ">=2.0.0-rc.1",
-    "d3-drag": ">=2.0.0-rc.1",
-    "d3-interpolate": ">=2.0.0-rc.1",
-    "d3-selection": ">=2.0.0-rc.3",
-    "d3-transition": ">=2.0.0-rc.3"
+    "d3-dispatch": "1 - 2",
+    "d3-drag": "2",
+    "d3-interpolate": "1 - 2",
+    "d3-selection": "2",
+    "d3-transition": "2"
   },
   "devDependencies": {
     "eslint": "6",
