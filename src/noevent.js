@@ -3,6 +3,6 @@ export function nopropagation(event) {
 }
 
 export default function(event) {
-  event.preventDefault();
+  if (event.cancelable) event.preventDefault();
   event.stopImmediatePropagation();
 }
