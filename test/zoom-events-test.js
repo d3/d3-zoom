@@ -1,29 +1,18 @@
 import assert from "assert";
 import * as d3 from "../src/index.js";
+import {select} from "d3-selection";
 import jsdom from "./jsdom.js";
-
-//    d3 = Object.assign(require("../"), require("d3-selection"), require("d3-transition")); ....??
-
-// temporary fix (while d3-transition still requests d3-selection@1)
-/*
-d3.selection.prototype.interrupt = function(name) {
-  return this.each(function() {
-    d3.interrupt(this, name);
-  });
-};
-
 
 // d3-zoom expects global navigator and SVGElement to exist
 global.navigator = {};
 global.SVGElement = function(){};
 
 const document = jsdom("<body>"),
-  div = d3.select(document.body).append("div").datum("hello"),
+  div = select(document.body).append("div").datum("hello"),
   zoom = d3.zoom(),
   identity = d3.zoomIdentity;
 
 div.call(zoom);
-*/
 
 it("zoom.filter receives (event, d) and filters", () => {
   div.call(zoom.transform, identity);
@@ -52,7 +41,7 @@ it("zoom.extent receives (d)", () => {
   div.call(zoom.transform, identity);
   const extent = zoom.extent(),
     event = { bubbles: true, cancelable: true, detail: { type: "fake" } };
-  let a, b;
+  let a;
   zoom.extent(function() {
     a = arguments;
     a[-1] = this;
