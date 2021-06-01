@@ -162,7 +162,7 @@ If *filter* is specified, sets the filter to the specified function and returns 
 
 ```js
 function filter(event) {
-  return !event.ctrlKey && !event.button;
+  return (!event.ctrlKey || event.type === 'wheel') && !event.button;
 }
 ```
 
