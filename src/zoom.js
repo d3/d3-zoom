@@ -269,10 +269,10 @@ export default function() {
 
   function mousedowned(event, ...args) {
     if (touchending || !filter.apply(this, arguments)) return;
-    var g = gesture(this, args, true).event(event),
+    var currentTarget = event.currentTarget,
+        g = gesture(this, args, true).event(event),
         v = select(event.view).on("mousemove.zoom", mousemoved, true).on("mouseup.zoom", mouseupped, true),
         p = pointer(event, currentTarget),
-        currentTarget = event.currentTarget,
         x0 = event.clientX,
         y0 = event.clientY;
 
