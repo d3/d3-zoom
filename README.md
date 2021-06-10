@@ -26,6 +26,7 @@ If you use npm, `npm install d3-zoom`. You can also download the [latest release
 
 ```html
 <script type="module">
+
 import {zoom} from "https://cdn.skypack.dev/d3-zoom@3";
 
 const handler = zoom();
