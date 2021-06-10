@@ -1,139 +1,159 @@
-const tape = require("tape"),
-    jsdom = require("./jsdom"),
-    d3 = Object.assign(require("../"), require("d3-selection"), require("d3-transition"));
+import assert from "assert";
+import {select} from "d3-selection";
+import {zoom, zoomIdentity, zoomTransform} from "../src/index.js";
+import {Transform as ZoomTransform} from "../src/transform.js";
+import it from "./jsdom.js";
 
-// d3-zoom expects global navigator and SVGElement to exist
-global.navigator = {};
-global.SVGElement = function(){};
-
-const document = jsdom("<body>"),
-  div = d3.select(document.body).append("div").datum("hello"),
-  zoom = d3.zoom(),
-  identity = d3.zoomIdentity;
-
-div.call(zoom);
-
-tape("d3.zoom initiates a zooming behavior", function(test) {
-  div.call(zoom.transform, identity);
-  test.deepEqual(div.node().__zoom, { k: 1, x: 0, y: 0 });
-  div.call(zoom.transform, d3.zoomIdentity.scale(2).translate(1,-3));
-  test.deepEqual(div.node().__zoom, { k: 2, x: 2, y: -6 });
-  test.end();
+it("zoom initiates a zooming behavior", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(1, 0, 0));
+  div.call(z.transform, zoomIdentity.scale(2).translate(1,-3));
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(2, 2, -6));
 });
 
-tape("zoomTransform returns the node’s current transform", function(test) {
-  div.call(zoom.transform, identity);
-  test.deepEqual(d3.zoomTransform(div.node()), { k: 1, x: 0, y: 0 });
-  div.call(zoom.translateBy, 10, 10);
-  test.deepEqual(d3.zoomTransform(div.node()), { k: 1, x: 10, y: 10 });
-
-  // or an ancestor's…
-  test.deepEqual(d3.zoomTransform(div.append("span").node()), { k: 1, x: 10, y: 10 });
-
-  // or zoomIdentity
-  test.deepEqual(d3.zoomTransform(document.body), d3.zoomIdentity);
-
-  div.html("");
-  test.end();
+it("zoomTransform returns the node’s current transform", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
+  assert.deepStrictEqual(zoomTransform(div.node()), new ZoomTransform(1, 0, 0));
+  div.call(z.translateBy, 10, 10);
+  assert.deepStrictEqual(zoomTransform(div.node()), new ZoomTransform(1, 10, 10));
+  assert.deepStrictEqual(zoomTransform(div.append("span").node()), new ZoomTransform(1, 10, 10)); // or an ancestor's…
+  assert.deepStrictEqual(zoomTransform(document.body), zoomIdentity); // or zoomIdentity
 });
 
-tape("zoom.scaleBy zooms", function(test) {
-  div.call(zoom.transform, identity);
-  div.call(zoom.scaleBy, 2, [0, 0]);
-  test.deepEqual(div.node().__zoom, { k: 2, x: 0, y: 0 });
-  div.call(zoom.scaleBy, 2, [2, -2]);
-  test.deepEqual(div.node().__zoom, { k: 4, x: -2, y: 2 });
-  div.call(zoom.scaleBy, 1/4, [2, -2]);
-  test.deepEqual(div.node().__zoom, { k: 1, x: 1, y: -1 });
-  test.end();
+it("zoom.scaleBy zooms", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
+  div.call(z.scaleBy, 2, [0, 0]);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(2, 0, 0));
+  div.call(z.scaleBy, 2, [2, -2]);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(4, -2, 2));
+  div.call(z.scaleBy, 1/4, [2, -2]);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(1, 1, -1));
 });
 
-tape("zoom.scaleTo zooms", function(test) {
-  div.call(zoom.transform, identity);
-  div.call(zoom.scaleTo, 2);
-  test.deepEqual(div.node().__zoom, { k: 2, x: 0, y: 0 });
-  div.call(zoom.scaleTo, 2);
-  test.deepEqual(div.node().__zoom, { k: 2, x: 0, y: 0 });
-  div.call(zoom.scaleTo, 1);
-  test.deepEqual(div.node().__zoom, { k: 1, x: 0, y: 0 });
-  test.end();
+it("zoom.scaleTo zooms", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
+  div.call(z.scaleTo, 2);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(2, 0, 0));
+  div.call(z.scaleTo, 2);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(2, 0, 0));
+  div.call(z.scaleTo, 1);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(1, 0, 0));
 });
 
-tape("zoom.translateBy translates", function(test) {
-  div.call(zoom.transform, identity);
-  div.call(zoom.translateBy, 10, 10);
-  test.deepEqual(div.node().__zoom, { k: 1, x: 10, y: 10 });
-  div.call(zoom.scaleBy, 2);
-  div.call(zoom.translateBy, -10, -10);
-  test.deepEqual(div.node().__zoom, { k: 2, x: 0, y: 0 });
-  test.end();
+it("zoom.translateBy translates", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
+  div.call(z.translateBy, 10, 10);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(1, 10, 10));
+  div.call(z.scaleBy, 2);
+  div.call(z.translateBy, -10, -10);
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(2, 0, 0));
 });
 
-tape("zoom.scaleBy arguments can be functions passed (datum, index)", function(test) {
-  div.call(zoom.transform, identity);
+it("zoom.scaleBy arguments can be functions passed (datum, index)", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
   let a, b, c, d;
-  div.call(zoom.scaleBy,
-    function() { a = arguments; b = this; return 2; },
-    function() { c = arguments; d = this; return [0, 0]; }
+  div.call(
+    z.scaleBy,
+    function() {
+      a = arguments;
+      b = this;
+      return 2;
+    },
+    function() {
+      c = arguments;
+      d = this;
+      return [0, 0];
+    }
   );
-  test.deepEqual(div.node().__zoom, { k: 2, x: 0, y: 0 });
-  test.deepEqual(a[0], "hello");
-  test.deepEqual(a[1], 0);
-  test.deepEqual(b, div.node());
-  test.deepEqual(c[0], "hello");
-  test.deepEqual(c[1], 0);
-  test.deepEqual(d, div.node());
-  test.end();
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(2, 0, 0));
+  assert.deepStrictEqual(a[0], "hello");
+  assert.deepStrictEqual(a[1], 0);
+  assert.deepStrictEqual(b, div.node());
+  assert.deepStrictEqual(c[0], "hello");
+  assert.deepStrictEqual(c[1], 0);
+  assert.deepStrictEqual(d, div.node());
 });
 
-tape("zoom.scaleTo arguments can be functions passed (datum, index)", function(test) {
-  div.call(zoom.transform, identity);
+it("zoom.scaleTo arguments can be functions passed (datum, index)", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
   let a, b, c, d;
-  div.call(zoom.scaleTo,
-    function() { a = arguments; b = this; return 2; },
-    function() { c = arguments; d = this; return [0, 0]; }
+  div.call(
+    z.scaleTo,
+    function() {
+      a = arguments;
+      b = this;
+      return 2;
+    },
+    function() {
+      c = arguments;
+      d = this;
+      return [0, 0];
+    }
   );
-  test.deepEqual(div.node().__zoom, { k: 2, x: 0, y: 0 });
-  test.deepEqual(a[0], "hello");
-  test.deepEqual(a[1], 0);
-  test.deepEqual(b, div.node());
-  test.deepEqual(c[0], "hello");
-  test.deepEqual(c[1], 0);
-  test.deepEqual(d, div.node());
-  test.end();
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(2, 0, 0));
+  assert.deepStrictEqual(a[0], "hello");
+  assert.deepStrictEqual(a[1], 0);
+  assert.deepStrictEqual(b, div.node());
+  assert.deepStrictEqual(c[0], "hello");
+  assert.deepStrictEqual(c[1], 0);
+  assert.deepStrictEqual(d, div.node());
 });
 
-tape("zoom.translateBy arguments can be functions passed (datum, index)", function(test) {
-  div.call(zoom.transform, identity);
+it("zoom.translateBy arguments can be functions passed (datum, index)", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
   let a, b, c, d;
-  div.call(zoom.translateBy,
-    function() { a = arguments; b = this; return 2; },
-    function() { c = arguments; d = this; return 3; }
+  div.call(
+    z.translateBy,
+    function() {
+      a = arguments;
+      b = this;
+      return 2;
+    },
+    function() {
+      c = arguments;
+      d = this;
+      return 3;
+    }
   );
-  test.deepEqual(div.node().__zoom, { k: 1, x: 2, y: 3 });
-  test.deepEqual(a[0], "hello");
-  test.deepEqual(a[1], 0);
-  test.deepEqual(b, div.node());
-  test.deepEqual(c[0], "hello");
-  test.deepEqual(c[1], 0);
-  test.deepEqual(d, div.node());
-  test.end();
+  assert.deepStrictEqual(div.node().__zoom, new ZoomTransform(1, 2, 3));
+  assert.deepStrictEqual(a[0], "hello");
+  assert.deepStrictEqual(a[1], 0);
+  assert.deepStrictEqual(b, div.node());
+  assert.deepStrictEqual(c[0], "hello");
+  assert.deepStrictEqual(c[1], 0);
+  assert.deepStrictEqual(d, div.node());
 });
 
-
-tape("zoom.constrain receives (transform, extent, translateExtent)", function(test) {
-  div.call(zoom.transform, identity);
-  const constrain = zoom.constrain();
+it("zoom.constrain receives (transform, extent, translateExtent)", () => {
+  const div = select(document.body).append("div").datum("hello");
+  const z = zoom();
+  div.call(z);
+  const constrain = z.constrain();
   let a, b;
-  zoom.constrain(function() {
+  z.constrain(function() {
     a = arguments;
     return b = constrain.apply(this, arguments);
   });
-  div.call(zoom.translateBy, 10, 10);
-  test.deepEqual(a[0], b);
-  test.deepEqual(a[0], { k: 1, x: 10, y: 10 });
-  test.deepEqual(a[1], [ [ 0, 0 ], [ 0, 0 ] ]);
-  test.equal(a[2][0][0], -Infinity);
-  zoom.constrain(constrain);
-  test.end();
+  div.call(z.translateBy, 10, 10);
+  assert.deepStrictEqual(a[0], b);
+  assert.deepStrictEqual(a[0], new ZoomTransform(1, 10, 10));
+  assert.deepStrictEqual(a[1], [ [ 0, 0 ], [ 0, 0 ] ]);
+  assert.strictEqual(a[2][0][0], -Infinity);
+  z.constrain(constrain);
 });
