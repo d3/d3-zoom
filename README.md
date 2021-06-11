@@ -399,6 +399,10 @@ function rescaleY(y) {
 
 The scale *y* must use [d3.interpolateNumber](https://github.com/d3/d3-interpolate#interpolateNumber); do not use [*continuous*.rangeRound](https://github.com/d3/d3-scale#continuous_rangeRound) as this reduces the accuracy of [*continuous*.invert](https://github.com/d3/d3-scale#continuous_invert) and can lead to an inaccurate rescaled domain. This method does not modify the input scale *y*; *y* thus represents the untransformed scale, while the returned scale represents its transformed view.
 
+<a href="#ZoomTransform_" name="ZoomTransform_">#</a> new d3.<b>ZoomTransform</b>(<i>k</i>, <i>x</i>, <i>y</i>) · [Source](https://github.com/d3/d3-zoom/blob/master/src/transform.js)
+
+Returns a transform with scale *k* and translation (*x*, *y*).
+
 <a href="#transform_toString" name="transform_toString">#</a> <i>transform</i>.<b>toString</b>() · [Source](https://github.com/d3/d3-zoom/blob/master/src/transform.js)
 
 Returns a string representing the [SVG transform](https://www.w3.org/TR/SVG/coords.html#TransformAttribute) corresponding to this transform. Implemented as:
