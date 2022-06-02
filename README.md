@@ -8,7 +8,7 @@ The zoom behavior implemented by d3-zoom is a convenient but flexible abstractio
 
 The zoom behavior is also designed to work with [d3-scale](https://github.com/d3/d3-scale) and [d3-axis](https://github.com/d3/d3-axis); see [*transform*.rescaleX](#transform_rescaleX) and [*transform*.rescaleY](#transform_rescaleY). You can also restrict zooming using [*zoom*.scaleExtent](#zoom_scaleExtent) and panning using [*zoom*.translateExtent](#zoom_translateExtent).
 
-[<img alt="Axis Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/axis.png" width="420" height="219">](https://observablehq.com/@d3/zoomable-scatterplot)
+[<img alt="Axis Zooming" src="https://raw.githubusercontent.com/d3/d3-zoom/master/img/axis.png" width="420" height="219">](https://observablehq.com/@d3/pan-zoom-axes)
 
 The zoom behavior can be combined with other behaviors, such as [d3-drag](https://github.com/d3/d3-drag) for dragging, and [d3-brush](https://github.com/d3/d3-brush) for focus + context.
 
