@@ -22,7 +22,7 @@ function defaultExtent() {
       e = e.viewBox.baseVal;
       return [[e.x, e.y], [e.x + e.width, e.y + e.height]];
     }
-    return [[0, 0], [e.width.baseVal.value, e.height.baseVal.value]];
+    return [[0, 0], [e.width?.baseVal.value, e.height?.baseVal.value]];
   }
   return [[0, 0], [e.clientWidth, e.clientHeight]];
 }
