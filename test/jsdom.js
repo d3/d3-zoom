@@ -5,7 +5,6 @@ export default function jsdomit(description, run) {
     try {
       const window = new JSDOM("").window;
       global.document = window.document;
-      global.navigator = window.navigator;
       global.Node = window.Node;
       global.NodeList = window.NodeList;
       global.HTMLCollection = window.HTMLCollection;
@@ -13,7 +12,6 @@ export default function jsdomit(description, run) {
       return await run();
     } finally {
       delete global.document;
-      delete global.navigator;
       delete global.Node;
       delete global.NodeList;
       delete global.HTMLCollection;
