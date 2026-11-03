@@ -1,5 +1,5 @@
+import assert from "node:assert";
 import {it} from "vitest";
-import assert from "assert";
 import {zoomIdentity, ZoomTransform} from "../src/index.js";
 
 it("zoomIdentity transform contains k = 1, x = y = 0", () => {
