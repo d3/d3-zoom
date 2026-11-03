@@ -1,43 +1,43 @@
-import {test} from "vitest";
+import {it} from "vitest";
 import assert from "assert";
 import {zoomIdentity, ZoomTransform} from "../src/index.js";
 
-test("zoomIdentity transform contains k = 1, x = y = 0", () => {
+it("zoomIdentity transform contains k = 1, x = y = 0", () => {
   assert.deepStrictEqual(zoomIdentity, new ZoomTransform(1, 0, 0));
 });
 
-test("transform.scale(k) returns a new transform scaled with k", () => {
+it("transform.scale(k) returns a new transform scaled with k", () => {
   const transform = zoomIdentity.scale(2.5);
   assert.deepStrictEqual(transform.scale(2), new ZoomTransform(5, 0, 0));
 });
 
-test("transform.translate(x, y) returns a new transform translated with x and y", () => {
+it("transform.translate(x, y) returns a new transform translated with x and y", () => {
   const transform = zoomIdentity.translate(2, 3);
   assert.deepStrictEqual(transform.translate(-4, 4), new ZoomTransform(1, -2, 7));
   assert.deepStrictEqual(transform.scale(2).translate(-4, 4), new ZoomTransform(2, -6, 11));
 });
 
-test("transform.apply([x, y]) returns the transformation of the specified point", () => {
+it("transform.apply([x, y]) returns the transformation of the specified point", () => {
   assert.deepStrictEqual(zoomIdentity.translate(2, 3).scale(2).apply([4, 5]), [10, 13]);
 });
 
-test("transform.applyX(x) returns the transformation of the specified x-coordinate", () => {
+it("transform.applyX(x) returns the transformation of the specified x-coordinate", () => {
   assert.deepStrictEqual(zoomIdentity.translate(2, 0).scale(2).applyX(4), 10);
 });
 
-test("transform.applyY(y) returns the transformation of the specified y-coordinate", () => {
+it("transform.applyY(y) returns the transformation of the specified y-coordinate", () => {
   assert.deepStrictEqual(zoomIdentity.translate(0, 3).scale(2).applyY(5), 13);
 });
 
-test("transform.invert([x, y]) returns the inverse transformation of the specified point", () => {
+it("transform.invert([x, y]) returns the inverse transformation of the specified point", () => {
   assert.deepStrictEqual(zoomIdentity.translate(2, 3).scale(2).invert([4, 5]), [1, 1]);
 });
 
-test("transform.invertX(x) returns the inverse transformation of the specified x-coordinate", () => {
+it("transform.invertX(x) returns the inverse transformation of the specified x-coordinate", () => {
   assert.deepStrictEqual(zoomIdentity.translate(2, 0).scale(2).invertX(4), 1);
 });
 
-test("transform.invertY(y) returns the inverse transformation of the specified y-coordinate", () => {
+it("transform.invertY(y) returns the inverse transformation of the specified y-coordinate", () => {
   assert.deepStrictEqual(zoomIdentity.translate(0, 3).scale(2).invertY(5), 1);
 });
 
@@ -45,6 +45,6 @@ test("transform.invertY(y) returns the inverse transformation of the specified y
 
 // transform.rescaleY(y)
 
-test("transform.toString() returns a string representing the SVG transform", () => {
+it("transform.toString() returns a string representing the SVG transform", () => {
   assert.strictEqual(zoomIdentity.toString(), "translate(0,0) scale(1)");
 });

@@ -1,8 +1,8 @@
-import {test} from "vitest";
+import {it} from "vitest";
 import {JSDOM} from "jsdom";
 
 export default function jsdomit(description, run) {
-  test(description, async () => {
+  it(description, async () => {
     try {
       const window = new JSDOM("").window;
       global.document = window.document;
