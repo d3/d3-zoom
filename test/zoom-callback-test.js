@@ -2,7 +2,7 @@ import assert from "node:assert";
 import {select} from "d3-selection";
 import {zoom, zoomIdentity} from "d3-zoom";
 import ZoomEvent from "../src/event.js";
-import it from "./jsdom.js";
+import {it} from "vitest";
 
 it("zoom.on('zoom') callback", () => {
   const div = select(document.body).append("div").datum("hello");

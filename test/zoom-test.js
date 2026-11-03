@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import {select} from "d3-selection";
 import {zoom, zoomIdentity, zoomTransform, ZoomTransform} from "d3-zoom";
-import it from "./jsdom.js";
+import {it} from "vitest";
 
 it("zoom initiates a zooming behavior", () => {
   const div = select(document.body).append("div").datum("hello");
