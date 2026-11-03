@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import {select} from "d3-selection";
-import {zoom, zoomIdentity} from "../src/index.js";
+import {zoom, zoomIdentity} from "d3-zoom";
 import ZoomEvent from "../src/event.js";
 import it from "./jsdom.js";
 

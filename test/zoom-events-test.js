@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import {zoom, zoomIdentity} from "../src/index.js";
+import {zoom, zoomIdentity} from "d3-zoom";
 import {select} from "d3-selection";
 import it from "./jsdom.js";
 
