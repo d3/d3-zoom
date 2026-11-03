@@ -1,7 +1,7 @@
-import assert from "assert";
-import {zoom, zoomIdentity} from "../src/index.js";
+import assert from "node:assert";
+import {zoom, zoomIdentity} from "d3-zoom";
 import {select} from "d3-selection";
-import it from "./jsdom.js";
+import {it} from "vitest";
 
 it("zoom.filter receives (event, d) and filters", () => {
   const div = select(document.body).append("div").datum("hello");

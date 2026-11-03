@@ -7,6 +7,6 @@ The zoom behavior implemented by d3-zoom is a convenient but flexible abstractio
 ## Resources
 
 - [Documentation](https://d3js.org/d3-zoom)
-- [Examples](https://observablehq.com/collection/@d3/d3-zoom)
+- [Examples](https://observablehq.com/@d3/-/collection/d3-zoom)
 - [Releases](https://github.com/d3/d3-zoom/releases)
 - [Getting help](https://d3js.org/community)
